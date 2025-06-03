@@ -1,0 +1,2 @@
+#!/bin/bash
+exec java -jar /usr/local/libexec/jdkcertstool/jdkcertstool.jar "$@"

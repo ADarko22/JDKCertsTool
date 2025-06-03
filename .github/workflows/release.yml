@@ -1,0 +1,54 @@
+name: Release JDKCertsTool
+
+on:
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: 'Release version tag (e.g., v1.0.0)'
+        required: true
+
+jobs:
+  build-and-release:
+    runs-on: ubuntu-latest
+
+    permissions:
+      contents: write  # required for release uploads
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up JDK
+        uses: actions/setup-java@v4
+        with:
+          java-version: '21'
+          distribution: 'temurin'
+
+      - name: Set up Gradle
+        uses: gradle/actions/setup-gradle@v3
+
+      - name: Build fat JAR
+        run: ./gradlew shadowJar
+
+      - name: Prepare release artifacts
+        run: |
+          mkdir release
+          cp build/libs/JDKCertsTool-*.jar release/jdkcertstool.jar
+          cp scripts/jdkcertstool release/jdkcertstool
+          chmod +x release/jdkcertstool
+
+      - name: Create Git Tag
+        run: |
+          git config user.name "github-actions"
+          git config user.email "github-actions@github.com"
+          git tag ${{ github.event.inputs.tag }}
+          git push origin ${{ github.event.inputs.tag }}
+
+      - name: Create GitHub Release
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: ${{ github.event.inputs.tag }}
+          name: "Release ${{ github.event.inputs.tag }}"
+          files: |
+            release/jdkcertstool.jar
+            release/jdkcertstool
