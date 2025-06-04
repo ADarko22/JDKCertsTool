@@ -9,7 +9,7 @@ import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertAll
 import java.nio.file.Path
 
-class RemoveCaCertTest {
+class RemoveCaCertCommandTest {
 
     private val customJdkHome = Path.of(javaClass.getResource("/customJdkHome")!!.toURI())
     private val nonJdkHome = Path.of(javaClass.getResource("/nonJdkHome")!!.toURI())
@@ -23,7 +23,7 @@ class RemoveCaCertTest {
 
         val logs = mutableListOf<String>()
 
-        val command = RemoveCaCert(jdkDiscover, print = { msg -> logs.add(msg) })
+        val command = RemoveCaCertCommand(jdkDiscover, print = { msg -> logs.add(msg) })
         command.parse(arrayOf("--alias", "custom-cert", "--dry-run"))
         command.run()
 

@@ -5,9 +5,10 @@ import com.github.ajalt.clikt.parameters.options.flag
 import com.github.ajalt.clikt.parameters.options.option
 import com.github.ajalt.clikt.parameters.options.required
 import edu.adarko22.utils.JdkDiscover
+import edu.adarko22.utils.*
 import java.nio.file.Files
 
-class RemoveCaCert(
+class RemoveCaCertCommand(
     private val jdkDiscovery: JdkDiscover,
     override val print: (String) -> Unit = { msg -> println(msg) }
 ) : BaseJdkCommand(name = "remove-cert", help = "Remove a CA certificate by alias from all discovered JDKs") {

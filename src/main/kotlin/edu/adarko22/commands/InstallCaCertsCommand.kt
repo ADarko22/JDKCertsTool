@@ -1,12 +1,12 @@
 package edu.adarko22.commands
 
-import com.github.ajalt.clikt.output.TermUi.echo
 import com.github.ajalt.clikt.parameters.options.*
 import edu.adarko22.utils.JdkDiscover
+import edu.adarko22.utils.*
 import java.nio.file.Files
 import java.nio.file.Path
 
-class InstallCaCerts(
+class InstallCaCertsCommand(
     private val jdkDiscovery: JdkDiscover,
     override val print: (String) -> Unit = { msg -> println(msg) }
 ) : BaseJdkCommand(name = "install-cert", help = "Install a CA certificate into all discovered JDKs") {

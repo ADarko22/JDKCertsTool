@@ -7,7 +7,8 @@ import org.junit.jupiter.api.Assertions.*
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertAll
 import java.nio.file.Path
-class InstallCaCertsTest {
+
+class InstallCaCertsCommandTest {
 
     private val certPath = Path.of(javaClass.getResource("/cert.pem")!!.toURI())
     private val customJdkHome = Path.of(javaClass.getResource("/customJdkHome")!!.toURI())
@@ -19,7 +20,7 @@ class InstallCaCertsTest {
 
         val loggedMessages = mutableListOf<String>()
 
-        val command = InstallCaCerts(jdkDiscover, print = { msg -> loggedMessages.add(msg) })
+        val command = InstallCaCertsCommand(jdkDiscover, print = { msg -> loggedMessages.add(msg) })
         command.parse(arrayOf("--cert", certPath.toString(), "--dry-run"))
         command.run()
 
