@@ -12,7 +12,7 @@ jobs:
     runs-on: ubuntu-latest
 
     permissions:
-      contents: write  # required for release uploads
+      contents: write
 
     steps:
       - name: Checkout code
@@ -34,21 +34,32 @@ jobs:
         run: |
           mkdir release
           cp build/libs/JDKCertsTool-*.jar release/jdkcertstool.jar
-          cp scripts/jdkcertstool release/jdkcertstool
-          chmod +x release/jdkcertstool
+          cp scripts/jdkcerts release/jdkcerts
+          chmod +x release/jdkcerts
 
       - name: Create Git Tag
         run: |
-          git config user.name "github-actions"
-          git config user.email "github-actions@github.com"
-          git tag ${{ github.event.inputs.tag }}
-          git push origin ${{ github.event.inputs.tag }}
+          git fetch --tags
+          if git rev-parse ${{ github.event.inputs.tag }} >/dev/null 2>&1; then
+            echo "❌ Error: Tag '${{ github.event.inputs.tag }}' already exists."
+            exit 1
+          else
+            git config user.name "github-actions"
+            git config user.email "github-actions@github.com"
+            git tag ${{ github.event.inputs.tag }}
+            git push origin ${{ github.event.inputs.tag }}
+          fi
 
       - name: Create GitHub Release
         uses: softprops/action-gh-release@v2
         with:
           tag_name: ${{ github.event.inputs.tag }}
           name: "Release ${{ github.event.inputs.tag }}"
+          body: |
+            ## Changes
+
+            - Describe the key changes in this release here.
+
           files: |
             release/jdkcertstool.jar
-            release/jdkcertstool
+            release/jdkcerts
