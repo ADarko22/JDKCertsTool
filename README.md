@@ -6,9 +6,34 @@ The tool internally uses the JDK's built-in `keytool` command to manage certific
 
 ---
 
-## 🚀 Usage
+## 🛠️ Installation
 
-### ❓ Show Help
+### Via Homebrew (Mac/Linux)
+
+```bash
+brew tap ADarko22/JDKCertsTool https://github.com/ADarko22/JDKCertsTool
+brew install jdkcerts
+````
+
+### 🚀 Usage
+
+Use the `jdkcerts` command to run the tool.
+
+```bash
+jdkcerts --help
+```
+
+---
+
+### Cloning the repository
+
+```bash
+git clone https://github.com/ADarko22/JDKCertsTool.git
+```
+
+#### 🚀 Usage
+
+From the cloned repository, you can run the tool using Gradle:
 
 ```bash
 ./gradlew run --args="--help"
@@ -16,16 +41,16 @@ The tool internally uses the JDK's built-in `keytool` command to manage certific
 
 ---
 
+## ❓ Usage Commands
+
 ### 📋 List JDKs
 
-```bash
-./gradlew run --args="list-jdk --custom-jdk-dirs <VALUE>"
-```
+**Command:** `list-jdk`
 
 **Options:**
 
 | Option                      | Description                                             |
-| --------------------------- | ------------------------------------------------------- |
+|-----------------------------|---------------------------------------------------------|
 | `-h`, `--help`              | ❓ Show this message and exit                            |
 | `--custom-jdk-dirs <VALUE>` | 🗂️ Comma-separated paths to JDK directories (optional) |
 
@@ -33,14 +58,12 @@ The tool internally uses the JDK's built-in `keytool` command to manage certific
 
 ### 📥 Install a Certificate
 
-```bash
-./gradlew run --args="install-cert --cert <CERT_PATH> --alias <ALIAS> --custom-jdk-dirs <VALUE> --dry-run"
-```
+**Command:** `install-cert`
 
 **Options:**
 
 | Option                       | Description                                             | Default       |
-| ---------------------------- | ------------------------------------------------------- | ------------- |
+|------------------------------|---------------------------------------------------------|---------------|
 | `-h`, `--help`               | ❓ Show this message and exit                            |               |
 | `--custom-jdk-dirs <VALUE>`  | 🗂️ Comma-separated paths to JDK directories (optional) |               |
 | `--cert <VALUE>`             | 📄 Path to the certificate file (required)              |               |
@@ -52,14 +75,12 @@ The tool internally uses the JDK's built-in `keytool` command to manage certific
 
 ### 🗑️ Remove a Certificate
 
-```bash
-./gradlew run --args="remove-cert --alias <ALIAS> --custom-jdk-dirs <VALUE> --dry-run"
-```
+**Command:** `remove-cert`
 
 **Options:**
 
 | Option                       | Description                                             | Default       |
-| ---------------------------- | ------------------------------------------------------- | ------------- |
+|------------------------------|---------------------------------------------------------|---------------|
 | `-h`, `--help`               | ❓ Show this message and exit                            |               |
 | `--custom-jdk-dirs <VALUE>`  | 🗂️ Comma-separated paths to JDK directories (optional) |               |
 | `--keystore-password <TEXT>` | 🔐 Keystore password                                    | `changeit`    |
