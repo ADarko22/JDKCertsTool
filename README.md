@@ -1,23 +1,27 @@
 # 🛠️ JDK Certs Tool
 
-A command-line tool to manage JDK certificates. It allows you to **add**, **remove**, or **list** certificates in the JDK's keystore.
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 
-The tool internally uses the JDK's built-in `keytool` command to manage certificates.
+A command-line utility to manage JDK certificates — allowing you to **add**, **remove**, or **list** certificates in your JDK's keystore.
+
+Under the hood, it uses the JDK’s built-in `keytool` for certificate operations.
 
 ---
 
-## 🛠️ Installation
+## 📦 Installation
 
-### Via Homebrew (Mac/Linux)
+### ✅ Via Homebrew (macOS/Linux)
 
 ```bash
 brew tap ADarko22/JDKCertsTool https://github.com/ADarko22/JDKCertsTool
 brew install jdkcerts
 ````
 
-### 🚀 Usage
+---
 
-Use the `jdkcerts` command to run the tool.
+## 🚀 Quick Start
+
+Use the installed `jdkcerts` command:
 
 ```bash
 jdkcerts --help
@@ -25,67 +29,65 @@ jdkcerts --help
 
 ---
 
-### Cloning the repository
+## 🧪 Run from Source
+
+### Clone the Repository
 
 ```bash
 git clone https://github.com/ADarko22/JDKCertsTool.git
+cd JDKCertsTool
 ```
 
-#### 🚀 Usage
-
-From the cloned repository, you can run the tool using Gradle:
+### Run with Gradle
 
 ```bash
 ./gradlew run --args="--help"
-````
+```
 
 ---
 
-## ❓ Usage Commands
+## 💡 Commands Overview
 
-### 📋 List JDKs
+### 🔍 info
 
-**Command:** `list-jdk`
+Displays basic project and environment info.
+
+### 📋 list-jdk
 
 **Options:**
 
-| Option                      | Description                                             |
-|-----------------------------|---------------------------------------------------------|
-| `-h`, `--help`              | ❓ Show this message and exit                            |
-| `--custom-jdk-dirs <VALUE>` | 🗂️ Comma-separated paths to JDK directories (optional) |
+| Option                      | Description                                              |
+|-----------------------------|----------------------------------------------------------|
+| `-h`, `--help`              | ❓ Show this message and exit                             |
+| `--custom-jdk-dirs <VALUE>` | 🗂️  Comma-separated paths to JDK directories (optional) |
 
----
-
-### 📥 Install a Certificate
-
-**Command:** `install-cert`
+### 📥 install-cert
 
 **Options:**
 
-| Option                       | Description                                             | Default       |
-|------------------------------|---------------------------------------------------------|---------------|
-| `-h`, `--help`               | ❓ Show this message and exit                            |               |
-| `--custom-jdk-dirs <VALUE>`  | 🗂️ Comma-separated paths to JDK directories (optional) |               |
-| `--cert <VALUE>`             | 📄 Path to the certificate file (required)              |               |
-| `--keystore-password <TEXT>` | 🔐 Keystore password                                    | `changeit`    |
-| `--alias <TEXT>`             | 🏷️ Certificate alias                                   | `custom-cert` |
-| `--dry-run`                  | 🛑 Preview changes without modifying anything           |               |
+| Option                       | Description                                              | Default       |
+|------------------------------|----------------------------------------------------------|---------------|
+| `-h`, `--help`               | ❓ Show this message and exit                             |               |
+| `--custom-jdk-dirs <VALUE>`  | 🗂️  Comma-separated paths to JDK directories (optional) |               |
+| `--cert <VALUE>`             | 📄 Path to the certificate file (required)               |               |
+| `--keystore-password <TEXT>` | 🔐 Keystore password                                     | `changeit`    |
+| `--alias <TEXT>`             | 🏷️  Certificate alias                                   | `custom-cert` |
+| `--dry-run`                  | 🛑 Preview changes without modifying anything            |               |
 
----
-
-### 🗑️ Remove a Certificate
-
-**Command:** `remove-cert`
+### 🗑️ remove-cert
 
 **Options:**
 
-| Option                       | Description                                             | Default       |
-|------------------------------|---------------------------------------------------------|---------------|
-| `-h`, `--help`               | ❓ Show this message and exit                            |               |
-| `--custom-jdk-dirs <VALUE>`  | 🗂️ Comma-separated paths to JDK directories (optional) |               |
-| `--keystore-password <TEXT>` | 🔐 Keystore password                                    | `changeit`    |
-| `--alias <TEXT>`             | 🏷️ Certificate alias                                   | `custom-cert` |
-| `--dry-run`                  | 🛑 Preview changes without modifying anything           |               |
+| Option                       | Description                                              | Default       |
+|------------------------------|----------------------------------------------------------|---------------|
+| `-h`, `--help`               | ❓ Show this message and exit                             |               |
+| `--custom-jdk-dirs <VALUE>`  | 🗂️  Comma-separated paths to JDK directories (optional) |               |
+| `--keystore-password <TEXT>` | 🔐 Keystore password                                     | `changeit`    |
+| `--alias <TEXT>`             | 🏷️  Certificate alias                                   | `custom-cert` |
+| `--dry-run`                  | 🛑 Preview changes without modifying anything            |               |
 
 ---
 
+## 📄 License
+
+This project is licensed under the [MIT License](LICENSE).

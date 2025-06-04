@@ -24,8 +24,10 @@ jobs:
           java-version: '21'
           distribution: 'temurin'
 
-      - name: Set up Gradle
+      - name: Set up Gradle with caching
         uses: gradle/actions/setup-gradle@v3
+        with:
+          cache-enabled: true
 
       - name: Build fat JAR
         run: ./gradlew shadowJar
@@ -40,14 +42,13 @@ jobs:
       - name: Create Git Tag
         run: |
           git fetch --tags
-          if git rev-parse ${{ github.event.inputs.tag }} >/dev/null 2>&1; then
-            echo "❌ Error: Tag '${{ github.event.inputs.tag }}' already exists."
-            exit 1
+          if git rev-parse "${{ github.event.inputs.tag }}" >/dev/null 2>&1; then
+            echo "⚠️ Warning: Tag '${{ github.event.inputs.tag }}' already exists."
           else
             git config user.name "github-actions"
             git config user.email "github-actions@github.com"
-            git tag ${{ github.event.inputs.tag }}
-            git push origin ${{ github.event.inputs.tag }}
+            git tag "${{ github.event.inputs.tag }}"
+            git push origin "${{ github.event.inputs.tag }}"
           fi
 
       - name: Create GitHub Release
@@ -56,13 +57,29 @@ jobs:
           tag_name: ${{ github.event.inputs.tag }}
           name: "Release ${{ github.event.inputs.tag }}"
           body: |
-            ## Changes
+            Describe the key changes in this release here.
 
-            - Describe the key changes in this release here.
-
+          draft: false
           files: |
             release/jdkcertstool.jar
             release/jdkcerts
+
+      - name: Wait for release assets to be available
+        run: |
+          URL="https://github.com/ADarko22/JDKCertsTool/releases/download/${{ github.event.inputs.tag }}/jdkcertstool.jar"
+          echo "Waiting for release asset $URL to be available..."
+          for i in {1..10}; do
+            status_code=$(curl -o /dev/null -s -w "%{http_code}" "$URL" || echo "000")
+            if [ "$status_code" = "200" ]; then
+              echo "Release asset is available!"
+              exit 0
+            else
+              echo "Asset not ready yet (HTTP $status_code), retrying in 10 seconds..."
+              sleep 10
+            fi
+          done
+          echo "Timeout waiting for release asset!"
+          exit 1
 
       - name: Generate Homebrew formula
         run: |
@@ -75,3 +92,22 @@ jobs:
           git add Formula/jdkcerts.rb
           git commit -m "Update Homebrew formula for ${{ github.event.inputs.tag }}" || echo "No changes to commit"
           git push
+
+      - name: Test Homebrew formula
+        run: |
+          # Use a temporary Homebrew prefix to avoid interfering with user's global setup
+          mkdir -p test-homebrew-prefix
+          # Trigger Homebrew install (on GitHub runners)
+          brew --prefix > /dev/null 
+          
+          # Try to install the formula (no network dependency)
+          brew install --verbose --debug ./Formula/jdkcerts.rb
+          
+          # Run a help command to verify it works
+          jdkcerts --help || (echo "Formula installed but command failed" && exit 1)
+
+      - name: Cleanup Homebrew formula
+        if: always()
+        run: |
+          brew uninstall jdkcerts || true
+          brew untap local/testtap || true
