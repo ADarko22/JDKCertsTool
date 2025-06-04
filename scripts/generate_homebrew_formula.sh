@@ -5,14 +5,25 @@ set -euo pipefail
 TAG=$1
 REPO="ADarko22/JDKCertsTool"
 JAR_NAME="jdkcertstool.jar"
-URL="https://github.com/$REPO/releases/download/$TAG/$JAR_NAME"
+SCRIPT_NAME="jdkcerts" # Name of the script asset
+JAR_URL="https://github.com/$REPO/releases/download/$TAG/$JAR_NAME"
+SCRIPT_URL="https://github.com/$REPO/releases/download/$TAG/$SCRIPT_NAME"
+
 
 # Download the jar fresh (overwrite if exists)
-echo "Downloading $JAR_NAME from $URL"
-curl -L -o "$JAR_NAME" "$URL"
+echo "Downloading $JAR_NAME from $JAR_URL"
+curl -L -o "$JAR_NAME" "$JAR_URL"
+
+# Download the script fresh (overwrite if exists)
+echo "Downloading $SCRIPT_NAME from $SCRIPT_URL"
+curl -L -o "$SCRIPT_NAME" "$SCRIPT_URL"
+chmod +x "$SCRIPT_NAME" # Ensure it's executable for local testing if needed
+
 
 # Compute SHA256 of the downloaded jar
-SHA=$(shasum -a 256 "$JAR_NAME" | awk '{print $1}')
+JAR_SHA=$(shasum -a 256 "$JAR_NAME" | awk '{print $1}')
+SCRIPT_SHA=$(shasum -a 256 "$SCRIPT_NAME" | awk '{print $1}') # Also get SHA for the script
+
 
 # Ensure Formula directory exists relative to this script
 FORMULA_DIR="$(dirname "$0")/../Formula"
@@ -22,20 +33,27 @@ cat > "$FORMULA_DIR/jdkcerts.rb" <<EOF
 class Jdkcerts < Formula
   desc "Tool to manage JDK certificates"
   homepage "https://github.com/$REPO"
-  url "$URL"
+  url "$JAR_URL" # The primary URL for the archive/main file
   version "${TAG#v}"
-  sha256 "$SHA"
+  sha256 "$JAR_SHA" # SHA for the main file
   license "Apache-2.0"
+
+  # Define a resource for the script
+  resource "jdkcerts-script" do
+    url "$SCRIPT_URL"
+    sha256 "$SCRIPT_SHA"
+  end
 
   depends_on "openjdk"
 
   def install
     libexec.install "$JAR_NAME"
 
-    (bin/"jdkcerts").write <<~EOS
-      #!/bin/bash
-      exec "\#{Formula["openjdk"].opt_bin}/java" -jar "\#{libexec}/$JAR_NAME" "\$@"
-    EOS
+    # Install the resource script
+    resource("jdkcerts-script").stage do
+      bin.install "jdkcerts"
+      chmod 0755, bin/"jdkcerts"
+    end
   end
 
   test do
