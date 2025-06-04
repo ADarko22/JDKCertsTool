@@ -3,13 +3,13 @@ class Jdkcerts < Formula
   homepage "https://github.com/ADarko22/JDKCertsTool"
   url "https://github.com/ADarko22/JDKCertsTool/releases/download/v1.0.0/jdkcertstool.jar" # The primary URL for the archive/main file
   version "1.0.0"
-  sha256 "21e56ec60bb8e3ee7dae22bf341ed3c3a90b08e91170ed7fc477bf9a3b55f338" # SHA for the main file
+  sha256 "efa9d69809cccaf47ea32d4bb8c6f090d573f821b047d8818b1a5ecfaeecc57c" # SHA for the main file
   license "Apache-2.0"
 
   # Define a resource for the script
   resource "jdkcerts-script" do
     url "https://github.com/ADarko22/JDKCertsTool/releases/download/v1.0.0/jdkcerts"
-    sha256 "8ad9f3d4d2437417d4600d312f47665d6c6f11e3895cfdc04c722b3f496d456a"
+    sha256 "d6d60fa6563903f2dfb2b35c2a7f403cd697a8a2d78b6dba87c2b78bb30c4513"
   end
 
   depends_on "openjdk"
