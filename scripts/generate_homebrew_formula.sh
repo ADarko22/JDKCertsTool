@@ -1,7 +1,7 @@
 #!/bin/bash
 
 TAG=$1
-REPO="adarko22/JDKCertsTool"
+REPO="ADarko22/JDKCertsTool"
 JAR_NAME="jdkcertstool.jar"
 URL="https://github.com/$REPO/releases/download/$TAG/$JAR_NAME"
 
@@ -10,8 +10,8 @@ curl -LO "$URL"
 
 SHA=$(shasum -a 256 $JAR_NAME | awk '{print $1}')
 
-cat > Formula/jdkcertstool.rb <<EOF
-class Jdkcertstool < Formula
+cat > Formula/jdkcerts.rb <<EOF
+class Jdkcerts < Formula
   desc "Tool to manage JDK certificates"
   homepage "https://github.com/$REPO"
   url "$URL"
@@ -22,16 +22,16 @@ class Jdkcertstool < Formula
   depends_on "openjdk"
 
   def install
-    libexec.install "jdkcertstool.jar"
+    libexec.install "$JAR_NAME"
 
-    (bin/"jdkcertstool").write <<~EOS
+    (bin/"jdkcerts").write <<~EOS
       #!/bin/bash
-      exec "\#{Formula["openjdk"].opt_bin}/java" -jar "\#{libexec}/jdkcertstool.jar" "\$@"
+      exec "\#{Formula["openjdk"].opt_bin}/java" -jar "\#{libexec}/$JAR_NAME" "\$@"
     EOS
   end
 
   test do
-    system "\#{bin}/jdkcertstool", "--help"
+    system "\#{bin}/jdkcerts", "--help"
   end
 end
 EOF
