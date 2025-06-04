@@ -20,7 +20,7 @@ abstract class BaseJdkCommand(
     protected fun discoverAndListJdks(jdkDiscover: JdkDiscover): List<Path> {
         val jdkPaths = jdkDiscover.discoverJdkHomes(customJdkDirs)
         if (jdkPaths.isEmpty()) {
-            print("❌ No JDKs found.".red())
+            print("❌ No JDKs found. Try specifying a JDK path with the `--custom-jdk-dirs` option.".red())
             return emptyList()
         }
 
