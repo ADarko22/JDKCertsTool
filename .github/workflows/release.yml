@@ -40,14 +40,13 @@ jobs:
       - name: Create Git Tag
         run: |
           git fetch --tags
-          if git rev-parse ${{ github.event.inputs.tag }} >/dev/null 2>&1; then
-            echo "❌ Error: Tag '${{ github.event.inputs.tag }}' already exists."
-            exit 1
+          if git rev-parse "${{ github.event.inputs.tag }}" >/dev/null 2>&1; then
+            echo "⚠️ Warning: Tag '${{ github.event.inputs.tag }}' already exists."
           else
             git config user.name "github-actions"
             git config user.email "github-actions@github.com"
-            git tag ${{ github.event.inputs.tag }}
-            git push origin ${{ github.event.inputs.tag }}
+            git tag "${{ github.event.inputs.tag }}"
+            git push origin "${{ github.event.inputs.tag }}"
           fi
 
       - name: Create GitHub Release
@@ -55,14 +54,35 @@ jobs:
         with:
           tag_name: ${{ github.event.inputs.tag }}
           name: "Release ${{ github.event.inputs.tag }}"
-          body: |
-            ## Changes
-
-            - Describe the key changes in this release here.
-
+          draft: false
           files: |
             release/jdkcertstool.jar
             release/jdkcerts
+
+      - name: Wait for release assets to be available
+        run: |
+          URL="https://github.com/ADarko22/JDKCertsTool/releases/download/${{ github.event.inputs.tag }}/jdkcertstool.jar"
+          echo "Waiting for release asset $URL to be available..."
+          
+          MAX_RETRIES=10
+          SLEEP_SECONDS=12
+          
+          for i in $(seq 1 $MAX_RETRIES); do
+            status_code=$(curl -s -o /dev/null -w "%{http_code}" --max-redirs 0 "$URL" || echo "000")
+          
+            if [ "$status_code" = "200" ] || [ "$status_code" = "302" ]; then
+              echo "Release asset is available (HTTP $status_code)!"
+              exit 0
+            else
+              echo "Unexpected HTTP status $status_code, retrying in $SLEEP_SECONDS seconds... ($i/$MAX_RETRIES)"
+            fi
+        
+          sleep $SLEEP_SECONDS
+          done
+          
+          echo "Timeout waiting for release asset after $MAX_RETRIES attempts."
+          exit 1
+
 
       - name: Generate Homebrew formula
         run: |
@@ -75,3 +95,29 @@ jobs:
           git add Formula/jdkcerts.rb
           git commit -m "Update Homebrew formula for ${{ github.event.inputs.tag }}" || echo "No changes to commit"
           git push
+
+      - name: Install Homebrew
+        id: setup-brew
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y build-essential procps curl file git
+          NONINTERACTIVE=1 /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
+          echo "HOMEBREW_PREFIX=/home/linuxbrew/.linuxbrew" >> $GITHUB_ENV
+          echo "HOMEBREW_BIN=/home/linuxbrew/.linuxbrew/bin" >> $GITHUB_ENV
+          echo "eval \"$(/home/linuxbrew/.linuxbrew/bin/brew shellenv)\"" >> $GITHUB_ENV
+
+      - name: Test Homebrew formula
+        run: |
+          eval "$($HOMEBREW_BIN/brew shellenv)"
+          
+          brew install --verbose --debug ./Formula/jdkcerts.rb
+          
+          # Run a help command to verify it works
+          jdkcerts --help || (echo "Formula installed but command failed" && exit 1)
+
+      - name: Cleanup Homebrew formula
+        if: always()
+        run: |
+          eval "$($HOMEBREW_BIN/brew shellenv)"
+          brew uninstall jdkcerts || true
+
