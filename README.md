@@ -11,7 +11,7 @@ Modern JDKs rely on a **trusted certificate store** to securely connect to HTTPS
 **JDKCertsTool makes it easy:**
 
 - ✅ **Add or remove custom certificates** (like corporate or internal CA certs)
-- 🔍 **List installed JDKs** 
+- 🔍 **List installed JDKs**
 - 🔐 Uses [keytool](https://docs.oracle.com/javase/10/tools/keytool.htm) under the hood — no need to learn its syntax
 
 If you’ve ever hit SSL or trust errors when using Java with internal services, APIs, or behind proxies, **this tool helps you fix that in seconds.**
@@ -95,6 +95,27 @@ Displays basic project and environment info.
 | `--keystore-password <TEXT>` | 🔐 Keystore password                                     | `changeit`    |
 | `--alias <TEXT>`             | 🏷️  Certificate alias                                   | `custom-cert` |
 | `--dry-run`                  | 🛑 Preview changes without modifying anything            |               |
+
+---
+
+## 💼 Use Case
+
+JDKCertsTool is designed for real-world Java environments where trusting internal or custom certificates is crucial for secure communication:
+
+- **Connecting Backend Services to Internal Authentication Servers:**  
+  When your Java backend calls internal SSO, OAuth2/OIDC providers, or custom token services, the JDK must trust the server’s certificate chain. Without the proper CA certificates
+  imported, SSL handshakes fail, blocking authentication and API calls.
+
+- **Testing OAuth2/OIDC Tokens with IntelliJ HTTP Client:**  
+  Developers retrieving access tokens or testing APIs via [IntelliJ HTTP Client](https://www.jetbrains.com/help/idea/http-client-in-product-code-editor.html#) often face SSL errors if the internal auth servers use certificates not trusted by the default JDK
+  truststore. Adding these certs avoids frustrating connection failures during development.
+
+- **Accessing Internal Maven or Gradle Repositories:**  
+  Private artifact repositories often use self-signed or corporate CA certificates. When the JDK doesn’t trust these, builds fail with SSL errors. Installing the correct
+  certificates ensures smooth dependency resolution in CI and local builds.
+
+
+More in general, **resolving `PKIX path building failed` SSL Errors**.
 
 ---
 
