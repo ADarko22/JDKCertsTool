@@ -1,6 +1,6 @@
 package edu.adarko22.commands
 
-import edu.adarko22.utils.JdkDiscover
+import edu.adarko22.utils.JdkDiscovery
 import io.mockk.every
 import io.mockk.mockk
 import org.junit.jupiter.api.Assertions.*
@@ -8,19 +8,19 @@ import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertAll
 import java.nio.file.Path
 
-class InstallCaCertsCommandTest {
+class InstallCertsJdkCommandTest {
 
     private val certPath = Path.of(javaClass.getResource("/cert.pem")!!.toURI())
     private val customJdkHome = Path.of(javaClass.getResource("/customJdkHome")!!.toURI())
     private val nonJdkHome = Path.of(javaClass.getResource("/nonJdkHome")!!.toURI())
 
     private fun runDryRunTest(jdkHome: Path, verifyLogs: (List<String>) -> Unit) {
-        val jdkDiscover = mockk<JdkDiscover>()
-        every { jdkDiscover.discoverJdkHomes() } returns listOf(jdkHome)
+        val jdkDiscovery = mockk<JdkDiscovery>()
+        every { jdkDiscovery.discoverJdkHomes() } returns listOf(jdkHome)
 
         val loggedMessages = mutableListOf<String>()
 
-        val command = InstallCaCertsCommand(jdkDiscover, print = { msg -> loggedMessages.add(msg) })
+        val command = InstallCertsJdkCommand(jdkDiscovery, print = { msg -> loggedMessages.add(msg) })
         command.parse(arrayOf("--cert", certPath.toString(), "--dry-run"))
         command.run()
 

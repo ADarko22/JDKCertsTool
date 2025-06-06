@@ -1,6 +1,6 @@
 package edu.adarko22.commands
 
-import edu.adarko22.utils.JdkDiscover
+import edu.adarko22.utils.JdkDiscovery
 import io.mockk.every
 import io.mockk.mockk
 import org.junit.jupiter.api.Assertions.assertNotNull
@@ -9,7 +9,7 @@ import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertAll
 import java.nio.file.Path
 
-class RemoveCaCertCommandTest {
+class RemoveCertJdkCommandTest {
 
     private val customJdkHome = Path.of(javaClass.getResource("/customJdkHome")!!.toURI())
     private val nonJdkHome = Path.of(javaClass.getResource("/nonJdkHome")!!.toURI())
@@ -18,12 +18,12 @@ class RemoveCaCertCommandTest {
         jdkHome: Path,
         verifyLogs: (List<String>) -> Unit
     ) {
-        val jdkDiscover = mockk<JdkDiscover>()
-        every { jdkDiscover.discoverJdkHomes(any()) } returns listOf(jdkHome)
+        val jdkDiscovery = mockk<JdkDiscovery>()
+        every { jdkDiscovery.discoverJdkHomes(any()) } returns listOf(jdkHome)
 
         val logs = mutableListOf<String>()
 
-        val command = RemoveCaCertCommand(jdkDiscover, print = { msg -> logs.add(msg) })
+        val command = RemoveCertJdkCommand(jdkDiscovery, print = { msg -> logs.add(msg) })
         command.parse(arrayOf("--alias", "custom-cert", "--dry-run"))
         command.run()
 
