@@ -62,7 +62,7 @@ cd JDKCertsTool
 
 Displays basic project and environment info.
 
-### 📋 list-jdk
+### 📋 list-jdks
 
 **Options:**
 

@@ -1,6 +1,6 @@
 package edu.adarko22.commands
 
-import edu.adarko22.utils.JdkDiscover
+import edu.adarko22.utils.JdkDiscovery
 import io.mockk.every
 import io.mockk.mockk
 import org.junit.jupiter.api.Assertions.assertTrue
@@ -12,11 +12,11 @@ import java.nio.file.Paths
 class ListJDKsCommandTest {
 
     private fun createCommandWithMock(jdkPaths: List<Path>): Pair<ListJDKsCommand, MutableList<String>> {
-        val jdkDiscover = mockk<JdkDiscover>()
-        every { jdkDiscover.discoverJdkHomes(any()) } returns jdkPaths
+        val jdkDiscovery = mockk<JdkDiscovery>()
+        every { jdkDiscovery.discoverJdkHomes(any()) } returns jdkPaths
 
         val output = mutableListOf<String>()
-        val command = ListJDKsCommand(jdkDiscovery = jdkDiscover, print = output::add)
+        val command = ListJDKsCommand(jdkDiscovery = jdkDiscovery, print = output::add)
         command.parse(emptyArray())
         return command to output
     }
