@@ -11,15 +11,22 @@ class InstallCertsJdkCommand(
     override val print: (String) -> Unit = { msg -> println(msg) }
 ) : BaseJdkCommand(name = "install-cert", help = "Install a CA certificate into all discovered JDKs") {
 
-    private val certPath: Path by option("--cert", help = "Path to the certificate file").convert { it.toPath() }.required()
-    private val keystorePassword: String by option("--keystore-password", help = "Keystore password").default("changeit")
+    private val certPath: Path by option("--cert", help = "Path to the certificate file").convert { it.toPath() }
+        .required()
+    private val keystorePassword: String by option(
+        "--keystore-password",
+        help = "Keystore password"
+    ).default("changeit")
     private val alias: String by option("--alias", help = "Certificate alias").default("custom-cert")
     private val dryRun: Boolean by option("--dry-run", help = "Preview changes without modifying anything").flag()
 
     override fun run() {
         if (!Files.exists(certPath)) {
             print("❌ Certificate not found: $certPath".red())
-            return
+
+            if (dryRun)
+                println("Dry run: Would have stopped, but continuing execution for simulation purposes.".blue())
+            else return
         }
 
         val jdkPaths = discoverAndListJdks(jdkDiscovery)
@@ -29,6 +36,6 @@ class InstallCertsJdkCommand(
             "-file", certPath.toString(),
             "-storepass", keystorePassword
         )
-        runKeyToolCommandWithCacertsResolution("certificate installation".blue(), jdkPaths, keytoolOptions, dryRun)
+        runKeyToolCommandWithCacertsResolution("certificate installation".bold(), jdkPaths, keytoolOptions, dryRun)
     }
 }

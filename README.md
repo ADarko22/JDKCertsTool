@@ -6,7 +6,8 @@ A command-line utility to manage certificates in all your installed JDKs.
 
 ## ❓ Why JDKCertsTool?
 
-Modern JDKs rely on a **trusted certificate store** to securely connect to HTTPS services. But managing these certificates—especially across multiple installed JDKs—can be a pain.
+Modern JDKs rely on a **trusted certificate store** to securely connect to HTTPS services. But managing these
+certificates—especially across multiple installed JDKs—can be a pain.
 
 **JDKCertsTool makes it easy:**
 
@@ -14,7 +15,8 @@ Modern JDKs rely on a **trusted certificate store** to securely connect to HTTPS
 - 🔍 **List installed JDKs**
 - 🔐 Uses [keytool](https://docs.oracle.com/javase/10/tools/keytool.htm) under the hood — no need to learn its syntax
 
-If you’ve ever hit SSL or trust errors when using Java with internal services, APIs, or behind proxies, **this tool helps you fix that in seconds.**
+If you’ve ever hit SSL or trust errors when using Java with internal services, APIs, or behind proxies, **this tool
+helps you fix that in seconds.**
 
 ---
 
@@ -53,6 +55,19 @@ cd JDKCertsTool
 ```bash
 ./gradlew run --args="--help"
 ```
+
+### Run from IntelliJ
+
+You can use the provided run configurations in [runConfigurations](.idea/runConfigurations)`.idea/runConfigurations` to
+execute the tool directly from IntelliJ:
+
+- `Info`
+- `List JDKs`
+- `Install JDK Cert`
+- `Remove JDK Cert`
+
+**Note**: you may need to edit the "Program arguments"  to replace placeholders like `<ALIAS>` and `<CERT_PATH>` with
+actual values, and to remove `--dry-run` for permanent changes.
 
 ---
 
@@ -100,20 +115,24 @@ Displays basic project and environment info.
 
 ## 💼 Use Case
 
-JDKCertsTool is designed for real-world Java environments where trusting internal or custom certificates is crucial for secure communication:
+JDKCertsTool is designed for real-world Java environments where trusting internal or custom certificates is crucial for
+secure communication:
 
 - **Connecting Backend Services to Internal Authentication Servers:**  
-  When your Java backend calls internal SSO, OAuth2/OIDC providers, or custom token services, the JDK must trust the server’s certificate chain. Without the proper CA certificates
+  When your Java backend calls internal SSO, OAuth2/OIDC providers, or custom token services, the JDK must trust the
+  server’s certificate chain. Without the proper CA certificates
   imported, SSL handshakes fail, blocking authentication and API calls.
 
 - **Testing OAuth2/OIDC Tokens with IntelliJ HTTP Client:**  
-  Developers retrieving access tokens or testing APIs via [IntelliJ HTTP Client](https://www.jetbrains.com/help/idea/http-client-in-product-code-editor.html#) often face SSL errors if the internal auth servers use certificates not trusted by the default JDK
+  Developers retrieving access tokens or testing APIs
+  via [IntelliJ HTTP Client](https://www.jetbrains.com/help/idea/http-client-in-product-code-editor.html#) often face
+  SSL errors if the internal auth servers use certificates not trusted by the default JDK
   truststore. Adding these certs avoids frustrating connection failures during development.
 
 - **Accessing Internal Maven or Gradle Repositories:**  
-  Private artifact repositories often use self-signed or corporate CA certificates. When the JDK doesn’t trust these, builds fail with SSL errors. Installing the correct
+  Private artifact repositories often use self-signed or corporate CA certificates. When the JDK doesn’t trust these,
+  builds fail with SSL errors. Installing the correct
   certificates ensures smooth dependency resolution in CI and local builds.
-
 
 More in general, **resolving `PKIX path building failed` SSL Errors**.
 

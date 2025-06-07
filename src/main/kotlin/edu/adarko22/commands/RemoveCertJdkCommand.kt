@@ -6,6 +6,7 @@ import com.github.ajalt.clikt.parameters.options.option
 import com.github.ajalt.clikt.parameters.options.required
 import edu.adarko22.utils.JdkDiscovery
 import edu.adarko22.utils.blue
+import edu.adarko22.utils.bold
 
 class RemoveCertJdkCommand(
     private val jdkDiscovery: JdkDiscovery,
@@ -23,7 +24,7 @@ class RemoveCertJdkCommand(
             "-alias", alias,
             "-storepass", keystorePassword
         )
-        runKeyToolCommandWithCacertsResolution("certificate deletion".blue(), jdkPaths, keytoolOptions, dryRun)
+        runKeyToolCommandWithCacertsResolution("certificate deletion".bold(), jdkPaths, keytoolOptions, dryRun)
     }
 }
 

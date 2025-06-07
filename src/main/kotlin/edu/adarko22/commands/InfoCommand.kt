@@ -9,9 +9,9 @@ class InfoCommand(
     private val version = this.javaClass.`package`.implementationVersion ?: "unknown"
 
     override fun run() {
-        print("🔧 JDK Management Tool".blue())
-        print("This tool helps you manage JDK installations, including listing JDKs, installing CA certificates, and removing them.")
+        print("🔧 JDK Management Tool".blue().bold().italic())
+        print("This tool helps you manage JDK installations, including listing JDKs, installing CA certificates, and removing them.".italic())
         print("Version: $version".green())
-        print("Author: Angelo Buono".green())
+        print("Author: ${"Angelo Buono".bold().italic()}".green())
     }
 }
