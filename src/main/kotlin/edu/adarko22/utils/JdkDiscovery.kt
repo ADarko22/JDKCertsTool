@@ -9,19 +9,21 @@ class JdkDiscovery(
     private val systemInfoProvider: SystemInfoProvider = DefaultSystemInfoProvider()
 ) {
 
+    private val defaultDirs = listOfNotNull(
+        // macOS JDKs
+        Path.of("/Library/Java/JavaVirtualMachines").takeIf(Files::isDirectory),
+        // Linux
+        Path.of("/usr/lib/jvm").takeIf(Files::isDirectory),
+        Path.of("/usr/java").takeIf(Files::isDirectory),
+        // Windows
+        systemInfoProvider.getProgramFilesEnv()?.let { Path.of(it, "Java") }?.takeIf(Files::isDirectory),
+        systemInfoProvider.getProgramFilesX86Env()?.let { Path.of(it, "Java") }?.takeIf(Files::isDirectory),
+        // SDKMAN uses the injected userHome
+        systemInfoProvider.getUserHome().resolve(".sdkman/candidates/java").takeIf(Files::isDirectory),
+    )
+
     fun discoverJdkHomes(customJdkDirs: List<Path> = emptyList()): List<Path> {
-        val allSearchRoots = listOfNotNull(
-            // macOS JDKs
-            Path.of("/Library/Java/JavaVirtualMachines").takeIf(Files::isDirectory),
-            // Linux
-            Path.of("/usr/lib/jvm").takeIf(Files::isDirectory),
-            Path.of("/usr/java").takeIf(Files::isDirectory),
-            // Windows
-            systemInfoProvider.getProgramFilesEnv()?.let { Path.of(it, "Java") }?.takeIf(Files::isDirectory),
-            systemInfoProvider.getProgramFilesX86Env()?.let { Path.of(it, "Java") }?.takeIf(Files::isDirectory),
-            // SDKMAN uses the injected userHome
-            systemInfoProvider.getUserHome().resolve(".sdkman/candidates/java").takeIf(Files::isDirectory),
-        ) + discoverJetBrainsRuntimeHomes() + customJdkDirs.filter(Files::isDirectory)
+        val allSearchRoots = defaultDirs + discoverJetBrainsRuntimeHomes() + customJdkDirs.filter(Files::isDirectory)
 
         return allSearchRoots
             .asSequence()
