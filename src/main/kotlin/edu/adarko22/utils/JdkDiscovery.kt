@@ -15,9 +15,6 @@ class JdkDiscovery(
         // Linux
         Path.of("/usr/lib/jvm").takeIf(Files::isDirectory),
         Path.of("/usr/java").takeIf(Files::isDirectory),
-        // Windows
-        systemInfoProvider.getProgramFilesEnv()?.let { Path.of(it, "Java") }?.takeIf(Files::isDirectory),
-        systemInfoProvider.getProgramFilesX86Env()?.let { Path.of(it, "Java") }?.takeIf(Files::isDirectory),
         // SDKMAN uses the injected userHome
         systemInfoProvider.getUserHome().resolve(".sdkman/candidates/java").takeIf(Files::isDirectory),
     )
@@ -82,9 +79,8 @@ class JdkDiscovery(
      * Validates a Java home by checking for both `bin/java` and `bin/keytool`
      */
     internal fun isValidJavaHome(dir: Path): Boolean {
-        val isWindows = systemInfoProvider.getOsName().startsWith("Windows")
-        val java = dir.resolve("bin").resolve(if (isWindows) "java.exe" else "java")
-        val keytool = dir.resolve("bin").resolve(if (isWindows) "keytool.exe" else "keytool")
+        val java = dir.resolve("bin").resolve("java")
+        val keytool = dir.resolve("bin").resolve("keytool")
         return Files.isExecutable(java) && Files.isExecutable(keytool)
     }
 }

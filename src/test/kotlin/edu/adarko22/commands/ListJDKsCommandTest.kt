@@ -16,7 +16,7 @@ class ListJDKsCommandTest {
         every { jdkDiscovery.discoverJdkHomes(any()) } returns jdkPaths
 
         val output = mutableListOf<String>()
-        val command = ListJDKsCommand(jdkDiscovery = jdkDiscovery, print = output::add)
+        val command = ListJDKsCommand(jdkDiscovery = jdkDiscovery, printer = output::add)
         command.parse(emptyArray())
         return command to output
     }

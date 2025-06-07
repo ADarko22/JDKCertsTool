@@ -56,16 +56,13 @@ class JdkDiscoveryTest {
 
         @JvmStatic
         fun validJavaHomesProvider() = listOf(
-            Arguments.of("Linux", "openjdk-17", false),
-            Arguments.of("Windows 10", "jdk-11.0.12", true)
+            Arguments.of("Linux", "openjdk-17", false)
         )
 
         @JvmStatic
         fun invalidJavaHomesProvider() = listOf(
             Arguments.of("macOS", "invalid_jdk_no_java", listOf("keytool")),
-            Arguments.of("Linux", "invalid_jdk_no_keytool", listOf("java")),
-            Arguments.of("Windows Server 2019", "invalid_jdk_win_no_java", listOf("keytool.exe")),
-            Arguments.of("Windows XP", "invalid_jdk_win_no_keytool", listOf("java.exe"))
+            Arguments.of("Linux", "invalid_jdk_no_keytool", listOf("java"))
         )
     }
 

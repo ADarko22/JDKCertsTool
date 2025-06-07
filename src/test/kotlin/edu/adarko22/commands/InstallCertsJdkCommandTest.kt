@@ -1,64 +1,110 @@
 package edu.adarko22.commands
 
+import edu.adarko22.process.KeytoolRunner
 import edu.adarko22.utils.JdkDiscovery
-import io.mockk.every
-import io.mockk.mockk
-import org.junit.jupiter.api.Assertions.*
-import org.junit.jupiter.api.Test
-import org.junit.jupiter.api.assertAll
+import io.mockk.*
+import org.junit.jupiter.api.*
+import org.junit.jupiter.api.Assertions.assertTrue
+import org.junit.jupiter.api.io.TempDir
+import java.nio.file.Files
 import java.nio.file.Path
 
 class InstallCertsJdkCommandTest {
 
-    private val certPath = Path.of(javaClass.getResource("/cert.pem")!!.toURI())
-    private val customJdkHome = Path.of(javaClass.getResource("/customJdkHome")!!.toURI())
-    private val nonJdkHome = Path.of(javaClass.getResource("/nonJdkHome")!!.toURI())
+    private lateinit var mockPrinter: (String) -> Unit
+    private lateinit var capturedOutput: MutableList<String>
+    private lateinit var mockDiscovery: JdkDiscovery
+    private lateinit var mockRunner: KeytoolRunner
 
-    private fun runDryRunTest(jdkHome: Path, verifyLogs: (List<String>) -> Unit) {
-        val jdkDiscovery = mockk<JdkDiscovery>()
-        every { jdkDiscovery.discoverJdkHomes() } returns listOf(jdkHome)
+    @TempDir
+    lateinit var tempDir: Path
 
-        val loggedMessages = mutableListOf<String>()
+    private lateinit var certPath: Path
+    private lateinit var jdkPath: Path
 
-        val command = InstallCertsJdkCommand(jdkDiscovery, print = { msg -> loggedMessages.add(msg) })
-        command.parse(arrayOf("--cert", certPath.toString(), "--dry-run"))
-        command.run()
+    @BeforeEach
+    fun setup() {
+        capturedOutput = mutableListOf()
+        mockPrinter = { msg -> capturedOutput.add(msg) }
 
-        verifyLogs(loggedMessages)
+        mockDiscovery = mockk()
+        mockRunner = mockk(relaxed = true)
+
+        certPath = Files.createFile(tempDir.resolve("test-cert.pem"))
+        jdkPath = tempDir.resolve("jdk").apply { Files.createDirectories(this) }
     }
 
     @Test
-    fun `dry-run on customJdkHome logs expected keytool command`() {
-        runDryRunTest(customJdkHome) { logs ->
-            val dryRunLog = logs.find { it.contains("Dry run") }!!
-            assertNotNull(dryRunLog, "Dry run log not found")
+    fun `should install cert if file exists`() {
+        every { mockDiscovery.discoverJdkHomes(any()) } returns listOf(jdkPath)
+        every {
+            mockRunner.runCommandWithCacertsResolution(
+                any(),
+                any(),
+                any<List<String>>(),
+                any()
+            )
+        } just Runs
 
-            assertAll(
-                "dry run keytool command contents",
-                { assertTrue(dryRunLog.contains(certPath.toString()), "Certificate path missing") },
-                { assertTrue(dryRunLog.contains("$customJdkHome/lib/security/cacerts"), "Keystore path missing") },
-                {
-                    assertTrue(
-                        dryRunLog.contains(
-                            "keytool -importcert -noprompt -trustcacerts -alias custom-cert -file $certPath -storepass changeit -keystore $customJdkHome/lib/security/cacerts"
-                        ), "Full keytool command not found"
-                    )
-                }
+        val cmd = InstallCertsJdkCommand(mockDiscovery, printer = mockPrinter, keytoolRunner = mockRunner)
+
+        val args = arrayOf("--cert", certPath.toString(), "--alias", "my-cert")
+        cmd.parse(args)
+        cmd.run()
+
+        verify {
+            mockRunner.runCommandWithCacertsResolution(
+                match { it.contains("certificate installation") },
+                listOf(jdkPath),
+                match { it.containsAll(listOf("-importcert", "-alias", "my-cert")) },
+                false
             )
         }
+
+        assertTrue(capturedOutput.any { it.contains("Found JDKs") }, "Expected to log JDK discovery")
     }
 
     @Test
-    fun `dry-run on nonJdkHome logs expected missing cacerts`() {
-        runDryRunTest(nonJdkHome) { logs ->
-            val warningLog = logs.find { it.contains("No cacerts") }
-            assertNotNull(warningLog, "Missing warning about absent cacerts")
+    fun `should print error and skip if cert file missing`() {
+        val fakeCertPath = tempDir.resolve("missing.pem")
 
-            assertAll(
-                "warning contents",
-                { assertTrue(warningLog!!.contains("No cacerts found. Skipping."), "cacerts should be missing") },
-                { assertTrue(logs.none { it.contains("keytool") }, "No keytool invocation expected") }
-            )
-        }
+        val cmd = InstallCertsJdkCommand(mockDiscovery, printer = mockPrinter, keytoolRunner = mockRunner)
+
+        val args = arrayOf("--cert", fakeCertPath.toString(), "--alias", "my-cert")
+        cmd.parse(args)
+        cmd.run()
+
+        verify(exactly = 0) { mockRunner.runCommandWithCacertsResolution(any(), any(), any(), any()) }
+
+        assertTrue(
+            capturedOutput.any { it.contains("❌ Certificate not found") },
+            "Expected error about missing certificate"
+        )
+    }
+
+    @Test
+    fun `should continue on dry run even if cert file is missing`() {
+        val fakeCertPath = tempDir.resolve("missing.pem")
+
+        every { mockDiscovery.discoverJdkHomes(any()) } returns emptyList()
+
+        val cmd = InstallCertsJdkCommand(mockDiscovery, printer = mockPrinter, keytoolRunner = mockRunner)
+
+        val args = arrayOf("--cert", fakeCertPath.toString(), "--alias", "test", "--dry-run")
+        cmd.parse(args)
+        cmd.run()
+
+        assertAll(
+            "dry run with missing cert",
+            {
+                assertTrue(
+                    capturedOutput.any { it.contains("❌ Certificate not found") },
+                    "Expected error about missing certificate"
+                )
+            },
+            {
+                assertTrue(capturedOutput.any { it.contains("Dry run") }, "Expected dry run continuation message")
+            }
+        )
     }
 }

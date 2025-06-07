@@ -1,63 +1,65 @@
 package edu.adarko22.commands
 
+import edu.adarko22.process.KeytoolRunner
 import edu.adarko22.utils.JdkDiscovery
-import io.mockk.every
-import io.mockk.mockk
-import org.junit.jupiter.api.Assertions.assertNotNull
-import org.junit.jupiter.api.Assertions.assertTrue
-import org.junit.jupiter.api.Test
-import org.junit.jupiter.api.assertAll
+import io.mockk.*
+import org.junit.jupiter.api.*
+import org.junit.jupiter.api.Assertions.*
+import org.junit.jupiter.api.io.TempDir
+import java.nio.file.Files
 import java.nio.file.Path
 
 class RemoveCertJdkCommandTest {
 
-    private val customJdkHome = Path.of(javaClass.getResource("/customJdkHome")!!.toURI())
-    private val nonJdkHome = Path.of(javaClass.getResource("/nonJdkHome")!!.toURI())
+    private lateinit var mockPrinter: (String) -> Unit
+    private lateinit var capturedOutput: MutableList<String>
+    private lateinit var mockDiscovery: JdkDiscovery
+    private lateinit var mockRunner: KeytoolRunner
 
-    private fun runDryRunTest(jdkHome: Path, verifyLogs: (List<String>) -> Unit) {
-        val jdkDiscovery = mockk<JdkDiscovery>()
-        every { jdkDiscovery.discoverJdkHomes(any()) } returns listOf(jdkHome)
+    @TempDir
+    lateinit var tempDir: Path
 
-        val logs = mutableListOf<String>()
+    private lateinit var jdkPath: Path
 
-        val command = RemoveCertJdkCommand(jdkDiscovery, print = { msg -> logs.add(msg) })
-        command.parse(arrayOf("--alias", "custom-cert", "--dry-run"))
-        command.run()
+    @BeforeEach
+    fun setup() {
+        capturedOutput = mutableListOf()
+        mockPrinter = { msg -> capturedOutput.add(msg) }
 
-        verifyLogs(logs)
+        mockDiscovery = mockk()
+        mockRunner = mockk(relaxed = true)
+
+        jdkPath = tempDir.resolve("jdk").apply { Files.createDirectories(this) }
     }
 
     @Test
-    fun `dry-run on customJdkHome logs expected keytool command`() {
-        runDryRunTest(customJdkHome) { logs ->
-            val dryRunLog = logs.find { it.contains("Dry run") }!!
-            assertNotNull(dryRunLog, "Dry run log not found")
+    fun `should remove cert by alias if JDKs found`() {
+        every { mockDiscovery.discoverJdkHomes(any()) } returns listOf(jdkPath)
+        every { mockRunner.runCommandWithCacertsResolution(any(), any(), any(), any()) } just Runs
 
-            assertAll(
-                "dry run keytool command contents",
-                { assertTrue(dryRunLog.contains("$customJdkHome/lib/security/cacerts"), "Keystore path missing") },
-                {
-                    assertTrue(
-                        dryRunLog.contains(
-                            "keytool -delete -alias custom-cert -storepass changeit -keystore $customJdkHome/lib/security/cacerts"
-                        ), "Full keytool command not found"
-                    )
-                }
+        val cmd = RemoveCertJdkCommand(mockDiscovery, printer = mockPrinter, keytoolRunner = mockRunner)
+        val args = arrayOf("--alias", "test-alias")
+        cmd.parse(args)
+        cmd.run()
+
+        verify {
+            mockRunner.runCommandWithCacertsResolution(
+                match { it.contains("certificate deletion") },
+                listOf(jdkPath),
+                match { it.containsAll(listOf("-delete", "-alias", "test-alias")) },
+                false
             )
         }
+
+        assertTrue(capturedOutput.any { it.contains("Found JDKs") }, "Expected JDK discovery message")
     }
 
     @Test
-    fun `dry-run on nonJdkHome logs warning about missing cacerts and no keytool command`() {
-        runDryRunTest(nonJdkHome) { logs ->
-            val warningLog = logs.find { it.contains("No cacerts") }
-            assertNotNull(warningLog, "Missing warning about absent cacerts")
+    fun `should error if alias is missing`() {
+        val cmd = RemoveCertJdkCommand(mockDiscovery, printer = mockPrinter, keytoolRunner = mockRunner)
 
-            assertAll(
-                "warning contents",
-                { assertTrue(warningLog!!.contains("No cacerts found. Skipping."), "cacerts should be missing") },
-                { assertTrue(logs.none { it.contains("keytool") }, "No keytool invocation expected") }
-            )
+        assertThrows<Exception> {
+            cmd.parse(emptyArray()) // Missing required --alias option
         }
     }
 }
