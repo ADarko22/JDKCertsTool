@@ -71,24 +71,18 @@ class JdkDiscoveryTest {
 
     @Test
     fun `should detect JBR inside IntelliJ IDEA app in Applications folder`() {
-        val appsDir = createDir(systemInfoProvider.getUserHome(), "Applications")
-        val ideaApp = createDir(appsDir, "IntelliJ IDEA Ultimate.app")
-        val contents = createDir(ideaApp, "Contents")
-        val jbr = createDir(contents, "jbr")
-        val jbrContents = createDir(jbr, "Contents")
+        val jbrContents =
+            createDir(systemInfoProvider.getUserHome(), "Applications/IntelliJ IDEA Ultimate.app/Contents/jbr/Contents")
 
         val result = jdkDiscovery.discoverJetBrainsRuntimeHomes()
-
         assertEquals(listOf(jbrContents), result)
     }
 
     @ParameterizedTest(name = "should detect JBR from Toolbox at {0}")
     @MethodSource("toolboxPathsProvider")
     fun `should detect JBR inside JetBrains Toolbox installations`(toolboxBase: Path) {
-        val ideaRoot = createDir(toolboxBase, "IDEA-U")
-        val ideaVersion = createDir(ideaRoot, "2024.1.0")
-        val jbrDir = createDir(ideaVersion, "jbr")
-        val jbrContents = createDir(jbrDir, "Contents")
+        val toolboxDir = createDir(systemInfoProvider.getUserHome(), toolboxBase.toString())
+        val jbrContents = createDir(toolboxDir, "IDEA-U/2024.1.0/jbr/Contents")
 
         val result = jdkDiscovery.discoverJetBrainsRuntimeHomes()
 
