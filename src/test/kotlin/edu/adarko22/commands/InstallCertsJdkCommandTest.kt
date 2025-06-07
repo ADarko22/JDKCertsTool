@@ -29,8 +29,8 @@ class InstallCertsJdkCommandTest {
 
     @Test
     fun `dry-run on customJdkHome logs expected keytool command`() {
-        runDryRunTest(customJdkHome) { loggedMessages ->
-            val dryRunLog = loggedMessages.find { it.contains("Dry run") }!!
+        runDryRunTest(customJdkHome) { logs ->
+            val dryRunLog = logs.find { it.contains("Dry run") }!!
             assertNotNull(dryRunLog, "Dry run log not found")
 
             assertAll(
@@ -40,7 +40,7 @@ class InstallCertsJdkCommandTest {
                 {
                     assertTrue(
                         dryRunLog.contains(
-                            "keytool -importcert -noprompt -trustcacerts -alias custom-cert -file $certPath -keystore $customJdkHome/lib/security/cacerts"
+                            "keytool -importcert -noprompt -trustcacerts -alias custom-cert -file $certPath -storepass changeit -keystore $customJdkHome/lib/security/cacerts"
                         ), "Full keytool command not found"
                     )
                 }
@@ -50,14 +50,14 @@ class InstallCertsJdkCommandTest {
 
     @Test
     fun `dry-run on nonJdkHome logs expected missing cacerts`() {
-        runDryRunTest(nonJdkHome) { loggedMessages ->
-            val warningLog = loggedMessages.find { it.contains("No cacerts") }
+        runDryRunTest(nonJdkHome) { logs ->
+            val warningLog = logs.find { it.contains("No cacerts") }
             assertNotNull(warningLog, "Missing warning about absent cacerts")
 
             assertAll(
                 "warning contents",
-                { assertTrue(warningLog!!.contains("$nonJdkHome/lib/security/cacerts"), "lib/security/cacerts should be missing") },
-                { assertTrue(loggedMessages.none { it.contains("Dry run") }, "No keytool invocation expected") }
+                { assertTrue(warningLog!!.contains("No cacerts found. Skipping."), "cacerts should be missing") },
+                { assertTrue(logs.none { it.contains("keytool") }, "No keytool invocation expected") }
             )
         }
     }

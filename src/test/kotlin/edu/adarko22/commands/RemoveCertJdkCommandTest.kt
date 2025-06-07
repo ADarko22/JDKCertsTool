@@ -14,10 +14,7 @@ class RemoveCertJdkCommandTest {
     private val customJdkHome = Path.of(javaClass.getResource("/customJdkHome")!!.toURI())
     private val nonJdkHome = Path.of(javaClass.getResource("/nonJdkHome")!!.toURI())
 
-    private fun runDryRunTestForJdk(
-        jdkHome: Path,
-        verifyLogs: (List<String>) -> Unit
-    ) {
+    private fun runDryRunTest(jdkHome: Path, verifyLogs: (List<String>) -> Unit) {
         val jdkDiscovery = mockk<JdkDiscovery>()
         every { jdkDiscovery.discoverJdkHomes(any()) } returns listOf(jdkHome)
 
@@ -32,19 +29,18 @@ class RemoveCertJdkCommandTest {
 
     @Test
     fun `dry-run on customJdkHome logs expected keytool command`() {
-        runDryRunTestForJdk(customJdkHome) { logs ->
-            val removalLog = logs.find { it.contains("Removing alias") }
-            val dryRunLog = logs.find { it.contains("Dry run") }
+        runDryRunTest(customJdkHome) { logs ->
+            val dryRunLog = logs.find { it.contains("Dry run") }!!
+            assertNotNull(dryRunLog, "Dry run log not found")
 
             assertAll(
-                "Dry-run logs",
-                { assertNotNull(removalLog, "Removal log missing") },
-                { assertTrue(removalLog!!.contains(customJdkHome.resolve("lib/security/cacerts").toString()), "Removal log missing cacerts path") },
-                { assertNotNull(dryRunLog, "Dry run log missing") },
+                "dry run keytool command contents",
+                { assertTrue(dryRunLog.contains("$customJdkHome/lib/security/cacerts"), "Keystore path missing") },
                 {
                     assertTrue(
-                        dryRunLog!!.contains("keytool -delete -alias custom-cert -keystore $customJdkHome/lib/security/cacerts"),
-                        "Dry run command does not match expected keytool command"
+                        dryRunLog.contains(
+                            "keytool -delete -alias custom-cert -storepass changeit -keystore $customJdkHome/lib/security/cacerts"
+                        ), "Full keytool command not found"
                     )
                 }
             )
@@ -53,15 +49,14 @@ class RemoveCertJdkCommandTest {
 
     @Test
     fun `dry-run on nonJdkHome logs warning about missing cacerts and no keytool command`() {
-        runDryRunTestForJdk(nonJdkHome) { logs ->
+        runDryRunTest(nonJdkHome) { logs ->
             val warningLog = logs.find { it.contains("No cacerts") }
+            assertNotNull(warningLog, "Missing warning about absent cacerts")
 
             assertAll(
-                "Missing cacerts logs",
-                { assertNotNull(warningLog, "Expected warning log for missing cacerts") },
-                { assertTrue(warningLog!!.contains("$nonJdkHome/lib/security/cacerts"), "Warning log missing correct cacerts path") },
-                { assertTrue(logs.none { it.contains("Removing alias") }, "Removal should not be attempted") },
-                { assertTrue(logs.none { it.contains("Dry run") }, "Dry run keytool command should not be logged") }
+                "warning contents",
+                { assertTrue(warningLog!!.contains("No cacerts found. Skipping."), "cacerts should be missing") },
+                { assertTrue(logs.none { it.contains("keytool") }, "No keytool invocation expected") }
             )
         }
     }
