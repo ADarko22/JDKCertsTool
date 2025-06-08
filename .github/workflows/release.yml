@@ -20,6 +20,25 @@ jobs:
         with:
           fetch-depth: 0 # Needed for git operations like checking for existing tags
 
+      - name: Update version in build.gradle.kts
+        run: |
+          TAG_VERSION=${{ github.event.inputs.tag }}
+          VERSION=${TAG_VERSION#v}
+
+          # Update version in build.gradle.kts
+          sed -i "s/^version = \".*\"/version = \"$VERSION\"/" build.gradle.kts
+
+          # Commit the version bump only if there are changes
+          git config user.name "github-actions"
+          git config user.email "github-actions@github.com"
+          git add build.gradle.kts
+          
+          if git diff --cached --quiet; then
+            echo "No version change needed. Skipping commit."
+          else
+            git commit -m "Bump version to $VERSION"
+          fi          
+
       - name: Set up JDK
         uses: actions/setup-java@v4
         with:
