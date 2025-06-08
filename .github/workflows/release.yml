@@ -12,11 +12,13 @@ jobs:
     runs-on: ubuntu-latest
 
     permissions:
-      contents: write
+      contents: write # Needed for creating releases, tags, and pushing Homebrew formula
 
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
+        with:
+          fetch-depth: 0 # Needed for git operations like checking for existing tags
 
       - name: Set up JDK
         uses: actions/setup-java@v4
@@ -37,78 +39,51 @@ jobs:
           cp scripts/jdkcerts release/jdkcerts
           chmod +x release/jdkcerts
 
-      - name: Create Git Tag
-        run: |
-          git fetch --tags
-          if git rev-parse "${{ github.event.inputs.tag }}" >/dev/null 2>&1; then
-            echo "⚠️ Warning: Tag '${{ github.event.inputs.tag }}' already exists."
-          else
-            git config user.name "github-actions"
-            git config user.email "github-actions@github.com"
-            git tag "${{ github.event.inputs.tag }}"
-            git push origin "${{ github.event.inputs.tag }}"
-          fi
-
       - name: Create GitHub Release
         uses: softprops/action-gh-release@v2
         with:
           tag_name: ${{ github.event.inputs.tag }}
           name: "Release ${{ github.event.inputs.tag }}"
           draft: false
+          prerelease: false
           files: |
             release/jdkcertstool.jar
             release/jdkcerts
-
-      - name: Wait for release assets to be available
-        run: |
-          URL="https://github.com/ADarko22/JDKCertsTool/releases/download/${{ github.event.inputs.tag }}/jdkcertstool.jar"
-          echo "Waiting for release asset $URL to be available..."
-          
-          MAX_RETRIES=10
-          SLEEP_SECONDS=12
-          
-          for i in $(seq 1 $MAX_RETRIES); do
-            status_code=$(curl -s -o /dev/null -w "%{http_code}" --max-redirs 0 "$URL" || echo "000")
-          
-            if [ "$status_code" = "200" ] || [ "$status_code" = "302" ]; then
-              echo "Release asset is available (HTTP $status_code)!"
-              exit 0
-            else
-              echo "Unexpected HTTP status $status_code, retrying in $SLEEP_SECONDS seconds... ($i/$MAX_RETRIES)"
-            fi
-        
-          sleep $SLEEP_SECONDS
-          done
-          
-          echo "Timeout waiting for release asset after $MAX_RETRIES attempts."
-          exit 1
-
 
       - name: Generate Homebrew formula
         run: |
           ./scripts/generate_homebrew_formula.sh ${{ github.event.inputs.tag }}
 
       - name: Commit and push Homebrew formula
+        # Only commit if there are changes. Push to the default branch (e.g., main).
         run: |
           git config user.name "github-actions"
           git config user.email "github-actions@github.com"
           git add Formula/jdkcerts.rb
-          git commit -m "Update Homebrew formula for ${{ github.event.inputs.tag }}" || echo "No changes to commit"
-          git push
+          git diff --cached --exit-code || git commit -m "Update Homebrew formula for ${{ github.event.inputs.tag }}"
+          git push origin master 
 
       - name: Install Homebrew
         id: setup-brew
         run: |
+          # Ensure necessary dependencies for Homebrew.
           sudo apt-get update
           sudo apt-get install -y build-essential procps curl file git
+          
           NONINTERACTIVE=1 /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
-          echo "HOMEBREW_PREFIX=/home/linuxbrew/.linuxbrew" >> $GITHUB_ENV
-          echo "HOMEBREW_BIN=/home/linuxbrew/.linuxbrew/bin" >> $GITHUB_ENV
-          echo "eval \"$(/home/linuxbrew/.linuxbrew/bin/brew shellenv)\"" >> $GITHUB_ENV
+          
+          # Configure environment variables for Homebrew.
+          echo "HOMEBREW_PREFIX=/home/linuxbrew/.linuxbrew" >> "$GITHUB_ENV"
+          echo "HOMEBREW_BIN=/home/linuxbrew/.linuxbrew/bin" >> "$GITHUB_ENV"
+          
+          # Evaluate shell environment immediately for this step
+          echo "eval \"$(/home/linuxbrew/.linuxbrew/bin/brew shellenv)\"" >> "$GITHUB_ENV"
+          eval "$(/home/linuxbrew/.linuxbrew/bin/brew shellenv)"
 
       - name: Test Homebrew formula
+        # Ensure brew shellenv is evaluated before any brew commands.
         run: |
-          eval "$($HOMEBREW_BIN/brew shellenv)"
+          eval "$(/home/linuxbrew/.linuxbrew/bin/brew shellenv)"
           
           brew install --verbose --debug ./Formula/jdkcerts.rb
           
@@ -118,6 +93,7 @@ jobs:
       - name: Cleanup Homebrew formula
         if: always()
         run: |
-          eval "$($HOMEBREW_BIN/brew shellenv)"
-          brew uninstall jdkcerts || true
+          # Ensure brew shellenv is evaluated for cleanup.
+          eval "$(/home/linuxbrew/.linuxbrew/bin/brew shellenv)"
+          brew uninstall jdkcerts || true # Use || true to prevent the step from failing if uninstall fails (e.g., not installed)
 

@@ -24,10 +24,6 @@ dependencies {
     testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine:5.11.0-M1")
 }
 
-tasks.test {
-    useJUnitPlatform()
-}
-
 kotlin {
     jvmToolchain(17)
 }
@@ -35,14 +31,43 @@ kotlin {
 application {
     mainClass.set("edu.adarko22.MainKt")
 }
-tasks {
-    shadowJar {
-        archiveBaseName.set("JDKCertsTool")
-        archiveClassifier.set("")
-        archiveVersion.set(version.toString())
-        manifest {
-            attributes["Main-Class"] = application.mainClass.get()
-            attributes["Implementation-Version"] = archiveVersion.get()
-        }
+
+tasks.test {
+    useJUnitPlatform()
+    reports{
+        junitXml.required.set(true)
     }
+}
+
+tasks.named<Jar>("jar") {
+    enabled = false
+}
+
+tasks.named<com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar>("shadowJar") {
+    archiveBaseName.set("JDKCertsTool")
+    archiveClassifier.set("")
+    archiveVersion.set(version.toString())
+    manifest {
+        attributes["Main-Class"] = application.mainClass.get()
+        attributes["Implementation-Version"] = archiveVersion.get()
+    }
+}
+
+// Fix implicit dependency errors by wiring dependent tasks explicitly
+tasks.named<Zip>("distZip") {
+    dependsOn(tasks.named("shadowJar"))
+}
+
+tasks.named<Tar>("distTar") {
+    dependsOn(tasks.named("shadowJar"))
+}
+
+tasks.named<CreateStartScripts>("startScripts") {
+    dependsOn(tasks.named("shadowJar"))
+}
+
+tasks.named<JavaExec>("run") {
+    dependsOn(tasks.named("shadowJar"))
+    classpath =
+        files(tasks.named<com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar>("shadowJar").get().archiveFile)
 }
