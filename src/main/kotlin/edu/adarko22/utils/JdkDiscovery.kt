@@ -6,18 +6,18 @@ import java.nio.file.Files
 import java.nio.file.Path
 
 class JdkDiscovery(
-    private val systemInfoProvider: SystemInfoProvider = DefaultSystemInfoProvider()
+    private val systemInfoProvider: SystemInfoProvider = DefaultSystemInfoProvider(),
 ) {
-
-    private val defaultDirs = listOfNotNull(
-        // macOS JDKs
-        Path.of("/Library/Java/JavaVirtualMachines").takeIf(Files::isDirectory),
-        // Linux
-        Path.of("/usr/lib/jvm").takeIf(Files::isDirectory),
-        Path.of("/usr/java").takeIf(Files::isDirectory),
-        // SDKMAN uses the injected userHome
-        systemInfoProvider.getUserHome().resolve(".sdkman/candidates/java").takeIf(Files::isDirectory),
-    )
+    private val defaultDirs =
+        listOfNotNull(
+            // macOS JDKs
+            Path.of("/Library/Java/JavaVirtualMachines").takeIf(Files::isDirectory),
+            // Linux
+            Path.of("/usr/lib/jvm").takeIf(Files::isDirectory),
+            Path.of("/usr/java").takeIf(Files::isDirectory),
+            // SDKMAN uses the injected userHome
+            systemInfoProvider.getUserHome().resolve(".sdkman/candidates/java").takeIf(Files::isDirectory),
+        )
 
     fun discoverJdkHomes(customJdkDirs: List<Path> = emptyList()): List<Path> {
         val allSearchRoots = defaultDirs + discoverJetBrainsRuntimeHomes() + customJdkDirs.filter(Files::isDirectory)
@@ -39,7 +39,8 @@ class JdkDiscovery(
         // Detect IntelliJ .app installations in /Applications (macOS)
         val appsDir = systemInfoProvider.getUserHome().resolve("Applications")
         if (Files.isDirectory(appsDir)) {
-            Files.newDirectoryStream(appsDir)
+            Files
+                .newDirectoryStream(appsDir)
                 .filter { it.fileName.toString().startsWith("IntelliJ IDEA") && it.toString().endsWith(".app") }
                 .map { it.resolve("Contents/jbr/Contents/") }
                 .filter(Files::isDirectory)
@@ -47,17 +48,19 @@ class JdkDiscovery(
         }
 
         // Detect JetBrains Toolbox installations (macOS/Linux)
-        val toolboxRoots = listOf(
-            systemInfoProvider.getUserHome().resolve("Library/Application Support/JetBrains/Toolbox/apps"), // macOS
-            systemInfoProvider.getUserHome().resolve(".local/share/JetBrains/Toolbox/apps")                 // Linux
-        )
+        val toolboxRoots =
+            listOf(
+                systemInfoProvider.getUserHome().resolve("Library/Application Support/JetBrains/Toolbox/apps"), // macOS
+                systemInfoProvider.getUserHome().resolve(".local/share/JetBrains/Toolbox/apps"), // Linux
+            )
 
         val ideaEditions = listOf("IDEA-U", "IDEA-C", "IDEA-E", "IDEA-P")
         toolboxRoots.filter(Files::isDirectory).forEach { toolboxBase ->
             ideaEditions.forEach { edition ->
                 val editionRoot = toolboxBase.resolve(edition)
                 if (Files.isDirectory(editionRoot)) {
-                    Files.walk(editionRoot, 6)
+                    Files
+                        .walk(editionRoot, 6)
                         .filter { it.fileName.toString() == "jbr" && Files.isDirectory(it) }
                         .map { it.resolve("Contents/") }
                         .filter(Files::isDirectory)
@@ -72,8 +75,7 @@ class JdkDiscovery(
     /**
      * For macOS: convert `.jdk` to `Contents/Home`
      */
-    internal fun toJavaHome(dir: Path): Path =
-        if (dir.toString().endsWith(".jdk")) dir.resolve("Contents/Home") else dir
+    internal fun toJavaHome(dir: Path): Path = if (dir.toString().endsWith(".jdk")) dir.resolve("Contents/Home") else dir
 
     /**
      * Validates a Java home by checking for both `bin/java` and `bin/keytool`

@@ -1,7 +1,10 @@
 package edu.adarko22.process
 
 import edu.adarko22.runner.JavaRunner
-import org.junit.jupiter.api.Assertions.*
+import org.junit.jupiter.api.Assertions.assertEquals
+import org.junit.jupiter.api.Assertions.assertNotNull
+import org.junit.jupiter.api.Assertions.assertNull
+import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.api.io.TempDir
 import org.junit.jupiter.params.ParameterizedTest
 import org.junit.jupiter.params.provider.Arguments
@@ -13,30 +16,36 @@ import java.nio.file.Path
 import java.util.stream.Stream
 
 class KeystoreResolverTest {
-
     @TempDir
     lateinit var tempDir: Path
 
     companion object {
         @JvmStatic
-        fun keystoreScenarios(): Stream<Arguments> = Stream.of(
-            Arguments.of("JDK > 8", 11, true, listOf("-cacerts")),
-            Arguments.of("JDK 8 with cacerts", 8, true, listOf("-keystore", "EXPECTED_PATH")),
-            Arguments.of("JDK 8 without cacerts", 8, false, null),
-            Arguments.of("Unknown JDK version", null, false, null)
-        )
+        fun keystoreScenarios(): Stream<Arguments> =
+            Stream.of(
+                Arguments.of("JDK > 8", 11, true, listOf("-cacerts")),
+                Arguments.of("JDK 8 with cacerts", 8, true, listOf("-keystore", "EXPECTED_PATH")),
+                Arguments.of("JDK 8 without cacerts", 8, false, null),
+                Arguments.of("Unknown JDK version", null, false, null),
+            )
     }
 
     @ParameterizedTest(name = "{0}")
     @MethodSource("keystoreScenarios")
-    fun `test keystore resolution`(name: String, version: Int?, shouldCreateCacerts: Boolean, expected: List<String>?) {
+    fun `test keystore resolution`(
+        name: String,
+        version: Int?,
+        shouldCreateCacerts: Boolean,
+        expected: List<String>?,
+    ) {
         val jdkPath = tempDir.resolve(name.replace(" ", "_"))
         Files.createDirectories(jdkPath)
 
         // Create mock JavaRunner
-        val javaRunner = mock<JavaRunner> {
-            on { getMajorVersion(jdkPath) } doReturn version
-        }
+        val javaRunner =
+            mock<JavaRunner> {
+                on { getMajorVersion(jdkPath) } doReturn version
+            }
 
         // Optionally create a fake cacerts file
         if (shouldCreateCacerts) {
