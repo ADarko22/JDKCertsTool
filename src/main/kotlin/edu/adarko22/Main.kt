@@ -1,6 +1,7 @@
 package edu.adarko22
 
 import com.github.ajalt.clikt.core.CliktCommand
+import com.github.ajalt.clikt.core.main
 import com.github.ajalt.clikt.core.subcommands
 import edu.adarko22.commands.InfoCommand
 import edu.adarko22.commands.InstallCertsJdkCommand

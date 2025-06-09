@@ -1,10 +1,13 @@
 package edu.adarko22.commands
 
+import com.github.ajalt.clikt.core.parse
 import edu.adarko22.process.KeytoolRunner
 import edu.adarko22.utils.JdkDiscovery
 import io.mockk.*
-import org.junit.jupiter.api.*
 import org.junit.jupiter.api.Assertions.assertTrue
+import org.junit.jupiter.api.BeforeEach
+import org.junit.jupiter.api.Test
+import org.junit.jupiter.api.assertAll
 import org.junit.jupiter.api.io.TempDir
 import java.nio.file.Files
 import java.nio.file.Path
