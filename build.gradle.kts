@@ -2,6 +2,7 @@ plugins {
     application
     kotlin("jvm") version "2.1.10"
     id("com.github.johnrengelman.shadow") version "8.1.1"
+    jacoco
 }
 
 group = "edu.adarko22"
@@ -34,8 +35,17 @@ application {
 
 tasks.test {
     useJUnitPlatform()
-    reports{
+    reports {
         junitXml.required.set(true)
+    }
+    finalizedBy(tasks.jacocoTestReport)
+}
+
+tasks.jacocoTestReport {
+    dependsOn(tasks.test)
+    reports {
+        xml.required.set(true)
+        html.required.set(true)
     }
 }
 

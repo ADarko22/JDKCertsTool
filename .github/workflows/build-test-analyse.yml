@@ -1,0 +1,100 @@
+name: Build, Test & Analyse
+
+on:
+  push:
+    branches: [master]
+  pull_request:
+    branches: [master]
+
+permissions:
+  contents: read
+  actions: read
+  security-events: write
+  pull-requests: write
+  statuses: write
+
+jobs:
+  # Linter Job
+  lint:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      pull-requests: write # For Super-Linter comments
+      statuses: write      # For Super-Linter status updates
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Run Super-Linter
+        uses: github/super-linter@v6
+        env:
+          DEFAULT_BRANCH: master
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          VALIDATE_KOTLIN: true
+          ENABLE_GITHUB_ACTIONS_STEP_SUMMARY: true
+
+  # Main Build, Test & Analyse Job
+  build-test-analyse:
+    runs-on: ubuntu-latest
+    outputs:
+      codeql-status: ${{ steps.codeql.outcome }}
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up JDK
+        uses: actions/setup-java@v4
+        with:
+          java-version: '17'
+          distribution: 'temurin'
+
+      - name: Set up Gradle
+        uses: gradle/actions/setup-gradle@v3
+
+      - name: Build project
+        run: ./gradlew clean build
+
+      - name: Run tests
+        run: ./gradlew test
+
+      - name: Generate code coverage report
+        run: ./gradlew jacocoTestReport
+
+      - name: Upload Test Results
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: junit-test-results
+          path: build/test-results/test
+
+      - name: Upload HTML Test Report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: junit-html-report
+          path: build/reports/tests/test
+
+      - name: Upload Code Coverage Report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: code-coverage-report
+          path: build/reports/jacoco/test/html
+
+      - name: Initialize CodeQL
+        id: codeql
+        uses: github/codeql-action/init@v3
+        with:
+          languages: kotlin
+
+      - name: Perform CodeQL Analysis
+        uses: github/codeql-action/analyze@v3
+
+      - name: Report Test Summary
+        if: always()
+        uses: dorny/test-reporter@v1
+        with:
+          name: JUnit Tests
+          path: build/test-results/test/TEST-*.xml
+          reporter: java-junit
