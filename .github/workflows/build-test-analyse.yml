@@ -1,12 +1,15 @@
-name: Build and Test
+name: Build & Test
 
 on:
   push:
-    branches:
-      - master
+    branches: [master]
   pull_request:
-    branches:
-      - master
+    branches: [master]
+
+permissions:
+  contents: read
+  actions: read
+  checks: write
 
 jobs:
   build-and-test:
@@ -19,20 +22,23 @@ jobs:
       - name: Set up JDK
         uses: actions/setup-java@v4
         with:
-          java-version: '21'
+          java-version: '17'
           distribution: 'temurin'
 
       - name: Set up Gradle
         uses: gradle/actions/setup-gradle@v3
 
-      - name: Build with Gradle
-        run: ./gradlew build
+      - name: Build project
+        run: ./gradlew clean build
 
-      - name: Run Tests with Gradle
+      - name: Run tests
         run: ./gradlew test
 
+      - name: Generate code coverage report
+        run: ./gradlew jacocoTestReport
+
       - name: Upload Test Results
-        if: always() # Always run even if tests fail
+        if: always()
         uses: actions/upload-artifact@v4
         with:
           name: junit-test-results
@@ -45,6 +51,13 @@ jobs:
           name: junit-html-report
           path: build/reports/tests/test
 
+      - name: Upload Code Coverage Report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: code-coverage-report
+          path: build/reports/jacoco/test/html
+
       - name: Report Test Summary
         if: always()
         uses: dorny/test-reporter@v1
@@ -52,4 +65,3 @@ jobs:
           name: JUnit Tests
           path: build/test-results/test/TEST-*.xml
           reporter: java-junit
-
