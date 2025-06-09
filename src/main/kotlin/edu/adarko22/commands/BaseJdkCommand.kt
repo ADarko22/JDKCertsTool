@@ -17,17 +17,16 @@ abstract class BaseJdkCommand(
     name: String,
     private val help: String,
     protected open val printer: (String) -> Unit = ::println,
-    protected open val keytoolRunner: KeytoolRunner = KeytoolRunner()
+    protected open val keytoolRunner: KeytoolRunner = KeytoolRunner(),
 ) : CliktCommand(name = name) {
-
     private val customJdkDirs: List<Path>
-            by option("--custom-jdk-dirs", help = "Comma-separated paths to JDK dirs")
-                .convert { it.toPaths() }
-                .default(emptyList())
+        by option("--custom-jdk-dirs", help = "Comma-separated paths to JDK dirs")
+            .convert { it.toPaths() }
+            .default(emptyList())
 
     protected val dryRun: Boolean by option("--dry-run", help = "Preview changes only").flag()
     protected val keystorePassword: String
-            by option("--keystore-password", help = "Keystore password").default("changeit")
+        by option("--keystore-password", help = "Keystore password").default("changeit")
 
     override fun help(context: Context) = help
 
@@ -45,7 +44,8 @@ abstract class BaseJdkCommand(
     }
 
     private fun String.toPaths(): List<Path> = split(",").map { it.trim().toPath() }
+
     fun String.toPath(): Path = Paths.get(this.expandHome())
-    private fun String.expandHome(): String =
-        if (startsWith("~")) System.getProperty("user.home") + drop(1) else this
+
+    private fun String.expandHome(): String = if (startsWith("~")) System.getProperty("user.home") + drop(1) else this
 }

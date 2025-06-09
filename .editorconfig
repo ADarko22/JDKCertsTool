@@ -1,0 +1,8 @@
+root = true
+
+# https://pinterest.github.io/ktlint/latest/rules/standard/
+[*.{kt,kts}]
+indent_style = space
+indent_size = 4
+max_line_length = 140
+

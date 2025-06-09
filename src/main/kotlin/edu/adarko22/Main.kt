@@ -18,6 +18,6 @@ fun main(args: Array<String>) {
         InfoCommand(),
         ListJDKsCommand(jdkDiscovery),
         InstallCertsJdkCommand(jdkDiscovery),
-        RemoveCertJdkCommand(jdkDiscovery)
+        RemoveCertJdkCommand(jdkDiscovery),
     ).main(args)
 }

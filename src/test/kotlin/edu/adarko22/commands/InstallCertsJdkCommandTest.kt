@@ -3,7 +3,11 @@ package edu.adarko22.commands
 import com.github.ajalt.clikt.core.parse
 import edu.adarko22.process.KeytoolRunner
 import edu.adarko22.utils.JdkDiscovery
-import io.mockk.*
+import io.mockk.Runs
+import io.mockk.every
+import io.mockk.just
+import io.mockk.mockk
+import io.mockk.verify
 import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
@@ -13,7 +17,6 @@ import java.nio.file.Files
 import java.nio.file.Path
 
 class InstallCertsJdkCommandTest {
-
     private lateinit var mockPrinter: (String) -> Unit
     private lateinit var capturedOutput: MutableList<String>
     private lateinit var mockDiscovery: JdkDiscovery
@@ -45,7 +48,7 @@ class InstallCertsJdkCommandTest {
                 any(),
                 any(),
                 any<List<String>>(),
-                any()
+                any(),
             )
         } just Runs
 
@@ -60,7 +63,7 @@ class InstallCertsJdkCommandTest {
                 match { it.contains("certificate installation") },
                 listOf(jdkPath),
                 match { it.containsAll(listOf("-importcert", "-alias", "my-cert")) },
-                false
+                false,
             )
         }
 
@@ -81,7 +84,7 @@ class InstallCertsJdkCommandTest {
 
         assertTrue(
             capturedOutput.any { it.contains("❌ Certificate not found") },
-            "Expected error about missing certificate"
+            "Expected error about missing certificate",
         )
     }
 
@@ -102,12 +105,12 @@ class InstallCertsJdkCommandTest {
             {
                 assertTrue(
                     capturedOutput.any { it.contains("❌ Certificate not found") },
-                    "Expected error about missing certificate"
+                    "Expected error about missing certificate",
                 )
             },
             {
                 assertTrue(capturedOutput.any { it.contains("Dry run") }, "Expected dry run continuation message")
-            }
+            },
         )
     }
 }

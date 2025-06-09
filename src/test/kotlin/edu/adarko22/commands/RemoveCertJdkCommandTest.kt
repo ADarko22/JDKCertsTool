@@ -3,7 +3,11 @@ package edu.adarko22.commands
 import com.github.ajalt.clikt.core.parse
 import edu.adarko22.process.KeytoolRunner
 import edu.adarko22.utils.JdkDiscovery
-import io.mockk.*
+import io.mockk.Runs
+import io.mockk.every
+import io.mockk.just
+import io.mockk.mockk
+import io.mockk.verify
 import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
@@ -13,7 +17,6 @@ import java.nio.file.Files
 import java.nio.file.Path
 
 class RemoveCertJdkCommandTest {
-
     private lateinit var mockPrinter: (String) -> Unit
     private lateinit var capturedOutput: MutableList<String>
     private lateinit var mockDiscovery: JdkDiscovery
@@ -50,7 +53,7 @@ class RemoveCertJdkCommandTest {
                 match { it.contains("certificate deletion") },
                 listOf(jdkPath),
                 match { it.containsAll(listOf("-delete", "-alias", "test-alias")) },
-                false
+                false,
             )
         }
 

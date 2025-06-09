@@ -18,6 +18,8 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
 
       # Super-Linter
       - name: Run Super-Linter
@@ -27,7 +29,7 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           VALIDATE_KOTLIN: true
           VALIDATE_RUBY: true
-          VALIDATE_BASH: true
+          VALIDATE_ALL_CODEBASE: false
           ENABLE_GITHUB_ACTIONS_STEP_SUMMARY: true
         # Fail PR check on linting errors
         # continue-on-error: true

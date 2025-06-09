@@ -1,6 +1,7 @@
 plugins {
     application
     kotlin("jvm") version "2.1.10"
+    id("org.jlleitschuh.gradle.ktlint") version "13.0.0-rc.1"
     id("com.github.johnrengelman.shadow") version "8.1.1"
     jacoco
 }
@@ -31,6 +32,15 @@ kotlin {
 
 application {
     mainClass.set("edu.adarko22.MainKt")
+}
+
+ktlint {
+    android.set(false)
+    outputColorName.set("RED")
+    reporters {
+        reporter(org.jlleitschuh.gradle.ktlint.reporter.ReporterType.PLAIN)
+        reporter(org.jlleitschuh.gradle.ktlint.reporter.ReporterType.CHECKSTYLE)
+    }
 }
 
 tasks.test {
