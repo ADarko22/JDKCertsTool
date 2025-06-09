@@ -5,8 +5,9 @@ import java.nio.file.Files
 import java.nio.file.Path
 import kotlin.io.path.absolutePathString
 
-class KeystoreResolver(private val javaRunner: JavaRunner = JavaRunner()) {
-
+class KeystoreResolver(
+    private val javaRunner: JavaRunner = JavaRunner(),
+) {
     fun resolve(jdk: Path): List<String>? {
         val version = javaRunner.getMajorVersion(jdk)
 
@@ -17,10 +18,9 @@ class KeystoreResolver(private val javaRunner: JavaRunner = JavaRunner()) {
         }
     }
 
-    private fun findJava8Cacerts(jdk: Path): Path? {
-        return listOf(
+    private fun findJava8Cacerts(jdk: Path): Path? =
+        listOf(
             jdk.resolve("lib/security/cacerts"),
-            jdk.resolve("jre/lib/security/cacerts")
+            jdk.resolve("jre/lib/security/cacerts"),
         ).firstOrNull { Files.exists(it) }
-    }
 }

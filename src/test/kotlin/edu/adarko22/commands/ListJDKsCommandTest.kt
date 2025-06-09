@@ -1,5 +1,6 @@
 package edu.adarko22.commands
 
+import com.github.ajalt.clikt.core.parse
 import edu.adarko22.utils.JdkDiscovery
 import io.mockk.every
 import io.mockk.mockk
@@ -10,7 +11,6 @@ import java.nio.file.Path
 import java.nio.file.Paths
 
 class ListJDKsCommandTest {
-
     private fun createCommandWithMock(jdkPaths: List<Path>): Pair<ListJDKsCommand, MutableList<String>> {
         val jdkDiscovery = mockk<JdkDiscovery>()
         every { jdkDiscovery.discoverJdkHomes(any()) } returns jdkPaths
@@ -37,9 +37,18 @@ class ListJDKsCommandTest {
             "List JDKs command output",
             { assertTrue(output.isNotEmpty(), "Expected output to be non-empty") },
             { assertTrue(output.any { it.contains("Found JDKs") }, "Expected output to contain 'Found JDKs'") },
-            { assertTrue(output.any { it.contains(jdkPaths[0].toString()) }, "Expected output to contain ${jdkPaths[0]}") },
-            { assertTrue(output.any { it.contains(jdkPaths[1].toString()) }, "Expected output to contain ${jdkPaths[1]}") }
+            {
+                assertTrue(
+                    output.any { it.contains(jdkPaths[0].toString()) },
+                    "Expected output to contain ${jdkPaths[0]}",
+                )
+            },
+            {
+                assertTrue(
+                    output.any { it.contains(jdkPaths[1].toString()) },
+                    "Expected output to contain ${jdkPaths[1]}",
+                )
+            },
         )
     }
 }
-

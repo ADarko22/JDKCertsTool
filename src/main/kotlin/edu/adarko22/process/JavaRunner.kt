@@ -2,8 +2,9 @@ package edu.adarko22.runner
 
 import java.nio.file.Path
 
-class JavaRunner(private val executor: ProcessExecutor = DefaultProcessExecutor()) {
-
+class JavaRunner(
+    private val executor: ProcessExecutor = DefaultProcessExecutor(),
+) {
     fun getMajorVersion(jdk: Path): Int? {
         val javaPath = jdk.resolve("bin/java").toAbsolutePath().toString()
         val command = listOf(javaPath, "-version")
@@ -16,7 +17,7 @@ class JavaRunner(private val executor: ProcessExecutor = DefaultProcessExecutor(
 
         return when {
             versionString.startsWith("1.") -> versionString.substring(2, 3).toIntOrNull() // 1.8
-            else -> versionString.takeWhile { it.isDigit() }.toIntOrNull()               // 11, 17, etc.
+            else -> versionString.takeWhile { it.isDigit() }.toIntOrNull() // 11, 17, etc.
         }
     }
 }
