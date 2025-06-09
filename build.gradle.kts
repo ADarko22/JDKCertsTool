@@ -23,7 +23,7 @@ dependencies {
     testImplementation("org.mockito:mockito-core:5.11.0")
     testImplementation("org.mockito.kotlin:mockito-kotlin:5.1.0")
 
-    testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine:5.11.0-M1")
+    testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine:5.13.1")
 }
 
 kotlin {
