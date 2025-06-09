@@ -13,7 +13,7 @@ repositories {
 }
 
 dependencies {
-    implementation("com.github.ajalt.clikt:clikt:3.5.2")
+    implementation("com.github.ajalt.clikt:clikt:5.0.3")
 
     testImplementation("org.junit.jupiter:junit-jupiter-api:5.11.0-M1")
     testImplementation("org.junit.jupiter:junit-jupiter-params:5.11.0-M1")
