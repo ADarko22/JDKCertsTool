@@ -1,6 +1,7 @@
 package edu.adarko22.commands
 
 import com.github.ajalt.clikt.core.CliktCommand
+import com.github.ajalt.clikt.core.Context
 import com.github.ajalt.clikt.parameters.options.convert
 import com.github.ajalt.clikt.parameters.options.default
 import com.github.ajalt.clikt.parameters.options.flag
@@ -14,19 +15,20 @@ import java.nio.file.Paths
 
 abstract class BaseJdkCommand(
     name: String,
-    help: String,
+    private val help: String,
     protected open val printer: (String) -> Unit = ::println,
-    protected open val keytoolRunner: KeytoolRunner = KeytoolRunner()
-) : CliktCommand(name = name, help = help) {
-
+    protected open val keytoolRunner: KeytoolRunner = KeytoolRunner(),
+) : CliktCommand(name = name) {
     private val customJdkDirs: List<Path>
-            by option("--custom-jdk-dirs", help = "Comma-separated paths to JDK dirs")
-                .convert { it.toPaths() }
-                .default(emptyList())
+        by option("--custom-jdk-dirs", help = "Comma-separated paths to JDK dirs")
+            .convert { it.toPaths() }
+            .default(emptyList())
 
     protected val dryRun: Boolean by option("--dry-run", help = "Preview changes only").flag()
     protected val keystorePassword: String
-            by option("--keystore-password", help = "Keystore password").default("changeit")
+        by option("--keystore-password", help = "Keystore password").default("changeit")
+
+    override fun help(context: Context) = help
 
     protected fun discoverAndListJdks(jdkDiscovery: JdkDiscovery): List<Path> {
         val jdkPaths = jdkDiscovery.discoverJdkHomes(customJdkDirs)
@@ -42,7 +44,8 @@ abstract class BaseJdkCommand(
     }
 
     private fun String.toPaths(): List<Path> = split(",").map { it.trim().toPath() }
+
     fun String.toPath(): Path = Paths.get(this.expandHome())
-    private fun String.expandHome(): String =
-        if (startsWith("~")) System.getProperty("user.home") + drop(1) else this
+
+    private fun String.expandHome(): String = if (startsWith("~")) System.getProperty("user.home") + drop(1) else this
 }
