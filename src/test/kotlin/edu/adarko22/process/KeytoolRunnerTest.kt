@@ -2,17 +2,24 @@ package edu.adarko22.process
 
 import edu.adarko22.runner.ProcessExecutor
 import edu.adarko22.runner.ProcessResult
-import edu.adarko22.utils.*
-import io.mockk.*
-import org.junit.jupiter.api.*
+import edu.adarko22.utils.blue
+import edu.adarko22.utils.green
+import edu.adarko22.utils.red
+import edu.adarko22.utils.yellow
+import io.mockk.clearAllMocks
+import io.mockk.every
+import io.mockk.mockk
+import io.mockk.verify
 import org.junit.jupiter.api.Assertions.assertTrue
+import org.junit.jupiter.api.BeforeEach
+import org.junit.jupiter.api.Test
+import org.junit.jupiter.api.assertAll
 import org.junit.jupiter.api.io.TempDir
 import java.nio.file.Path
 import kotlin.io.path.absolutePathString
 import kotlin.io.path.createDirectories
 
 class KeytoolRunnerTest {
-
     private lateinit var mockPrinter: (String) -> Unit
     private lateinit var capturedOutput: MutableList<String>
     private lateinit var mockExecutor: ProcessExecutor
@@ -32,11 +39,12 @@ class KeytoolRunnerTest {
         mockPrinter = { message -> capturedOutput.add(message) }
         mockExecutor = mockk()
         mockKeystoreResolver = mockk()
-        keytoolRunner = KeytoolRunner(
-            printer = mockPrinter,
-            executor = mockExecutor,
-            keystoreResolver = mockKeystoreResolver
-        )
+        keytoolRunner =
+            KeytoolRunner(
+                printer = mockPrinter,
+                executor = mockExecutor,
+                keystoreResolver = mockKeystoreResolver,
+            )
 
         mockJdkPath = tempDir.resolve("jdk_test").apply { createDirectories() }
         mockJdkPath.resolve("bin/keytool")
@@ -58,12 +66,11 @@ class KeytoolRunnerTest {
             { verify(exactly = 0) { mockExecutor.runCommand(any()) } },
             { assertOutputContains("🛑 Dry run: would run `${expectedCommand.joinToString(" ")}`".blue()) },
             { assertOutputContains("Running $commandName on $mockJdkPath ...") },
-            { assertSummary(1, 0) }
+            { assertSummary(1, 0) },
         )
     }
 
     @Test
-    @DisplayName("should return false and skip execution when keystoreArgs is null (no cacerts found)")
     fun `should return false and skip execution when keystoreArgs is null`() {
         val commandName = "list"
         val commandArgs = emptyList<String>()
@@ -77,12 +84,11 @@ class KeytoolRunnerTest {
             { verify(exactly = 0) { mockExecutor.runCommand(any()) } },
             { assertOutputContains("❌ No cacerts found. Skipping.".red()) },
             { assertOutputContains("Running $commandName on $mockJdkPath ...") },
-            { assertSummary(0, 1) }
+            { assertSummary(0, 1) },
         )
     }
 
     @Test
-    @DisplayName("should handle successful command execution (exit code 0)")
     fun `should handle successful command execution`() {
         val commandName = "importcert"
         val commandArgs = listOf("-alias", "mycert")
@@ -90,7 +96,7 @@ class KeytoolRunnerTest {
 
         givenKeystoreResolutionReturns(defaultKeystoreArgs)
         every { mockExecutor.runCommand(expectedCommand) } returns
-                ProcessResult("Key imported successfully", "", 0)
+            ProcessResult("Key imported successfully", "", 0)
 
         keytoolRunner.runCommandWithCacertsResolution(commandName, listOf(mockJdkPath), commandArgs, dryRun = false)
 
@@ -99,12 +105,11 @@ class KeytoolRunnerTest {
             { verify(exactly = 1) { mockExecutor.runCommand(expectedCommand) } },
             { assertOutputContains("✅ Success!".green()) },
             { assertOutputContains("Running $commandName on $mockJdkPath ...") },
-            { assertSummary(1, 0) }
+            { assertSummary(1, 0) },
         )
     }
 
     @Test
-    @DisplayName("should handle failed command execution (non-zero exit code)")
     fun `should handle failed command execution`() {
         val commandName = "list"
         val commandArgs = listOf("-v", "-keystore", "nonexistent.jks")
@@ -112,7 +117,7 @@ class KeytoolRunnerTest {
 
         givenKeystoreResolutionReturns(defaultKeystoreArgs)
         every { mockExecutor.runCommand(expectedCommand) } returns
-                ProcessResult("Keytool error: entry not found", "Error details in stderr", 1)
+            ProcessResult("Keytool error: entry not found", "Error details in stderr", 1)
 
         keytoolRunner.runCommandWithCacertsResolution(commandName, listOf(mockJdkPath), commandArgs, dryRun = false)
 
@@ -123,7 +128,7 @@ class KeytoolRunnerTest {
             { assertOutputContains("\tKeytool error: entry not found".yellow()) },
             { assertOutputContains("\tError details in stderr".yellow()) },
             { assertOutputContains("Running $commandName on $mockJdkPath ...") },
-            { assertSummary(0, 1) }
+            { assertSummary(0, 1) },
         )
     }
 
@@ -131,8 +136,7 @@ class KeytoolRunnerTest {
         every { mockKeystoreResolver.resolve(mockJdkPath) } returns args
     }
 
-    private fun expectedKeytoolPath(): String =
-        mockJdkPath.resolve("bin/keytool").absolutePathString()
+    private fun expectedKeytoolPath(): String = mockJdkPath.resolve("bin/keytool").absolutePathString()
 
     private fun verifyKeystoreResolvedOnce() {
         verify(exactly = 1) { mockKeystoreResolver.resolve(mockJdkPath) }
@@ -142,16 +146,19 @@ class KeytoolRunnerTest {
         expectedMessages.forEach { msg ->
             assertTrue(
                 capturedOutput.any { it.contains(msg) },
-                "Expected output to contain: '$msg', but it did not. Actual output: $capturedOutput"
+                "Expected output to contain: '$msg', but it did not. Actual output: $capturedOutput",
             )
         }
     }
 
-    private fun assertSummary(succeeded: Int, failed: Int) {
+    private fun assertSummary(
+        succeeded: Int,
+        failed: Int,
+    ) {
         val expectedSummary = "\nSummary: $succeeded succeeded, $failed failed.".blue()
         assertTrue(
             capturedOutput.contains(expectedSummary),
-            "Expected summary '$expectedSummary', but got: ${capturedOutput.lastOrNull()}"
+            "Expected summary '$expectedSummary', but got: ${capturedOutput.lastOrNull()}",
         )
     }
 }

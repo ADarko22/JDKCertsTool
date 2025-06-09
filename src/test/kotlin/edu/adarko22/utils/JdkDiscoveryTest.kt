@@ -4,7 +4,9 @@ import edu.adarko22.createDir
 import edu.adarko22.createExecutableFile
 import edu.adarko22.createValidJdk
 import edu.adarko22.utils.system.SystemInfoProvider
-import org.junit.jupiter.api.Assertions.*
+import org.junit.jupiter.api.Assertions.assertEquals
+import org.junit.jupiter.api.Assertions.assertFalse
+import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.TestInstance
@@ -19,7 +21,6 @@ import java.nio.file.Path
 
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 class JdkDiscoveryTest {
-
     private lateinit var systemInfoProvider: SystemInfoProvider
     private lateinit var jdkDiscovery: JdkDiscovery
 
@@ -41,29 +42,31 @@ class JdkDiscoveryTest {
 
     companion object {
         @JvmStatic
-        fun toolboxPathsProvider(): List<Arguments> {
-            return listOf(
+        fun toolboxPathsProvider(): List<Arguments> =
+            listOf(
                 Arguments.of("Library/Application Support/JetBrains/Toolbox/apps"),
-                Arguments.of(".local/share/JetBrains/Toolbox/apps")
+                Arguments.of(".local/share/JetBrains/Toolbox/apps"),
             )
-        }
 
         @JvmStatic
-        fun jdkPathsProvider() = listOf(
-            Arguments.of("jdk-11.0.12", false),
-            Arguments.of("bad-jdk.jdk", true)
-        )
+        fun jdkPathsProvider() =
+            listOf(
+                Arguments.of("jdk-11.0.12", false),
+                Arguments.of("bad-jdk.jdk", true),
+            )
 
         @JvmStatic
-        fun validJavaHomesProvider() = listOf(
-            Arguments.of("Linux", "openjdk-17", false)
-        )
+        fun validJavaHomesProvider() =
+            listOf(
+                Arguments.of("Linux", "openjdk-17", false),
+            )
 
         @JvmStatic
-        fun invalidJavaHomesProvider() = listOf(
-            Arguments.of("macOS", "invalid_jdk_no_java", listOf("keytool")),
-            Arguments.of("Linux", "invalid_jdk_no_keytool", listOf("java"))
-        )
+        fun invalidJavaHomesProvider() =
+            listOf(
+                Arguments.of("macOS", "invalid_jdk_no_java", listOf("keytool")),
+                Arguments.of("Linux", "invalid_jdk_no_keytool", listOf("java")),
+            )
     }
 
     @Test
@@ -94,7 +97,10 @@ class JdkDiscoveryTest {
 
     @ParameterizedTest(name = "path ''{0}'' isJdkBundle={1}")
     @MethodSource("jdkPathsProvider")
-    fun `should correctly convert or return JDK path`(dirName: String, isJdkBundle: Boolean) {
+    fun `should correctly convert or return JDK path`(
+        dirName: String,
+        isJdkBundle: Boolean,
+    ) {
         val jdkPath = createDir(tempDir, dirName)
         val expected = if (isJdkBundle) jdkPath.resolve("Contents/Home") else jdkPath
         val javaHome = jdkDiscovery.toJavaHome(jdkPath)
@@ -103,7 +109,11 @@ class JdkDiscoveryTest {
 
     @ParameterizedTest(name = "valid home on {0}")
     @MethodSource("validJavaHomesProvider")
-    fun `should return true for valid Java home`(osName: String, dirName: String, isWindows: Boolean) {
+    fun `should return true for valid Java home`(
+        osName: String,
+        dirName: String,
+        isWindows: Boolean,
+    ) {
         whenever(systemInfoProvider.getOsName()).thenReturn(osName)
         val jdkHome = createValidJdk(tempDir, dirName, isWindows)
         assertTrue(jdkDiscovery.isValidJavaHome(jdkHome))
@@ -111,7 +121,11 @@ class JdkDiscoveryTest {
 
     @ParameterizedTest(name = "invalid home on {0}, missing {2}")
     @MethodSource("invalidJavaHomesProvider")
-    fun `should return false for invalid Java home`(osName: String, dirName: String, presentFiles: List<String>) {
+    fun `should return false for invalid Java home`(
+        osName: String,
+        dirName: String,
+        presentFiles: List<String>,
+    ) {
         whenever(systemInfoProvider.getOsName()).thenReturn(osName)
         val jdkHome = createDir(tempDir, dirName)
         val binDir = createDir(jdkHome, "bin")

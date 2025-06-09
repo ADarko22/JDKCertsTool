@@ -2,21 +2,23 @@ package edu.adarko22.process
 
 import edu.adarko22.runner.DefaultProcessExecutor
 import edu.adarko22.runner.ProcessExecutor
-import edu.adarko22.utils.*
+import edu.adarko22.utils.blue
+import edu.adarko22.utils.green
+import edu.adarko22.utils.red
+import edu.adarko22.utils.yellow
 import java.nio.file.Path
 import kotlin.io.path.absolutePathString
 
 class KeytoolRunner(
     private val printer: (String) -> Unit = ::println,
     private val executor: ProcessExecutor = DefaultProcessExecutor(),
-    private val keystoreResolver: KeystoreResolver = KeystoreResolver()
+    private val keystoreResolver: KeystoreResolver = KeystoreResolver(),
 ) {
-
     fun runCommandWithCacertsResolution(
         commandName: String,
         jdkPaths: List<Path>,
         commandArgs: List<String>,
-        dryRun: Boolean
+        dryRun: Boolean,
     ) {
         var successes = 0
         var failures = 0
@@ -34,7 +36,11 @@ class KeytoolRunner(
         printer("\nSummary: $successes succeeded, $failures failed.".blue())
     }
 
-    private fun runForJdk(jdk: Path, command: List<String>, dryRun: Boolean): Boolean {
+    private fun runForJdk(
+        jdk: Path,
+        command: List<String>,
+        dryRun: Boolean,
+    ): Boolean {
         val keystoreArgs = keystoreResolver.resolve(jdk)
 
         if (keystoreArgs == null) {
@@ -58,8 +64,8 @@ class KeytoolRunner(
         }
     }
 
-    private fun handleResult(result: edu.adarko22.runner.ProcessResult): Boolean {
-        return if (result.exitCode == 0) {
+    private fun handleResult(result: edu.adarko22.runner.ProcessResult): Boolean =
+        if (result.exitCode == 0) {
             printer("✅ Success!".green())
             true
         } else {
@@ -73,5 +79,4 @@ class KeytoolRunner(
             }
             false
         }
-    }
 }

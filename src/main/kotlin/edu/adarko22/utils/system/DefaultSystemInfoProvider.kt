@@ -8,7 +8,10 @@ import java.nio.file.Paths
  */
 class DefaultSystemInfoProvider : SystemInfoProvider {
     override fun getUserHome(): Path = Paths.get(System.getProperty("user.home"))
+
     override fun getOsName(): String = System.getProperty("os.name")
+
     override fun getProgramFilesEnv(): String? = System.getenv("ProgramFiles")
+
     override fun getProgramFilesX86Env(): String? = System.getenv("ProgramFiles(x86)")
 }

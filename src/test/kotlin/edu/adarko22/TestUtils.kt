@@ -7,7 +7,10 @@ import java.nio.file.Path
  * Creates a directory hierarchy at the specified parent path using the given name,
  * which can contain nested directories separated by "/".
  */
-fun createDir(parent: Path, name: String): Path {
+fun createDir(
+    parent: Path,
+    name: String,
+): Path {
     val dir = name.split("/").fold(parent) { acc, part -> acc.resolve(part) }
     return Files.createDirectories(dir)
 }
@@ -15,7 +18,10 @@ fun createDir(parent: Path, name: String): Path {
 /**
  * Creates an executable file at the specified parent path with the given name.
  */
-fun createExecutableFile(parent: Path, name: String): Path {
+fun createExecutableFile(
+    parent: Path,
+    name: String,
+): Path {
     val file = parent.resolve(name)
     Files.createFile(file)
     file.toFile().setExecutable(true)
@@ -29,7 +35,11 @@ fun createExecutableFile(parent: Path, name: String): Path {
  * @param isWindows If true, creates `java.exe` and `keytool.exe`; otherwise, `java` and `keytool`.
  * @return The Path to the created JDK home directory.
  */
-fun createValidJdk(parent: Path, name: String, isWindows: Boolean): Path {
+fun createValidJdk(
+    parent: Path,
+    name: String,
+    isWindows: Boolean,
+): Path {
     val jdkHome = createDir(parent, name)
     val binDir = createDir(jdkHome, "bin")
     createExecutableFile(binDir, if (isWindows) "java.exe" else "java")

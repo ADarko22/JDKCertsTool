@@ -1,6 +1,7 @@
 plugins {
     application
     kotlin("jvm") version "2.1.10"
+    id("org.jlleitschuh.gradle.ktlint") version "13.0.0-rc.1"
     id("com.github.johnrengelman.shadow") version "8.1.1"
     jacoco
 }
@@ -13,11 +14,11 @@ repositories {
 }
 
 dependencies {
-    implementation("com.github.ajalt.clikt:clikt:3.5.2")
+    implementation("com.github.ajalt.clikt:clikt:5.0.3")
 
     testImplementation("org.junit.jupiter:junit-jupiter-api:5.11.0-M1")
     testImplementation("org.junit.jupiter:junit-jupiter-params:5.11.0-M1")
-    testImplementation("io.mockk:mockk:1.13.5")
+    testImplementation("io.mockk:mockk:1.14.2")
     testImplementation("org.mockito:mockito-junit-jupiter:5.11.0")
     testImplementation("org.mockito:mockito-core:5.11.0")
     testImplementation("org.mockito.kotlin:mockito-kotlin:5.1.0")
@@ -31,6 +32,15 @@ kotlin {
 
 application {
     mainClass.set("edu.adarko22.MainKt")
+}
+
+ktlint {
+    android.set(false)
+    outputColorName.set("RED")
+    reporters {
+        reporter(org.jlleitschuh.gradle.ktlint.reporter.ReporterType.PLAIN)
+        reporter(org.jlleitschuh.gradle.ktlint.reporter.ReporterType.CHECKSTYLE)
+    }
 }
 
 tasks.test {

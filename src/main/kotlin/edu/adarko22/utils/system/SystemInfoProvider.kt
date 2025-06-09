@@ -7,7 +7,10 @@ import java.nio.file.Path
  */
 interface SystemInfoProvider {
     fun getUserHome(): Path
+
     fun getOsName(): String
+
     fun getProgramFilesEnv(): String?
+
     fun getProgramFilesX86Env(): String?
 }
