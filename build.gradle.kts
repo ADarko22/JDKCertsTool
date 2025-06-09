@@ -1,6 +1,6 @@
 plugins {
     application
-    kotlin("jvm") version "2.1.10"
+    kotlin("jvm") version "2.1.21"
     id("org.jlleitschuh.gradle.ktlint") version "13.0.0-rc.1"
     id("com.github.johnrengelman.shadow") version "8.1.1"
     jacoco
