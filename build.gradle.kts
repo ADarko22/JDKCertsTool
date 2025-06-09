@@ -15,7 +15,7 @@ repositories {
 dependencies {
     implementation("com.github.ajalt.clikt:clikt:3.5.2")
 
-    testImplementation("org.junit.jupiter:junit-jupiter-api:5.11.0-M1")
+    testImplementation("org.junit.jupiter:junit-jupiter-api:5.13.1")
     testImplementation("org.junit.jupiter:junit-jupiter-params:5.11.0-M1")
     testImplementation("io.mockk:mockk:1.13.5")
     testImplementation("org.mockito:mockito-junit-jupiter:5.11.0")
