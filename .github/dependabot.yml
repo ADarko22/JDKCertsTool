@@ -5,21 +5,15 @@
 
 version: 2
 updates:
-  - package-ecosystem: "" # See documentation for possible values
-    directory: "/" # Location of package manifests
+  # Configuration for Gradle dependencies
+  - package-ecosystem: "gradle" # Specifies the package manager (Gradle)
+    directory: "/" # Location of your build.gradle or build.gradle.kts files
     schedule:
-      interval: "weekly"
-
-version: 2
-updates:
-  - package-ecosystem: "gradle"
-    directory: "/"  # Root of your project
-    schedule:
-      interval: "weekly"
-    open-pull-requests-limit: 5
+      interval: "weekly" # Check for updates weekly
+    open-pull-requests-limit: 5 # Limit to 5 open PRs for these updates
     allow:
-      - dependency-type: "all"  # Can be "direct", "indirect", or "all"
-    ignore:
-      - dependency-name: "org.junit.jupiter:*"
-        versions: ["5.11.0-M1"]  
-
+      - dependency-type: "all" # Allow updates for all dependency types (direct, indirect)
+    #ignore:
+      # You can add more ignore rules here for other dependencies if needed
+      # - dependency-name: "some.other.dependency"
+      #   versions: ["< 2.0.0"] # Example: ignore any version before 2.0.0
