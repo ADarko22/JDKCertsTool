@@ -16,14 +16,14 @@ repositories {
 dependencies {
     implementation("com.github.ajalt.clikt:clikt:5.0.3")
 
-    testImplementation("org.junit.jupiter:junit-jupiter-api:5.11.0-M1")
-    testImplementation("org.junit.jupiter:junit-jupiter-params:5.11.0-M1")
+    testImplementation("org.junit.jupiter:junit-jupiter-api:6.0.0-M1")
+    testImplementation("org.junit.jupiter:junit-jupiter-params:6.0.0-M1")
     testImplementation("io.mockk:mockk:1.14.2")
     testImplementation("org.mockito:mockito-junit-jupiter:5.18.0")
     testImplementation("org.mockito:mockito-core:5.18.0")
     testImplementation("org.mockito.kotlin:mockito-kotlin:5.4.0")
 
-    testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine:5.11.0-M1")
+    testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine:6.0.0-M1")
 }
 
 kotlin {
