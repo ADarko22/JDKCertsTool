@@ -1,0 +1,26 @@
+[plugins]
+kotlin-jvm = { id = "org.jetbrains.kotlin.jvm", version = "2.2.0" }
+ktlint = { id = "org.jlleitschuh.gradle.ktlint", version = "13.0.0-rc.1" }
+shadow = { id = "com.github.johnrengelman.shadow", version = "8.1.1" }
+
+[versions]
+clikt = "5.0.3"
+junit = "6.0.0-M1"
+mockk = "1.14.4"
+mockito = "5.18.0"
+mockito-kotlin = "5.4.0"
+
+[libraries]
+clikt = { module = "com.github.ajalt.clikt:clikt", version.ref = "clikt" }
+
+junit-api = { module = "org.junit.jupiter:junit-jupiter-api", version.ref = "junit" }
+junit-params = { module = "org.junit.jupiter:junit-jupiter-params", version.ref = "junit" }
+junit-engine = { module = "org.junit.jupiter:junit-jupiter-engine", version.ref = "junit" }
+
+junit-platform-reporting = { module = "org.junit.platform:junit-platform-reporting", version = "1.13.2" }
+
+mockk = { module = "io.mockk:mockk", version.ref = "mockk" }
+
+mockito-core = { module = "org.mockito:mockito-core", version.ref = "mockito" }
+mockito-junit = { module = "org.mockito:mockito-junit-jupiter", version.ref = "mockito" }
+mockito-kotlin = { module = "org.mockito.kotlin:mockito-kotlin", version.ref = "mockito-kotlin" }

@@ -1,39 +1,46 @@
 plugins {
     application
-    kotlin("jvm") version "2.2.0"
-    id("org.jlleitschuh.gradle.ktlint") version "13.0.0-rc.1"
-    id("com.github.johnrengelman.shadow") version "8.1.1"
     jacoco
+    alias(libs.plugins.kotlin.jvm)
+    alias(libs.plugins.ktlint)
+    alias(libs.plugins.shadow)
 }
 
+// Project metadata
 group = "edu.adarko22"
 version = "1.0.0"
 
+// Repositories
 repositories {
     mavenCentral()
 }
 
+// Dependencies
 dependencies {
-    implementation("com.github.ajalt.clikt:clikt:5.0.3")
+    implementation(libs.clikt)
 
-    testImplementation("org.junit.jupiter:junit-jupiter-api:5.11.0-M1")
-    testImplementation("org.junit.jupiter:junit-jupiter-params:5.11.0-M1")
-    testImplementation("io.mockk:mockk:1.14.2")
-    testImplementation("org.mockito:mockito-junit-jupiter:5.18.0")
-    testImplementation("org.mockito:mockito-core:5.18.0")
-    testImplementation("org.mockito.kotlin:mockito-kotlin:5.4.0")
+    testImplementation(libs.junit.api)
+    testImplementation(libs.junit.params)
+    testImplementation(libs.mockk)
+    testImplementation(libs.mockito.junit)
+    testImplementation(libs.mockito.core)
+    testImplementation(libs.mockito.kotlin)
 
-    testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine:5.11.0-M1")
+    testRuntimeOnly(libs.junit.engine)
+    testRuntimeOnly(libs.junit.platform.reporting)
 }
 
+// Toolchain
 kotlin {
-    jvmToolchain(17)
+    jvmToolchain(21)
 }
 
+// Application configuration
 application {
     mainClass.set("edu.adarko22.MainKt")
 }
 
+// Ktlint configuration
 ktlint {
     android.set(false)
     outputColorName.set("RED")
@@ -43,6 +50,7 @@ ktlint {
     }
 }
 
+// Test configuration
 tasks.test {
     useJUnitPlatform()
     reports {
@@ -51,6 +59,7 @@ tasks.test {
     finalizedBy(tasks.jacocoTestReport)
 }
 
+// Jacoco report
 tasks.jacocoTestReport {
     dependsOn(tasks.test)
     reports {
@@ -59,6 +68,7 @@ tasks.jacocoTestReport {
     }
 }
 
+// Packaging
 tasks.named<Jar>("jar") {
     enabled = false
 }
@@ -73,7 +83,7 @@ tasks.named<com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar>("shadowJ
     }
 }
 
-// Fix implicit dependency errors by wiring dependent tasks explicitly
+// Distribution tasks
 tasks.named<Zip>("distZip") {
     dependsOn(tasks.named("shadowJar"))
 }
@@ -88,6 +98,5 @@ tasks.named<CreateStartScripts>("startScripts") {
 
 tasks.named<JavaExec>("run") {
     dependsOn(tasks.named("shadowJar"))
-    classpath =
-        files(tasks.named<com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar>("shadowJar").get().archiveFile)
+    classpath = files(tasks.named<com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar>("shadowJar").get().archiveFile)
 }
