@@ -5,7 +5,7 @@ shadow = { id = "com.github.johnrengelman.shadow", version = "8.1.1" }
 
 [versions]
 clikt = "5.0.3"
-junit = "6.0.0-M1"
+junit = "6.0.0-M2"
 mockk = "1.14.4"
 mockito = "5.18.0"
 mockito-kotlin = "5.4.0"
