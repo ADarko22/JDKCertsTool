@@ -1,6 +1,5 @@
 package edu.adarko22.process
 
-import edu.adarko22.runner.JavaRunner
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertNotNull
 import org.junit.jupiter.api.Assertions.assertNull

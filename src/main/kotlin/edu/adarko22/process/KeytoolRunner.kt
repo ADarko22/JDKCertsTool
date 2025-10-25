@@ -1,7 +1,5 @@
 package edu.adarko22.process
 
-import edu.adarko22.runner.DefaultProcessExecutor
-import edu.adarko22.runner.ProcessExecutor
 import edu.adarko22.utils.blue
 import edu.adarko22.utils.green
 import edu.adarko22.utils.red
@@ -64,7 +62,7 @@ class KeytoolRunner(
         }
     }
 
-    private fun handleResult(result: edu.adarko22.runner.ProcessResult): Boolean =
+    private fun handleResult(result: ProcessResult): Boolean =
         if (result.exitCode == 0) {
             printer("✅ Success!".green())
             true

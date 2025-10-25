@@ -1,4 +1,4 @@
-package edu.adarko22.runner
+package edu.adarko22.process
 
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.io.TempDir
