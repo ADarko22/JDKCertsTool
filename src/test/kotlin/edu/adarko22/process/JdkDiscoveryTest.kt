@@ -1,12 +1,10 @@
-package edu.adarko22.utils
+package edu.adarko22.process
 
-import edu.adarko22.createDir
-import edu.adarko22.createExecutableFile
-import edu.adarko22.createValidJdk
+import edu.adarko22.testutils.createDir
+import edu.adarko22.testutils.createExecutableFile
+import edu.adarko22.testutils.createValidJdk
 import edu.adarko22.utils.system.SystemInfoProvider
-import org.junit.jupiter.api.Assertions.assertEquals
-import org.junit.jupiter.api.Assertions.assertFalse
-import org.junit.jupiter.api.Assertions.assertTrue
+import org.junit.jupiter.api.Assertions
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.TestInstance
@@ -75,7 +73,7 @@ class JdkDiscoveryTest {
             createDir(systemInfoProvider.getUserHome(), "Applications/IntelliJ IDEA Ultimate.app/Contents/jbr/Contents")
 
         val result = jdkDiscovery.discoverJetBrainsRuntimeHomes()
-        assertEquals(listOf(jbrContents), result)
+        Assertions.assertEquals(listOf(jbrContents), result)
     }
 
     @ParameterizedTest(name = "should detect JBR from Toolbox at {0}")
@@ -86,13 +84,13 @@ class JdkDiscoveryTest {
 
         val result = jdkDiscovery.discoverJetBrainsRuntimeHomes()
 
-        assertEquals(listOf(jbrContents), result)
+        Assertions.assertEquals(listOf(jbrContents), result)
     }
 
     @Test
     fun `should return empty list when no valid paths exist`() {
         val result = jdkDiscovery.discoverJetBrainsRuntimeHomes()
-        assertTrue(result.isEmpty())
+        Assertions.assertTrue(result.isEmpty())
     }
 
     @ParameterizedTest(name = "path ''{0}'' isJdkBundle={1}")
@@ -104,7 +102,7 @@ class JdkDiscoveryTest {
         val jdkPath = createDir(tempDir, dirName)
         val expected = if (isJdkBundle) jdkPath.resolve("Contents/Home") else jdkPath
         val javaHome = jdkDiscovery.toJavaHome(jdkPath)
-        assertEquals(expected, javaHome)
+        Assertions.assertEquals(expected, javaHome)
     }
 
     @ParameterizedTest(name = "valid home on {0}")
@@ -116,7 +114,7 @@ class JdkDiscoveryTest {
     ) {
         whenever(systemInfoProvider.getOsName()).thenReturn(osName)
         val jdkHome = createValidJdk(tempDir, dirName, isWindows)
-        assertTrue(jdkDiscovery.isValidJavaHome(jdkHome))
+        Assertions.assertTrue(jdkDiscovery.isValidJavaHome(jdkHome))
     }
 
     @ParameterizedTest(name = "invalid home on {0}, missing {2}")
@@ -130,12 +128,12 @@ class JdkDiscoveryTest {
         val jdkHome = createDir(tempDir, dirName)
         val binDir = createDir(jdkHome, "bin")
         presentFiles.forEach { createExecutableFile(binDir, it) }
-        assertFalse(jdkDiscovery.isValidJavaHome(jdkHome))
+        Assertions.assertFalse(jdkDiscovery.isValidJavaHome(jdkHome))
     }
 
     @Test
     fun `should return false if the provided path does not exist`() {
         val nonExistentPath = tempDir.resolve("non_existent_jdk")
-        assertFalse(jdkDiscovery.isValidJavaHome(nonExistentPath))
+        Assertions.assertFalse(jdkDiscovery.isValidJavaHome(nonExistentPath))
     }
 }

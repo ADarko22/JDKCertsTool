@@ -1,6 +1,6 @@
 package edu.adarko22.commands
 
-import edu.adarko22.utils.JdkDiscovery
+import edu.adarko22.process.JdkDiscovery
 
 class ListJDKsCommand(
     private val jdkDiscovery: JdkDiscovery,

@@ -1,4 +1,4 @@
-package edu.adarko22
+package edu.adarko22.testutils
 
 import java.nio.file.Files
 import java.nio.file.Path

@@ -7,7 +7,7 @@ import edu.adarko22.commands.InfoCommand
 import edu.adarko22.commands.InstallCertsJdkCommand
 import edu.adarko22.commands.ListJDKsCommand
 import edu.adarko22.commands.RemoveCertJdkCommand
-import edu.adarko22.utils.JdkDiscovery
+import edu.adarko22.process.JdkDiscovery
 
 fun main(args: Array<String>) {
     val jdkDiscovery = JdkDiscovery()

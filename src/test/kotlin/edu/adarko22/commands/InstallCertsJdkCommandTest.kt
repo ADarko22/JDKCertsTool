@@ -1,8 +1,8 @@
 package edu.adarko22.commands
 
 import com.github.ajalt.clikt.core.parse
+import edu.adarko22.process.JdkDiscovery
 import edu.adarko22.process.KeytoolRunner
-import edu.adarko22.utils.JdkDiscovery
 import io.mockk.Runs
 import io.mockk.every
 import io.mockk.just

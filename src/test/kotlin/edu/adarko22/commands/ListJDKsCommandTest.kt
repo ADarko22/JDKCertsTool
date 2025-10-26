@@ -1,7 +1,7 @@
 package edu.adarko22.commands
 
 import com.github.ajalt.clikt.core.parse
-import edu.adarko22.utils.JdkDiscovery
+import edu.adarko22.process.JdkDiscovery
 import io.mockk.every
 import io.mockk.mockk
 import org.junit.jupiter.api.Assertions.assertTrue

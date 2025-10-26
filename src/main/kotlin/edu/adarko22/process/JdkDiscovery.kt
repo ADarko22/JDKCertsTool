@@ -1,4 +1,4 @@
-package edu.adarko22.utils
+package edu.adarko22.process
 
 import edu.adarko22.utils.system.DefaultSystemInfoProvider
 import edu.adarko22.utils.system.SystemInfoProvider

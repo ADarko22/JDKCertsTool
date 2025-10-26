@@ -6,8 +6,8 @@ import com.github.ajalt.clikt.parameters.options.convert
 import com.github.ajalt.clikt.parameters.options.default
 import com.github.ajalt.clikt.parameters.options.flag
 import com.github.ajalt.clikt.parameters.options.option
+import edu.adarko22.process.JdkDiscovery
 import edu.adarko22.process.KeytoolRunner
-import edu.adarko22.utils.JdkDiscovery
 import edu.adarko22.utils.green
 import edu.adarko22.utils.red
 import java.nio.file.Path

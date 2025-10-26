@@ -4,8 +4,8 @@ import com.github.ajalt.clikt.parameters.options.convert
 import com.github.ajalt.clikt.parameters.options.default
 import com.github.ajalt.clikt.parameters.options.option
 import com.github.ajalt.clikt.parameters.options.required
+import edu.adarko22.process.JdkDiscovery
 import edu.adarko22.process.KeytoolRunner
-import edu.adarko22.utils.JdkDiscovery
 import edu.adarko22.utils.blue
 import edu.adarko22.utils.bold
 import edu.adarko22.utils.red
