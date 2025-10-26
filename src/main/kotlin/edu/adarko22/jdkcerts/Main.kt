@@ -3,11 +3,7 @@ package edu.adarko22.jdkcerts
 import com.github.ajalt.clikt.core.CliktCommand
 import com.github.ajalt.clikt.core.main
 import com.github.ajalt.clikt.core.subcommands
-import edu.adarko22.jdkcerts.commands.InfoCommand
-import edu.adarko22.jdkcerts.commands.InstallCertsJdkCommand
-import edu.adarko22.jdkcerts.commands.ListJDKsCommand
-import edu.adarko22.jdkcerts.commands.RemoveCertJdkCommand
-import edu.adarko22.jdkcerts.jdk.JdkDiscovery
+import edu.adarko22.jdkcerts.shared.AppConfig
 
 /**
  * Main entry point for the JDK Certificate Management Tool.
@@ -25,14 +21,14 @@ import edu.adarko22.jdkcerts.jdk.JdkDiscovery
  * @author Angelo Buono (adarko22)
  */
 fun main(args: Array<String>) {
-    val jdkDiscovery = JdkDiscovery()
+    val appConfig = AppConfig()
 
     object : CliktCommand() {
         override fun run() = Unit
     }.subcommands(
-        InfoCommand(),
-        ListJDKsCommand(jdkDiscovery),
-        InstallCertsJdkCommand(jdkDiscovery),
-        RemoveCertJdkCommand(jdkDiscovery),
+        appConfig.createInfoCommand(),
+        appConfig.createListCommand(),
+        appConfig.createInstallCommand(),
+        appConfig.createRemoveCommand(),
     ).main(args)
 }
