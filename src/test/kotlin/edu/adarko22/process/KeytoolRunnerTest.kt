@@ -1,7 +1,5 @@
 package edu.adarko22.process
 
-import edu.adarko22.runner.ProcessExecutor
-import edu.adarko22.runner.ProcessResult
 import edu.adarko22.utils.blue
 import edu.adarko22.utils.green
 import edu.adarko22.utils.red

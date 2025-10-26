@@ -1,4 +1,4 @@
-package edu.adarko22.runner
+package edu.adarko22.process
 
 data class ProcessResult(
     val stdout: String,
