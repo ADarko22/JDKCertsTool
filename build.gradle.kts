@@ -7,7 +7,7 @@ plugins {
 }
 
 // Project metadata
-group = "edu.adarko22"
+group = "edu.adarko22.jdkcerts"
 version = "1.0.0"
 
 // Repositories
@@ -37,7 +37,7 @@ kotlin {
 
 // Application configuration
 application {
-    mainClass.set("edu.adarko22.MainKt")
+    mainClass.set("edu.adarko22.jdkcerts.MainKt")
 }
 
 // Ktlint configuration

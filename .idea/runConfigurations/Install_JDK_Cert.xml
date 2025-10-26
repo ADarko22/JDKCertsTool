@@ -1,6 +1,6 @@
 <component name="ProjectRunConfigurationManager">
   <configuration default="false" name="Install JDK Cert" type="JetRunConfigurationType">
-    <option name="MAIN_CLASS_NAME" value="edu.adarko22.MainKt" />
+    <option name="MAIN_CLASS_NAME" value="edu.adarko22.jdkcerts.MainKt" />
     <module name="JDKCertsTool.main" />
     <option name="PROGRAM_PARAMETERS" value="install-cert --dry-run --alias &lt;ALIAS&gt; --cert &lt;CERT_PATH&gt;" />
     <shortenClasspath name="NONE" />
