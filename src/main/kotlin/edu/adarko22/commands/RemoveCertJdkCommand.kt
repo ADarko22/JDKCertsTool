@@ -6,6 +6,15 @@ import edu.adarko22.process.JdkDiscovery
 import edu.adarko22.process.KeytoolRunner
 import edu.adarko22.utils.bold
 
+/**
+ * Command for removing certificates from JDK truststores by alias.
+ *
+ * This command removes a certificate from the cacerts keystore of all discovered
+ * JDK installations using the specified alias. It supports dry-run mode for
+ * previewing changes and provides feedback on the removal process for each JDK.
+ *
+ * The alias must match exactly what was used when the certificate was originally installed.
+ */
 class RemoveCertJdkCommand(
     private val jdkDiscovery: JdkDiscovery,
     override val printer: (String) -> Unit = ::println,

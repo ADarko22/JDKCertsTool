@@ -3,7 +3,12 @@ package edu.adarko22.utils.system
 import java.nio.file.Path
 
 /**
- * Provides access to system-related information, abstracting away static calls to java.lang.System.
+ * Interface for accessing system-related information in a platform-independent way.
+ *
+ * This abstraction allows for easy testing and platform-specific implementations
+ * by removing direct dependencies on System properties and environment variables.
+ * It provides access to user home directory, OS information, and platform-specific
+ * environment variables like Program Files on Windows.
  */
 interface SystemInfoProvider {
     fun getUserHome(): Path

@@ -5,6 +5,17 @@ import edu.adarko22.utils.system.SystemInfoProvider
 import java.nio.file.Files
 import java.nio.file.Path
 
+/**
+ * Service responsible for discovering JDK installations on the system.
+ *
+ * This class searches for JDK installations in standard locations and custom
+ * directories specified by the user. It handles different JDK distributions and
+ * installation patterns across platforms, including SDKMAN, JetBrains Toolbox,
+ * and IntelliJ IDEA bundled runtimes.
+ *
+ * The service validates JDK installations by checking for required executables
+ * (java and keytool) and normalizes paths for consistent handling.
+ */
 class JdkDiscovery(
     private val systemInfoProvider: SystemInfoProvider = DefaultSystemInfoProvider(),
 ) {

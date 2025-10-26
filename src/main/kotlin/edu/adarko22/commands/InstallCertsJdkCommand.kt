@@ -12,6 +12,16 @@ import edu.adarko22.utils.red
 import java.nio.file.Files
 import java.nio.file.Path
 
+/**
+ * Command for installing certificates into JDK truststores across multiple JDK installations.
+ *
+ * This command takes a certificate file (PEM or DER format) and installs it into
+ * the cacerts keystore of all discovered JDK installations. It supports dry-run
+ * mode for previewing changes and handles different JDK versions automatically.
+ *
+ * The command validates certificate file existence and provides clear feedback
+ * on the installation process for each JDK.
+ */
 class InstallCertsJdkCommand(
     private val jdkDiscovery: JdkDiscovery,
     override val printer: (String) -> Unit = ::println,

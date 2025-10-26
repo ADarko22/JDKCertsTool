@@ -1,5 +1,15 @@
 package edu.adarko22.utils
 
+/**
+ * ANSI color and formatting utilities for terminal output.
+ *
+ * These extension functions add ANSI escape sequences to strings for colored
+ * and formatted output in terminal environments. They automatically reset
+ * formatting after each string to prevent color bleeding between outputs.
+ *
+ * Supported formatting includes colors (red, green, yellow, blue) and
+ * text styles (bold, italic) for consistent user interface presentation.
+ */
 fun String.red() = "\u001B[31m$this\u001B[0m"
 
 fun String.green() = "\u001B[32m$this\u001B[0m"

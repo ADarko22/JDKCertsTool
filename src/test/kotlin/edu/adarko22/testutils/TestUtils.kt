@@ -4,6 +4,10 @@ import java.nio.file.Files
 import java.nio.file.Path
 
 /**
+ * Utility functions for creating test fixtures and mock JDK installations.
+ */
+
+/**
  * Creates a directory hierarchy at the specified parent path using the given name,
  * which can contain nested directories separated by "/".
  */

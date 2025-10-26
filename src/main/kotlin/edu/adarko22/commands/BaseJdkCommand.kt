@@ -13,6 +13,20 @@ import edu.adarko22.utils.red
 import java.nio.file.Path
 import java.nio.file.Paths
 
+/**
+ * Abstract base class for JDK-related commands that provides common functionality
+ * for discovering JDKs and managing certificates.
+ *
+ * This class encapsulates shared behavior including JDK discovery, dry-run mode support,
+ * custom JDK directory specification, and keystore password handling. All concrete
+ * command implementations should extend this class to inherit these common features.
+ *
+ * Key features:
+ * - Automatic JDK discovery across standard locations
+ * - Support for custom JDK directories via --custom-jdk-dirs option
+ * - Dry-run mode for previewing changes without execution
+ * - Configurable keystore password with sensible defaults
+ */
 abstract class BaseJdkCommand(
     name: String,
     private val help: String,

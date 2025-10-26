@@ -2,6 +2,16 @@ package edu.adarko22.process
 
 import java.nio.file.Path
 
+/**
+ * Service for executing Java runtime commands and extracting version information.
+ *
+ * This class provides functionality to interact with Java installations, primarily
+ * for determining the Java version which affects keystore handling. It executes
+ * 'java -version' and parses the output to extract the major version number.
+ *
+ * Version detection is crucial for determining the correct keystore location
+ * and format (Java 8 vs Java 9+ differences).
+ */
 class JavaRunner(
     private val executor: ProcessExecutor = DefaultProcessExecutor(),
 ) {

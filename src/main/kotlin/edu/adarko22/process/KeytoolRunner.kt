@@ -7,6 +7,17 @@ import edu.adarko22.utils.yellow
 import java.nio.file.Path
 import kotlin.io.path.absolutePathString
 
+/**
+ * Service for executing keytool commands across multiple JDK installations.
+ *
+ * This class handles the execution of keytool operations (like importing and deleting
+ * certificates) across all discovered JDK installations. It provides consistent
+ * error handling, progress reporting, and supports dry-run mode for previewing
+ * operations without making actual changes.
+ *
+ * The service automatically resolves the correct keystore location for different
+ * JDK versions and provides detailed feedback on operation results.
+ */
 class KeytoolRunner(
     private val printer: (String) -> Unit = ::println,
     private val executor: ProcessExecutor = DefaultProcessExecutor(),

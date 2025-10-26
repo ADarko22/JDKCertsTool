@@ -9,6 +9,21 @@ import edu.adarko22.commands.ListJDKsCommand
 import edu.adarko22.commands.RemoveCertJdkCommand
 import edu.adarko22.process.JdkDiscovery
 
+/**
+ * Main entry point for the JDK Certificate Management Tool.
+ *
+ * This application provides a command-line interface for managing certificates
+ * across multiple JDK installations. It automates the process of adding and
+ * removing certificates from JDK truststores using the keytool utility.
+ *
+ * The application supports four main commands:
+ * - info: Display tool information and version
+ * - list-jdks: List all discovered JDK installations
+ * - install-cert: Install certificates into JDK truststores
+ * - remove-cert: Remove certificates from JDK truststores by alias
+ *
+ * @author Angelo Buono (adarko22)
+ */
 fun main(args: Array<String>) {
     val jdkDiscovery = JdkDiscovery()
 
