@@ -1,12 +1,11 @@
 package edu.adarko22.jdkcerts
 
-import com.github.ajalt.clikt.core.CliktCommand
-import com.github.ajalt.clikt.core.main
-import com.github.ajalt.clikt.core.subcommands
-import edu.adarko22.jdkcerts.clickt.info.InfoCliktCommand
-import edu.adarko22.jdkcerts.clickt.jdk.ListJDKsCliktCommand
-import edu.adarko22.jdkcerts.clickt.jdk.keytool.InstallCertCliktCommand
-import edu.adarko22.jdkcerts.clickt.jdk.keytool.RemoveCertCliktCommand
+import edu.adarko22.jdkcerts.cli.CliBuilder
+import edu.adarko22.jdkcerts.core.jdk.parser.DefaultJavaInfoParser
+import edu.adarko22.jdkcerts.core.jdk.usecase.DiscoverJdksUseCase
+import edu.adarko22.jdkcerts.core.jdk.usecase.ResolveJavaInfoUseCase
+import edu.adarko22.jdkcerts.core.process.DefaultProcessRunner
+import edu.adarko22.jdkcerts.system.SystemType
 
 /**
  * Main entry point for the JDK Certificate Management Tool.
@@ -24,12 +23,29 @@ import edu.adarko22.jdkcerts.clickt.jdk.keytool.RemoveCertCliktCommand
  * @author Angelo Buono (adarko22)
  */
 fun main(args: Array<String>) {
-    object : CliktCommand() {
-        override fun run() = Unit
-    }.subcommands(
-        InfoCliktCommand(),
-        ListJDKsCliktCommand(),
-        InstallCertCliktCommand(),
-        RemoveCertCliktCommand(),
-    ).main(args)
+    // Details
+    val systemType = SystemType.UNIX
+    val processRunner = DefaultProcessRunner()
+    val javaInfoParser = DefaultJavaInfoParser()
+
+    // Use-cases
+    val resolveJavaInfo = ResolveJavaInfoUseCase(processRunner, javaInfoParser)
+    val discoverJdks =
+        DiscoverJdksUseCase(
+            systemType.jdkPathDiscovery(),
+            systemType.keystoreInfoResolver(),
+            resolveJavaInfo,
+        )
+
+    // Build the CLI and Run with args
+    CliBuilder(
+        discoverJdks,
+        processRunner,
+    ).withInfo()
+        .withInfo()
+        .withListJdks()
+        .withInstallCert()
+        .withRemoveCert()
+        .build()
+        .run(args)
 }
