@@ -6,9 +6,8 @@ import edu.adarko22.jdkcerts.cli.command.aliasOption
 import edu.adarko22.jdkcerts.cli.command.certPathOption
 import edu.adarko22.jdkcerts.cli.command.customJdkDirsOption
 import edu.adarko22.jdkcerts.cli.command.dryRunOption
-import edu.adarko22.jdkcerts.cli.command.jdk.keytool.KeytoolCommand
-import edu.adarko22.jdkcerts.cli.command.jdk.keytool.KeytoolCommandExecutor
 import edu.adarko22.jdkcerts.cli.command.keystorePasswordOption
+import edu.adarko22.jdkcerts.core.jdk.KeytoolCommand
 import java.nio.file.Path
 
 /**
@@ -22,7 +21,7 @@ import java.nio.file.Path
  * on the installation process for each JDK.
  */
 class InstallCertCliCommand(
-    val keytoolCommandExecutor: KeytoolCommandExecutor,
+    val keytoolCliPresenter: KeytoolCliPresenter,
 ) : CliktCommand(name = "install-cert") {
     private val customJdkDirs: List<Path> by customJdkDirsOption()
     private val dryRun: Boolean by dryRunOption()
@@ -45,6 +44,6 @@ class InstallCertCliCommand(
                 .withKeystoreResolution()
                 .build()
 
-        keytoolCommandExecutor.execute(command, customJdkDirs, dryRun)
+        keytoolCliPresenter.present(command, customJdkDirs, dryRun)
     }
 }

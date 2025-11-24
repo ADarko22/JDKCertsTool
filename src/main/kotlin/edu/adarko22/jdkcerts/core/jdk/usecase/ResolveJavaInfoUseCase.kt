@@ -1,8 +1,8 @@
 package edu.adarko22.jdkcerts.core.jdk.usecase
 
+import edu.adarko22.jdkcerts.core.execution.ProcessRunner
 import edu.adarko22.jdkcerts.core.jdk.JavaInfo
 import edu.adarko22.jdkcerts.core.jdk.parser.JavaInfoParser
-import edu.adarko22.jdkcerts.core.process.ProcessRunner
 import java.nio.file.Path
 import kotlin.io.path.absolutePathString
 

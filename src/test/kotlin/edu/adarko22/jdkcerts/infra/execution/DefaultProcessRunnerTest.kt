@@ -1,4 +1,4 @@
-package edu.adarko22.jdkcerts.core.process
+package edu.adarko22.jdkcerts.infra.execution
 
 import org.junit.jupiter.api.Assertions
 import org.junit.jupiter.api.Test

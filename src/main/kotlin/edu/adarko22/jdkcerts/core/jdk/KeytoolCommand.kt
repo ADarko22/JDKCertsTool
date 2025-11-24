@@ -1,4 +1,4 @@
-package edu.adarko22.jdkcerts.cli.command.jdk.keytool
+package edu.adarko22.jdkcerts.core.jdk
 
 data class KeytoolCommand(
     val args: List<String>,

@@ -1,9 +1,9 @@
-package edu.adarko22.jdkcerts.system.unix
+package edu.adarko22.jdkcerts.infra.system.unix
 
 import edu.adarko22.jdkcerts.createDir
 import edu.adarko22.jdkcerts.createExecutableFile
 import edu.adarko22.jdkcerts.createValidJdkPath
-import edu.adarko22.jdkcerts.system.SystemInfoProvider
+import edu.adarko22.jdkcerts.infra.system.SystemInfoProvider
 import org.junit.jupiter.api.Assertions
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test

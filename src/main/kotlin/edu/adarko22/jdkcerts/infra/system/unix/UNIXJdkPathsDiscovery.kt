@@ -1,7 +1,7 @@
-package edu.adarko22.jdkcerts.system.unix
+package edu.adarko22.jdkcerts.infra.system.unix
 
-import edu.adarko22.jdkcerts.system.JdkPathsDiscovery
-import edu.adarko22.jdkcerts.system.SystemInfoProvider
+import edu.adarko22.jdkcerts.infra.system.JdkPathsDiscovery
+import edu.adarko22.jdkcerts.infra.system.SystemInfoProvider
 import java.nio.file.Files
 import java.nio.file.Path
 

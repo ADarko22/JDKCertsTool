@@ -3,9 +3,10 @@ package edu.adarko22.jdkcerts
 import edu.adarko22.jdkcerts.cli.CliBuilder
 import edu.adarko22.jdkcerts.core.jdk.parser.DefaultJavaInfoParser
 import edu.adarko22.jdkcerts.core.jdk.usecase.DiscoverJdksUseCase
+import edu.adarko22.jdkcerts.core.jdk.usecase.ExecuteKeytoolCommandUseCase
 import edu.adarko22.jdkcerts.core.jdk.usecase.ResolveJavaInfoUseCase
-import edu.adarko22.jdkcerts.core.process.DefaultProcessRunner
-import edu.adarko22.jdkcerts.system.SystemType
+import edu.adarko22.jdkcerts.infra.execution.DefaultProcessRunner
+import edu.adarko22.jdkcerts.infra.system.SystemType
 
 /**
  * Main entry point for the JDK Certificate Management Tool.
@@ -36,13 +37,17 @@ fun main(args: Array<String>) {
             systemType.keystoreInfoResolver(),
             resolveJavaInfo,
         )
+    val executeKeytoolCommandUseCase =
+        ExecuteKeytoolCommandUseCase(
+            discoverJdks,
+            processRunner,
+        )
 
     // Build the CLI and Run with args
     CliBuilder(
         discoverJdks,
-        processRunner,
+        executeKeytoolCommandUseCase,
     ).withInfo()
-        .withInfo()
         .withListJdks()
         .withInstallCert()
         .withRemoveCert()

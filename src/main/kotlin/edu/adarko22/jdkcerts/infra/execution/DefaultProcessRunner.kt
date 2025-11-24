@@ -1,4 +1,7 @@
-package edu.adarko22.jdkcerts.core.process
+package edu.adarko22.jdkcerts.infra.execution
+
+import edu.adarko22.jdkcerts.core.execution.ProcessResult
+import edu.adarko22.jdkcerts.core.execution.ProcessRunner
 
 /**
  * Default implementation of ProcessExecutor using ProcessBuilder for synchronous execution.

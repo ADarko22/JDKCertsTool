@@ -1,8 +1,8 @@
-package edu.adarko22.jdkcerts.system
+package edu.adarko22.jdkcerts.infra.system
 
-import edu.adarko22.jdkcerts.system.unix.UNIXJdkPathsDiscovery
-import edu.adarko22.jdkcerts.system.unix.UNIXKeystoreInfoResolver
-import edu.adarko22.jdkcerts.system.unix.UNIXSystemInfoProvider
+import edu.adarko22.jdkcerts.infra.system.unix.UNIXJdkPathsDiscovery
+import edu.adarko22.jdkcerts.infra.system.unix.UNIXKeystoreInfoResolver
+import edu.adarko22.jdkcerts.infra.system.unix.UNIXSystemInfoProvider
 
 enum class SystemType {
     UNIX {

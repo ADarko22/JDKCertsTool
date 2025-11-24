@@ -1,4 +1,4 @@
-package edu.adarko22.jdkcerts.system
+package edu.adarko22.jdkcerts.infra.system
 
 import edu.adarko22.jdkcerts.core.jdk.JavaInfo
 import edu.adarko22.jdkcerts.core.jdk.KeystoreInfo

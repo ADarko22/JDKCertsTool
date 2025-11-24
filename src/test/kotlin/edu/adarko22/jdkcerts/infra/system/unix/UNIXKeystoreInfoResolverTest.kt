@@ -1,4 +1,4 @@
-package edu.adarko22.jdkcerts.system.unix
+package edu.adarko22.jdkcerts.infra.system.unix
 
 import edu.adarko22.jdkcerts.core.jdk.JavaInfo
 import org.junit.jupiter.api.Assertions

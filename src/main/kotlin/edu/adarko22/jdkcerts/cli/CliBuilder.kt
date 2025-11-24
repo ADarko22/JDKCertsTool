@@ -5,27 +5,26 @@ import com.github.ajalt.clikt.core.main
 import com.github.ajalt.clikt.core.subcommands
 import edu.adarko22.jdkcerts.cli.command.InfoCliCommand
 import edu.adarko22.jdkcerts.cli.command.jdk.InstallCertCliCommand
+import edu.adarko22.jdkcerts.cli.command.jdk.KeytoolCliPresenter
 import edu.adarko22.jdkcerts.cli.command.jdk.ListJDKsCliCommand
 import edu.adarko22.jdkcerts.cli.command.jdk.RemoveCertCliCommand
-import edu.adarko22.jdkcerts.cli.command.jdk.keytool.KeytoolCommandExecutor
 import edu.adarko22.jdkcerts.cli.output.DefaultToolOutputPrinter
 import edu.adarko22.jdkcerts.cli.output.ToolOutputPrinter
 import edu.adarko22.jdkcerts.core.jdk.usecase.DiscoverJdksUseCase
-import edu.adarko22.jdkcerts.core.process.ProcessRunner
+import edu.adarko22.jdkcerts.core.jdk.usecase.ExecuteKeytoolCommandUseCase
 
 class CliBuilder(
     private val discoverJdks: DiscoverJdksUseCase,
-    private val processRunner: ProcessRunner,
+    private val executeKeytoolCommandUseCase: ExecuteKeytoolCommandUseCase,
     private val toolOutputPrinter: ToolOutputPrinter = DefaultToolOutputPrinter(),
 ) : CliEntryPoint {
     // Internal list to hold the selected subcommands
     private val subcommands = mutableListOf<CliktCommand>()
 
     // Create only if one of the certificate commands is needed
-    private val keytoolCommandExecutor by lazy {
-        KeytoolCommandExecutor(
-            discoverJdks,
-            processRunner,
+    private val keytoolCliPresenter by lazy {
+        KeytoolCliPresenter(
+            executeKeytoolCommandUseCase,
             toolOutputPrinter,
         )
     }
@@ -56,7 +55,7 @@ class CliBuilder(
      */
     fun withInstallCert(): CliBuilder =
         apply {
-            subcommands.add(InstallCertCliCommand(keytoolCommandExecutor))
+            subcommands.add(InstallCertCliCommand(keytoolCliPresenter))
         }
 
     /**
@@ -64,7 +63,7 @@ class CliBuilder(
      */
     fun withRemoveCert(): CliBuilder =
         apply {
-            subcommands.add(RemoveCertCliCommand(keytoolCommandExecutor))
+            subcommands.add(RemoveCertCliCommand(keytoolCliPresenter))
         }
 
     /**

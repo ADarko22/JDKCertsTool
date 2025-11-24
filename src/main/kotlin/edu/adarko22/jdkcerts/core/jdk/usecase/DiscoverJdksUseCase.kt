@@ -1,8 +1,8 @@
 package edu.adarko22.jdkcerts.core.jdk.usecase
 
 import edu.adarko22.jdkcerts.core.jdk.Jdk
-import edu.adarko22.jdkcerts.system.JdkPathsDiscovery
-import edu.adarko22.jdkcerts.system.KeystoreInfoResolver
+import edu.adarko22.jdkcerts.infra.system.JdkPathsDiscovery
+import edu.adarko22.jdkcerts.infra.system.KeystoreInfoResolver
 import java.nio.file.Path
 
 class DiscoverJdksUseCase(

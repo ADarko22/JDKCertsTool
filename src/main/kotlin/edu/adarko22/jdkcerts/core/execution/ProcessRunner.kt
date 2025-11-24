@@ -1,4 +1,4 @@
-package edu.adarko22.jdkcerts.core.process
+package edu.adarko22.jdkcerts.core.execution
 
 /**
  * Interface for executing external processes with consistent error handling and result reporting.

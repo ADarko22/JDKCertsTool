@@ -5,9 +5,8 @@ import com.github.ajalt.clikt.core.Context
 import edu.adarko22.jdkcerts.cli.command.aliasOption
 import edu.adarko22.jdkcerts.cli.command.customJdkDirsOption
 import edu.adarko22.jdkcerts.cli.command.dryRunOption
-import edu.adarko22.jdkcerts.cli.command.jdk.keytool.KeytoolCommand
-import edu.adarko22.jdkcerts.cli.command.jdk.keytool.KeytoolCommandExecutor
 import edu.adarko22.jdkcerts.cli.command.keystorePasswordOption
+import edu.adarko22.jdkcerts.core.jdk.KeytoolCommand
 import java.nio.file.Path
 
 /**
@@ -20,7 +19,7 @@ import java.nio.file.Path
  * The alias must match exactly what was used when the certificate was originally installed.
  */
 class RemoveCertCliCommand(
-    val keytoolCommandExecutor: KeytoolCommandExecutor,
+    val keytoolCliPresenter: KeytoolCliPresenter,
 ) : CliktCommand(name = "remove-cert") {
     private val customJdkDirs: List<Path> by customJdkDirsOption()
     private val dryRun: Boolean by dryRunOption()
@@ -39,6 +38,6 @@ class RemoveCertCliCommand(
                 .withKeystoreResolution()
                 .build()
 
-        keytoolCommandExecutor.execute(command, customJdkDirs, dryRun)
+        keytoolCliPresenter.present(command, customJdkDirs, dryRun)
     }
 }

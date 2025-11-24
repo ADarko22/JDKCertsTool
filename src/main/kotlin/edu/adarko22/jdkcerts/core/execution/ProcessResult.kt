@@ -1,4 +1,4 @@
-package edu.adarko22.jdkcerts.core.process
+package edu.adarko22.jdkcerts.core.execution
 
 data class ProcessResult(
     val stdout: String,
