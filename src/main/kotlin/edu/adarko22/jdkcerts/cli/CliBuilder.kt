@@ -13,6 +13,16 @@ import edu.adarko22.jdkcerts.cli.output.ToolOutputPrinter
 import edu.adarko22.jdkcerts.core.jdk.usecase.DiscoverJdksUseCase
 import edu.adarko22.jdkcerts.core.jdk.usecase.ExecuteKeytoolCommandUseCase
 
+/**
+ * Builder for assembling the JDKCertsTool CLI application.
+ *
+ * This class constructs the CLI by registering subcommands (`info`, `list-jdks`, `install-cert`, `remove-cert`)
+ * and wires them with the necessary use cases and output printer.
+ *
+ * @param discoverJdks Use case for discovering installed JDKs.
+ * @param executeKeytoolCommandUseCase Use case for executing keytool commands.
+ * @param toolOutputPrinter Output printer used for CLI messages (default is [DefaultToolOutputPrinter]).
+ */
 class CliBuilder(
     private val discoverJdks: DiscoverJdksUseCase,
     private val executeKeytoolCommandUseCase: ExecuteKeytoolCommandUseCase,

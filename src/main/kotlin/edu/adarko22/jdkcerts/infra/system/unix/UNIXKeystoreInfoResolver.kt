@@ -6,6 +6,12 @@ import edu.adarko22.jdkcerts.infra.system.KeystoreInfoResolver
 import java.nio.file.Files
 import java.nio.file.Path
 
+/**
+ * Unix/macOS implementation of [KeystoreInfoResolver].
+ *
+ * Determines the path to the JDK's `cacerts` file and whether the
+ * `-cacerts` shortcut is supported (Java 9+).
+ */
 class UNIXKeystoreInfoResolver : KeystoreInfoResolver {
     override fun resolve(
         jdkPath: Path,

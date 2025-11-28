@@ -12,10 +12,8 @@ import java.nio.file.Path
 /**
  * Command that lists all discovered JDK installations on the system.
  *
- * This command searches for JDK installations in standard locations and any
- * custom directories specified by the user, then displays a formatted list
- * of all found JDKs. It's useful for verifying which JDKs the tool can
- * operate on before performing certificate operations.
+ * @param DiscoverJdksUseCase Use case that discovers JDK installations on the system.
+ * @param output Abstract printer used to emit formatted output to the terminal or other destinations.
  */
 class ListJDKsCliCommand(
     private val discoverJdks: DiscoverJdksUseCase,

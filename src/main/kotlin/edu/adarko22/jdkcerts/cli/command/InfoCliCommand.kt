@@ -11,10 +11,7 @@ import edu.adarko22.jdkcerts.cli.output.italic
 /**
  * Command that displays information about the JDK Certificate Management Tool.
  *
- * This command provides users with basic information about the tool including
- * version number, author details, and a brief description of its capabilities.
- * It serves as a simple way for users to verify the tool is working correctly
- * and to get basic information about the installation.
+ * @param output Abstract printer used to emit formatted output to the terminal or other destinations.
  */
 class InfoCliCommand(
     private val output: ToolOutputPrinter,

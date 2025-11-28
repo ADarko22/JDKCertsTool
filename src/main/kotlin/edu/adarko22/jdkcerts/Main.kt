@@ -9,19 +9,20 @@ import edu.adarko22.jdkcerts.infra.execution.DefaultProcessRunner
 import edu.adarko22.jdkcerts.infra.system.SystemType
 
 /**
- * Main entry point for the JDK Certificate Management Tool.
+ * Entry point for the `jdkcerts` CLI application.
  *
- * This application provides a command-line interface for managing certificates
- * across multiple JDK installations. It automates the process of adding and
- * removing certificates from JDK keystores using the keytool utility.
+ * Sets up system-specific dependencies, use cases, and the CLI builder
+ * with all available commands, then executes the CLI using the provided command-line arguments.
  *
- * The application supports four main commands:
- * - info: Display tool information and version
- * - list-jdks: List all discovered JDK installations
- * - install-cert: Install certificates into JDK keystores
- * - remove-cert: Remove certificates from JDK keystores by alias
+ * Supported commands include:
+ *  - info: display system and JDK information
+ *  - list-jdks: list all discovered JDKs
+ *  - install-cert: install a certificate into JDK keystores
+ *  - remove-cert: remove a certificate from JDK keystores
  *
  * @author Angelo Buono (adarko22)
+ *
+ * @param args Command-line arguments passed to the CLI.
  */
 fun main(args: Array<String>) {
     // Details

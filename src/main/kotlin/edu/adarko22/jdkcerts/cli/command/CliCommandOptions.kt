@@ -10,6 +10,9 @@ import com.github.ajalt.clikt.parameters.options.required
 import java.nio.file.Path
 import java.nio.file.Paths
 
+/**
+ * Reusable CLI option extensions for the JDKCertsTool commands.
+ */
 fun ParameterHolder.dryRunOption(): OptionDelegate<Boolean> = option("--dry-run", help = "Preview changes only").flag()
 
 fun ParameterHolder.customJdkDirsOption(): OptionDelegate<List<Path>> =
@@ -29,6 +32,10 @@ fun ParameterHolder.aliasOption(): OptionDelegate<String> =
     option("--alias", help = "Certificate alias")
         .default("custom-cert")
 
+/**
+ * Helper functions are included to convert strings to [Path] objects and expand
+ *  * home directories (`~`) automatically.
+ */
 private fun String.toPaths(): List<Path> = split(",").map { it.trim().toPath() }
 
 private fun String.toPath(): Path = Paths.get(this.expandHome())

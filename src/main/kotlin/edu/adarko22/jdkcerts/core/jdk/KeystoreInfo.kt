@@ -3,10 +3,10 @@ package edu.adarko22.jdkcerts.core.jdk
 import java.nio.file.Path
 
 /**
- * Information about a JDK's keystore.
+ * Represents information about a JDK keystore.
  *
- * @property keystorePath The path to the keystore file.
- * @property cacertsShortcutEnabled Whether the cacerts shortcut, i.e. "-cacerts", is enabled for this JDK.
+ * @property keystorePath Path to the keystore file.
+ * @property cacertsShortcutEnabled True if the default `-cacerts` shortcut can be used.
  */
 data class KeystoreInfo(
     val keystorePath: Path,

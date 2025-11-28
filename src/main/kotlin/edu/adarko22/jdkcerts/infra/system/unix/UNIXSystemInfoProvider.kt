@@ -5,12 +5,9 @@ import java.nio.file.Path
 import java.nio.file.Paths
 
 /**
- * Default implementation of SystemInfoProvider that delegates to actual System calls.
+ * Unix/macOS implementation of [SystemInfoProvider].
  *
- * This implementation provides access to system properties and environment variables
- * through the standard Java System class. It's suitable for production use and
- * provides a foundation for platform-specific implementations that may need
- * different behavior on different operating systems.
+ * Provides standard system properties such as user home and OS name.
  */
 class UNIXSystemInfoProvider : SystemInfoProvider {
     override fun getUserHome(): Path = Paths.get(System.getProperty("user.home"))

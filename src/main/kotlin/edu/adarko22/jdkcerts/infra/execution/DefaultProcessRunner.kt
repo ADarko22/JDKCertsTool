@@ -4,13 +4,19 @@ import edu.adarko22.jdkcerts.core.execution.ProcessResult
 import edu.adarko22.jdkcerts.core.execution.ProcessRunner
 
 /**
- * Default implementation of ProcessExecutor using ProcessBuilder for synchronous execution.
+ * Default implementation of [ProcessRunner] that executes system commands.
  *
- * This implementation executes commands synchronously and captures both stdout and
- * stderr streams. It's suitable for production use and provides a foundation for
- * more sophisticated execution strategies.
+ * Supports a "dry run" mode where the command is not executed, but returned
+ * as a textual representation for preview purposes.
  */
 class DefaultProcessRunner : ProcessRunner {
+    /**
+     * Runs the given system command.
+     *
+     * @param command List of command-line arguments, including the executable.
+     * @param dryRun If true, the command is not executed and only a preview is returned.
+     * @return A [ProcessResult] containing stdout, stderr, exit code, and dry-run output.
+     */
     override fun runCommand(
         command: List<String>,
         dryRun: Boolean,

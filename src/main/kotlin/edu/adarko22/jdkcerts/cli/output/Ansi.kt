@@ -1,5 +1,7 @@
 package edu.adarko22.jdkcerts.cli.output
 
+typealias PrintFn = (String) -> Unit
+
 /**
  * ANSI color and formatting utilities for terminal output.
  *
@@ -10,8 +12,6 @@ package edu.adarko22.jdkcerts.cli.output
  * Supported formatting includes colors (red, green, yellow, blue) and
  * text styles (bold, italic) for consistent user interface presentation.
  */
-typealias PrintFn = (String) -> Unit
-
 fun String.red() = "\u001B[31m$this\u001B[0m"
 
 fun String.green() = "\u001B[32m$this\u001B[0m"

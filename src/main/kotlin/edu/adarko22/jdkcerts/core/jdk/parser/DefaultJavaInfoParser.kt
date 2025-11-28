@@ -1,8 +1,10 @@
 package edu.adarko22.jdkcerts.core.jdk.parser
 
 import edu.adarko22.jdkcerts.core.jdk.JavaInfo
-import edu.adarko22.jdkcerts.core.jdk.parser.JavaInfoParser
 
+/**
+ * Default implementation of [JavaInfoParser] that parses typical Java version output.
+ */
 class DefaultJavaInfoParser : JavaInfoParser {
     // todo add defensive checks for regex groups, avoid fixed substring indices,
     //  validate numeric conversions with safe parsing, and consider returning a Result/sealed error type

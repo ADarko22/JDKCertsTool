@@ -10,13 +10,7 @@ import edu.adarko22.jdkcerts.core.jdk.KeytoolCommand
 import java.nio.file.Path
 
 /**
- * Command for removing certificates from JDK keystore by alias.
- *
- * This command removes a certificate from the cacerts keystore of all discovered
- * JDK installations using the specified alias. It supports dry-run mode for
- * previewing changes and provides feedback on the removal process for each JDK.
- *
- * The alias must match exactly what was used when the certificate was originally installed.
+ * Command for removing a certificate, by its alias, from JDK cacerts keystore across all the JDK installations discovered.
  */
 class RemoveCertCliCommand(
     val keytoolCliPresenter: KeytoolCliPresenter,

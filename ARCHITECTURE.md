@@ -35,8 +35,8 @@ Here are some ways the architecture supports extensibility:
 
 - **Add new certificate operations easily**
 
-  New use cases—such as exporting certificates, validating truststores, or synchronizing certs across machines—can be
-  added in the core layer without touching CLI or OS-specific code.
+  New use cases—such as exporting certificates, validating cacerts keystores, or synchronizing certs across machines—can
+  be added in the core layer without touching CLI or OS-specific code.
 
 - **Plug in new operating-system or tool integrations**
 
