@@ -10,7 +10,7 @@ package edu.adarko22.jdkcerts.cli.output
  * Supported formatting includes colors (red, green, yellow, blue) and
  * text styles (bold, italic) for consistent user interface presentation.
  */
-typealias PrinterFunction = (String) -> Unit
+typealias PrintFn = (String) -> Unit
 
 fun String.red() = "\u001B[31m$this\u001B[0m"
 
