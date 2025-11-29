@@ -32,6 +32,6 @@ class RemoveCertCliCommand(
                 .withKeystoreResolution()
                 .build()
 
-        executeKeytoolCommandCliPresenter.present(command, customJdkDirs, dryRun)
+        executeKeytoolCommandCliPresenter.present(keytoolCommand = command, customJdkDirs, dryRun)
     }
 }

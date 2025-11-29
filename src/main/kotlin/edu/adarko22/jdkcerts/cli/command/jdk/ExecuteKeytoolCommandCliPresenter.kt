@@ -31,13 +31,13 @@ class ExecuteKeytoolCommandCliPresenter(
             .execute(keytoolCommand, customJdkDirs, dryRun)
             .forEach {
                 if (dryRun) {
-                    output.print("\t${it.dryRunOutput}".yellow())
+                    output.print("\t${it.processResult.dryRunOutput}".yellow())
                     successes++
-                } else if (it.exitCode == 0) {
-                    output.print("\t${it.stdout}".green())
+                } else if (it.processResult.exitCode == 0) {
+                    output.print("\t${it.processResult.stdout}".green())
                     successes++
                 } else {
-                    output.print("\t${it.stderr}".red())
+                    output.print("\t${it.processResult.stderr}".red())
                     failures++
                 }
             }

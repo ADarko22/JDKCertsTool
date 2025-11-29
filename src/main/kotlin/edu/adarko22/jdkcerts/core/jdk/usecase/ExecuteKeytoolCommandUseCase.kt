@@ -4,6 +4,7 @@ import edu.adarko22.jdkcerts.core.execution.ProcessResult
 import edu.adarko22.jdkcerts.core.execution.ProcessRunner
 import edu.adarko22.jdkcerts.core.jdk.Jdk
 import edu.adarko22.jdkcerts.core.jdk.KeytoolCommand
+import edu.adarko22.jdkcerts.core.jdk.KeytoolCommandResult
 import java.nio.file.Path
 import kotlin.io.path.absolutePathString
 
@@ -26,18 +27,19 @@ class ExecuteKeytoolCommandUseCase(
      * @param keytoolCommand The keytool command to execute.
      * @param customJdkDirs Optional custom JDK directories to include in discovery.
      * @param dryRun If true, commands are not actually executed but simulated.
-     * @return List of [ProcessResult] objects representing the outcome for each JDK.
+     * @return List of [KeytoolCommandResult] objects representing the outcome for each JDK.
      */
     fun execute(
         keytoolCommand: KeytoolCommand,
         customJdkDirs: List<Path>,
         dryRun: Boolean,
-    ): List<ProcessResult> =
+    ): List<KeytoolCommandResult> =
         discoverJdks
             .discover(customJdkDirs)
             .map {
                 val command = buildProcessRunnerCommand(keytoolCommand, it)
-                processRunner.runCommand(command, dryRun)
+                val processResult = processRunner.runCommand(command, dryRun)
+                KeytoolCommandResult(jdk = it, processResult)
             }
 
     /**
