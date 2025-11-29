@@ -6,7 +6,6 @@ import java.nio.file.Path
  * Provides system-level information, such as OS name and user home directory.
  */
 interface SystemInfoProvider {
-
     /** Returns the current user's home directory. */
     fun getUserHome(): Path
 

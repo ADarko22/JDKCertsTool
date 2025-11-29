@@ -5,6 +5,8 @@ import com.github.ajalt.clikt.core.main
 import com.github.ajalt.clikt.core.subcommands
 import edu.adarko22.jdkcerts.cli.command.InfoCliCommand
 import edu.adarko22.jdkcerts.cli.command.jdk.ExecuteKeytoolCommandCliPresenter
+import edu.adarko22.jdkcerts.cli.command.jdk.FindCertCliCommand
+import edu.adarko22.jdkcerts.cli.command.jdk.FindCertCliPresenter
 import edu.adarko22.jdkcerts.cli.command.jdk.InstallCertCliCommand
 import edu.adarko22.jdkcerts.cli.command.jdk.ListJDKsCliCommand
 import edu.adarko22.jdkcerts.cli.command.jdk.RemoveCertCliCommand
@@ -33,9 +35,12 @@ class CliBuilder(
     // Internal list to hold the selected subcommands
     private val subcommands = mutableListOf<CliktCommand>()
 
-    // Create only if one of the certificate commands is needed
     private val executeKeytoolCommandCliPresenter by lazy {
         ExecuteKeytoolCommandCliPresenter(toolOutputPrinter)
+    }
+
+    private val findCertCliPresenter by lazy {
+        FindCertCliPresenter(toolOutputPrinter)
     }
 
     /**
@@ -68,7 +73,7 @@ class CliBuilder(
                 InstallCertCliCommand(
                     executeKeytoolCommandUseCase,
                     executeKeytoolCommandCliPresenter,
-                )
+                ),
             )
         }
 
@@ -81,7 +86,20 @@ class CliBuilder(
                 RemoveCertCliCommand(
                     executeKeytoolCommandUseCase,
                     executeKeytoolCommandCliPresenter,
-                )
+                ),
+            )
+        }
+
+    /**
+     * Adds the `find-cert` subcommand to the CLI
+     */
+    fun withFindCert(): CliBuilder =
+        apply {
+            subcommands.add(
+                FindCertCliCommand(
+                    executeFindCertificateKeytoolCommandUseCase,
+                    findCertCliPresenter,
+                ),
             )
         }
 

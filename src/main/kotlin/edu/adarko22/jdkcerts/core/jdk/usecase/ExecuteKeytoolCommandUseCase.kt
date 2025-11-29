@@ -1,6 +1,5 @@
 package edu.adarko22.jdkcerts.core.jdk.usecase
 
-import edu.adarko22.jdkcerts.core.execution.ProcessResult
 import edu.adarko22.jdkcerts.core.execution.ProcessRunner
 import edu.adarko22.jdkcerts.core.jdk.Jdk
 import edu.adarko22.jdkcerts.core.jdk.KeytoolCommand

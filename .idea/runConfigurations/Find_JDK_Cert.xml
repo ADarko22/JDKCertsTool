@@ -1,0 +1,16 @@
+<component name="ProjectRunConfigurationManager">
+  <configuration default="false" name="Find JDK Cert" type="JetRunConfigurationType">
+    <option name="MAIN_CLASS_NAME" value="edu.adarko22.jdkcerts.MainKt" />
+    <module name="JDKCertsTool.test" />
+    <option name="PROGRAM_PARAMETERS" value="find-cert --alias &lt;ALIAS&gt;" />
+    <shortenClasspath name="NONE" />
+    <extension name="software.aws.toolkits.jetbrains.core.execution.JavaAwsConnectionExtension">
+      <option name="credential" />
+      <option name="region" />
+      <option name="useCurrentConnection" value="false" />
+    </extension>
+    <method v="2">
+      <option name="Make" enabled="true" />
+    </method>
+  </configuration>
+</component>
