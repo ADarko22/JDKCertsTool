@@ -29,8 +29,10 @@ class RemoveCertCliCommand(
             KeytoolCommand
                 .Builder()
                 .addArg("-delete")
-                .addArg("-alias $alias")
-                .addArg("-storepass $keystorePassword")
+                .addArg("-alias")
+                .addArg(alias)
+                .addArg("-storepass")
+                .addArg(keystorePassword)
                 .withKeystoreResolution()
                 .build()
 
