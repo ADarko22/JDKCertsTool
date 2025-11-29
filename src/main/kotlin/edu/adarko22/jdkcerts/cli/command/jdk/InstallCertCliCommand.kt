@@ -8,13 +8,14 @@ import edu.adarko22.jdkcerts.cli.command.customJdkDirsOption
 import edu.adarko22.jdkcerts.cli.command.dryRunOption
 import edu.adarko22.jdkcerts.cli.command.keystorePasswordOption
 import edu.adarko22.jdkcerts.core.jdk.KeytoolCommand
+import edu.adarko22.jdkcerts.core.jdk.usecase.ExecuteKeytoolCommandUseCase
 import java.nio.file.Path
 
 /**
  * Command for installing certificates into JDK cacerts keystore across all the JDK installations discovered.
- *
  */
 class InstallCertCliCommand(
+    private val executeKeytoolCommandUseCase: ExecuteKeytoolCommandUseCase,
     val executeKeytoolCommandCliPresenter: ExecuteKeytoolCommandCliPresenter,
 ) : CliktCommand(name = "install-cert") {
     private val customJdkDirs: List<Path> by customJdkDirsOption()
@@ -38,6 +39,7 @@ class InstallCertCliCommand(
                 .withKeystoreResolution()
                 .build()
 
-        executeKeytoolCommandCliPresenter.present(keytoolCommand = command, customJdkDirs, dryRun)
+        val results = executeKeytoolCommandUseCase.execute(keytoolCommand = command, customJdkDirs, dryRun)
+        executeKeytoolCommandCliPresenter.present(results, dryRun)
     }
 }

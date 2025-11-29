@@ -7,12 +7,14 @@ import edu.adarko22.jdkcerts.cli.command.customJdkDirsOption
 import edu.adarko22.jdkcerts.cli.command.dryRunOption
 import edu.adarko22.jdkcerts.cli.command.keystorePasswordOption
 import edu.adarko22.jdkcerts.core.jdk.KeytoolCommand
+import edu.adarko22.jdkcerts.core.jdk.usecase.ExecuteKeytoolCommandUseCase
 import java.nio.file.Path
 
 /**
  * Command for removing a certificate, by its alias, from JDK cacerts keystore across all the JDK installations discovered.
  */
 class RemoveCertCliCommand(
+    private val executeKeytoolCommandUseCase: ExecuteKeytoolCommandUseCase,
     val executeKeytoolCommandCliPresenter: ExecuteKeytoolCommandCliPresenter,
 ) : CliktCommand(name = "remove-cert") {
     private val customJdkDirs: List<Path> by customJdkDirsOption()
@@ -32,6 +34,7 @@ class RemoveCertCliCommand(
                 .withKeystoreResolution()
                 .build()
 
-        executeKeytoolCommandCliPresenter.present(keytoolCommand = command, customJdkDirs, dryRun)
+        val results = executeKeytoolCommandUseCase.execute(keytoolCommand = command, customJdkDirs, dryRun)
+        executeKeytoolCommandCliPresenter.present(results, dryRun)
     }
 }

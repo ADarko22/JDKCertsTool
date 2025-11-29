@@ -4,13 +4,14 @@ import com.github.ajalt.clikt.core.CliktCommand
 import com.github.ajalt.clikt.core.main
 import com.github.ajalt.clikt.core.subcommands
 import edu.adarko22.jdkcerts.cli.command.InfoCliCommand
-import edu.adarko22.jdkcerts.cli.command.jdk.InstallCertCliCommand
 import edu.adarko22.jdkcerts.cli.command.jdk.ExecuteKeytoolCommandCliPresenter
+import edu.adarko22.jdkcerts.cli.command.jdk.InstallCertCliCommand
 import edu.adarko22.jdkcerts.cli.command.jdk.ListJDKsCliCommand
 import edu.adarko22.jdkcerts.cli.command.jdk.RemoveCertCliCommand
 import edu.adarko22.jdkcerts.cli.output.DefaultToolOutputPrinter
 import edu.adarko22.jdkcerts.cli.output.ToolOutputPrinter
 import edu.adarko22.jdkcerts.core.jdk.usecase.DiscoverJdksUseCase
+import edu.adarko22.jdkcerts.core.jdk.usecase.ExecuteFindCertificateKeytoolCommandUseCase
 import edu.adarko22.jdkcerts.core.jdk.usecase.ExecuteKeytoolCommandUseCase
 
 /**
@@ -26,6 +27,7 @@ import edu.adarko22.jdkcerts.core.jdk.usecase.ExecuteKeytoolCommandUseCase
 class CliBuilder(
     private val discoverJdks: DiscoverJdksUseCase,
     private val executeKeytoolCommandUseCase: ExecuteKeytoolCommandUseCase,
+    private val executeFindCertificateKeytoolCommandUseCase: ExecuteFindCertificateKeytoolCommandUseCase,
     private val toolOutputPrinter: ToolOutputPrinter = DefaultToolOutputPrinter(),
 ) : CliEntryPoint {
     // Internal list to hold the selected subcommands
@@ -33,10 +35,7 @@ class CliBuilder(
 
     // Create only if one of the certificate commands is needed
     private val executeKeytoolCommandCliPresenter by lazy {
-        ExecuteKeytoolCommandCliPresenter(
-            executeKeytoolCommandUseCase,
-            toolOutputPrinter,
-        )
+        ExecuteKeytoolCommandCliPresenter(toolOutputPrinter)
     }
 
     /**
@@ -55,7 +54,7 @@ class CliBuilder(
             subcommands.add(
                 ListJDKsCliCommand(
                     discoverJdks,
-                    toolOutputPrinter,
+                    output = toolOutputPrinter,
                 ),
             )
         }
@@ -65,7 +64,12 @@ class CliBuilder(
      */
     fun withInstallCert(): CliBuilder =
         apply {
-            subcommands.add(InstallCertCliCommand(executeKeytoolCommandCliPresenter))
+            subcommands.add(
+                InstallCertCliCommand(
+                    executeKeytoolCommandUseCase,
+                    executeKeytoolCommandCliPresenter,
+                )
+            )
         }
 
     /**
@@ -73,7 +77,12 @@ class CliBuilder(
      */
     fun withRemoveCert(): CliBuilder =
         apply {
-            subcommands.add(RemoveCertCliCommand(executeKeytoolCommandCliPresenter))
+            subcommands.add(
+                RemoveCertCliCommand(
+                    executeKeytoolCommandUseCase,
+                    executeKeytoolCommandCliPresenter,
+                )
+            )
         }
 
     /**
