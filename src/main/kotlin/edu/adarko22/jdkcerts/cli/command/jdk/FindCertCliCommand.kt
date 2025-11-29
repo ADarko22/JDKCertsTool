@@ -31,8 +31,10 @@ class FindCertCliCommand(
                 .Builder()
                 .addArg("-list")
                 .addArg("-v")
-                .addArg("-alias $alias")
-                .addArg("-storepass $keystorePassword")
+                .addArg("-alias")
+                .addArg(alias)
+                .addArg("-storepass")
+                .addArg(keystorePassword)
                 .withKeystoreResolution()
                 .build()
 
