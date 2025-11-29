@@ -13,7 +13,7 @@ import java.nio.file.Path
  * Command for removing a certificate, by its alias, from JDK cacerts keystore across all the JDK installations discovered.
  */
 class RemoveCertCliCommand(
-    val keytoolCliPresenter: KeytoolCliPresenter,
+    val executeKeytoolCommandCliPresenter: ExecuteKeytoolCommandCliPresenter,
 ) : CliktCommand(name = "remove-cert") {
     private val customJdkDirs: List<Path> by customJdkDirsOption()
     private val dryRun: Boolean by dryRunOption()
@@ -32,6 +32,6 @@ class RemoveCertCliCommand(
                 .withKeystoreResolution()
                 .build()
 
-        keytoolCliPresenter.present(command, customJdkDirs, dryRun)
+        executeKeytoolCommandCliPresenter.present(command, customJdkDirs, dryRun)
     }
 }

@@ -16,7 +16,7 @@ import java.nio.file.Path
  * @param executeKeytoolCommandUseCase Use case that executes the keytool command on all JDKs.
  * @param output Abstract printer used to emit formatted output to the terminal or other destinations.
  */
-class KeytoolCliPresenter(
+class ExecuteKeytoolCommandCliPresenter(
     private val executeKeytoolCommandUseCase: ExecuteKeytoolCommandUseCase,
     private val output: ToolOutputPrinter,
 ) {

@@ -15,7 +15,7 @@ import java.nio.file.Path
  *
  */
 class InstallCertCliCommand(
-    val keytoolCliPresenter: KeytoolCliPresenter,
+    val executeKeytoolCommandCliPresenter: ExecuteKeytoolCommandCliPresenter,
 ) : CliktCommand(name = "install-cert") {
     private val customJdkDirs: List<Path> by customJdkDirsOption()
     private val dryRun: Boolean by dryRunOption()
@@ -38,6 +38,6 @@ class InstallCertCliCommand(
                 .withKeystoreResolution()
                 .build()
 
-        keytoolCliPresenter.present(command, customJdkDirs, dryRun)
+        executeKeytoolCommandCliPresenter.present(command, customJdkDirs, dryRun)
     }
 }

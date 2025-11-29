@@ -5,7 +5,7 @@ import com.github.ajalt.clikt.core.main
 import com.github.ajalt.clikt.core.subcommands
 import edu.adarko22.jdkcerts.cli.command.InfoCliCommand
 import edu.adarko22.jdkcerts.cli.command.jdk.InstallCertCliCommand
-import edu.adarko22.jdkcerts.cli.command.jdk.KeytoolCliPresenter
+import edu.adarko22.jdkcerts.cli.command.jdk.ExecuteKeytoolCommandCliPresenter
 import edu.adarko22.jdkcerts.cli.command.jdk.ListJDKsCliCommand
 import edu.adarko22.jdkcerts.cli.command.jdk.RemoveCertCliCommand
 import edu.adarko22.jdkcerts.cli.output.DefaultToolOutputPrinter
@@ -32,8 +32,8 @@ class CliBuilder(
     private val subcommands = mutableListOf<CliktCommand>()
 
     // Create only if one of the certificate commands is needed
-    private val keytoolCliPresenter by lazy {
-        KeytoolCliPresenter(
+    private val executeKeytoolCommandCliPresenter by lazy {
+        ExecuteKeytoolCommandCliPresenter(
             executeKeytoolCommandUseCase,
             toolOutputPrinter,
         )
@@ -65,7 +65,7 @@ class CliBuilder(
      */
     fun withInstallCert(): CliBuilder =
         apply {
-            subcommands.add(InstallCertCliCommand(keytoolCliPresenter))
+            subcommands.add(InstallCertCliCommand(executeKeytoolCommandCliPresenter))
         }
 
     /**
@@ -73,7 +73,7 @@ class CliBuilder(
      */
     fun withRemoveCert(): CliBuilder =
         apply {
-            subcommands.add(RemoveCertCliCommand(keytoolCliPresenter))
+            subcommands.add(RemoveCertCliCommand(executeKeytoolCommandCliPresenter))
         }
 
     /**
