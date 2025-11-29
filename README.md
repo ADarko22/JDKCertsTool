@@ -69,6 +69,7 @@ execute the tool directly from IntelliJ:
 - `List JDKs`
 - `Install JDK Cert`
 - `Remove JDK Cert`
+- `Find JDK Cert`
 
 **Note**: you may need to edit the "Program arguments"  to replace placeholders like `<ALIAS>` and `<CERT_PATH>` with
 actual values, and to remove `--dry-run` for permanent changes.
@@ -94,26 +95,38 @@ Displays basic project and environment info.
 
 **Options:**
 
-| Option                       | Description                                              | Default       |
-|------------------------------|----------------------------------------------------------|---------------|
-| `-h`, `--help`               | ❓ Show this message and exit                             |               |
-| `--custom-jdk-dirs <VALUE>`  | 🗂️  Comma-separated paths to JDK directories (optional) |               |
-| `--cert <VALUE>`             | 📄 Path to the certificate file (required)               |               |
-| `--keystore-password <TEXT>` | 🔐 Keystore password                                     | `changeit`    |
-| `--alias <TEXT>`             | 🏷️  Certificate alias                                   | `custom-cert` |
-| `--dry-run`                  | 🛑 Preview changes without modifying anything            |               |
+| Option                       | Description                                              | Default    |
+|------------------------------|----------------------------------------------------------|------------|
+| `-h`, `--help`               | ❓ Show this message and exit                             |            |
+| `--custom-jdk-dirs <VALUE>`  | 🗂️  Comma-separated paths to JDK directories (optional) |            |
+| `--cert <VALUE>`             | 📄 Path to the certificate file (required)               |            |
+| `--keystore-password <TEXT>` | 🔐 Keystore password                                     | `changeit` |
+| `--alias <TEXT>`             | 🏷️  Certificate alias                                   |            |
+| `--dry-run`                  | 🛑 Preview changes without modifying anything            |            |
 
 ### 🗑️ remove-cert
 
 **Options:**
 
-| Option                       | Description                                              | Default       |
-|------------------------------|----------------------------------------------------------|---------------|
-| `-h`, `--help`               | ❓ Show this message and exit                             |               |
-| `--custom-jdk-dirs <VALUE>`  | 🗂️  Comma-separated paths to JDK directories (optional) |               |
-| `--keystore-password <TEXT>` | 🔐 Keystore password                                     | `changeit`    |
-| `--alias <TEXT>`             | 🏷️  Certificate alias                                   | `custom-cert` |
-| `--dry-run`                  | 🛑 Preview changes without modifying anything            |               |
+| Option                       | Description                                              | Default    |
+|------------------------------|----------------------------------------------------------|------------|
+| `-h`, `--help`               | ❓ Show this message and exit                             |            |
+| `--custom-jdk-dirs <VALUE>`  | 🗂️  Comma-separated paths to JDK directories (optional) |            |
+| `--keystore-password <TEXT>` | 🔐 Keystore password                                     | `changeit` |
+| `--alias <TEXT>`             | 🏷️  Certificate alias                                   |            |
+| `--dry-run`                  | 🛑 Preview changes without modifying anything            |            |
+
+## 🔍 find-cert
+
+**Options:**
+
+| Option                           | Description                                                     | Default    |
+|----------------------------------|-----------------------------------------------------------------|------------|
+| **`-h, --help`**                 | ❓ Show this message and exit                                    |            |
+| **`--custom-jdk-dirs <VALUE>`**  | 🗂️ Comma-separated paths to JDK directories (optional)         |            |
+| **`--keystore-password <TEXT>`** | 🔐 Keystore password                                            | `changeit` |
+| **`--alias <TEXT>`**             | 🏷️ Certificate alias (**required**)                            |            |
+| **`-v, --verbose`**              | 🔬 Display all certificate details (SHA1, SHA256, Serial, etc.) | `false`    |
 
 ---
 

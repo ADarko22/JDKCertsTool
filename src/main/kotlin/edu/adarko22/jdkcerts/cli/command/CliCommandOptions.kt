@@ -21,7 +21,8 @@ fun ParameterHolder.customJdkDirsOption(): OptionDelegate<List<Path>> =
         .default(emptyList())
 
 fun ParameterHolder.keystorePasswordOption(): OptionDelegate<String> =
-    option("--keystore-password", help = "Keystore password").default("changeit")
+    option("--keystore-password", help = "Keystore password")
+        .default("changeit")
 
 fun ParameterHolder.certPathOption(): OptionDelegate<Path> =
     option("--cert", help = "Path to the certificate file")
@@ -31,6 +32,8 @@ fun ParameterHolder.certPathOption(): OptionDelegate<Path> =
 fun ParameterHolder.aliasOption(): OptionDelegate<String> =
     option("--alias", help = "Certificate alias")
         .default("custom-cert")
+
+fun ParameterHolder.verboseOption(): OptionDelegate<Boolean> = option("--verbose", help = "Display more details").flag()
 
 /**
  * Helper functions are included to convert strings to [Path] objects and expand
