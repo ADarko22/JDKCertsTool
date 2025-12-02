@@ -33,6 +33,7 @@ class InstallCertCliCommand(
                 .addArg("-importcert")
                 .addArg("-noprompt")
                 .addArg("-trustcacerts")
+                .addArg("-alias")
                 .addArg(alias)
                 .addArg("-file")
                 .addArg("$certPath")
