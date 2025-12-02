@@ -1,6 +1,6 @@
 <component name="ProjectRunConfigurationManager">
   <configuration default="false" name="Remove JDK Cert" type="JetRunConfigurationType">
-    <option name="MAIN_CLASS_NAME" value="edu.adarko22.MainKt" />
+    <option name="MAIN_CLASS_NAME" value="edu.adarko22.jdkcerts.MainKt" />
     <module name="JDKCertsTool.main" />
     <option name="PROGRAM_PARAMETERS" value="remove-cert --dry-run --alias &lt;ALIAS&gt;" />
     <shortenClasspath name="NONE" />

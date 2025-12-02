@@ -2,7 +2,7 @@
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 
-A command-line utility to manage certificates in all your installed JDKs.
+A command-line utility to manage certificates in all the installed JDKs discovered.
 
 ## ❓ Why JDKCertsTool?
 
@@ -17,6 +17,10 @@ certificates—especially across multiple installed JDKs—can be a pain.
 
 If you’ve ever hit SSL or trust errors when using Java with internal services, APIs, or behind proxies, **this tool
 helps you fix that in seconds.**
+
+_Note that this is a developer tool which assumes usage on development environment.
+This assumption translates, for example, in having the same password (or the default `changeit`) for all the keystores
+and implicitly assuming the **cacerts** keystore._
 
 ---
 
@@ -120,19 +124,19 @@ secure communication:
 
 - **Connecting Backend Services to Internal Authentication Servers:**  
   When your Java backend calls internal SSO, OAuth2/OIDC providers, or custom token services, the JDK must trust the
-  server’s certificate chain. Without the proper CA certificates
-  imported, SSL handshakes fail, blocking authentication and API calls.
+  server’s certificate chain. Without the proper CA certificates imported, SSL handshakes fail, blocking authentication
+  and API calls.
 
 - **Testing OAuth2/OIDC Tokens with IntelliJ HTTP Client:**  
   Developers retrieving access tokens or testing APIs
   via [IntelliJ HTTP Client](https://www.jetbrains.com/help/idea/http-client-in-product-code-editor.html#) often face
-  SSL errors if the internal auth servers use certificates not trusted by the default JDK
-  truststore. Adding these certs avoids frustrating connection failures during development.
+  SSL errors if the internal auth servers use certificates not trusted by the default JDK certificate keystore. Adding
+  these certs avoids frustrating connection failures during development.
 
 - **Accessing Internal Maven or Gradle Repositories:**  
   Private artifact repositories often use self-signed or corporate CA certificates. When the JDK doesn’t trust these,
-  builds fail with SSL errors. Installing the correct
-  certificates ensures smooth dependency resolution in CI and local builds.
+  builds fail with SSL errors. Installing the correct certificates ensures smooth dependency resolution in CI and local
+  builds.
 
 More in general, **resolving `PKIX path building failed` SSL Errors**.
 
