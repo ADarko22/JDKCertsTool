@@ -7,7 +7,7 @@ The architecture is strictly separated into three layers, adhering to the Depend
 inward):
 
 1. [core](src/main/kotlin/edu/adarko22/jdkcerts/core) (Domain/Use Cases): Contains the business logic (e.g., the
-   rules for discovering a JDK, for a managing a certificate). It is entirely decoupled from the OS and CLI.
+   rules for discovering a JDK, for managing a certificate). It is entirely decoupled from the OS and CLI.
 
 2. [cli](src/main/kotlin/edu/adarko22/jdkcerts/cli) (Interface Adapters): Translates user input (CLI arguments) into
    calls to the Core Use Cases, and formats the Core's output for display.
@@ -20,11 +20,11 @@ Contextualization.
 
 ## High-Level Package Structure
 
-| Package        | Clean Architecture Layer | Responsibility                                                                                   |
-|----------------|--------------------------|--------------------------------------------------------------------------------------------------|
-| core           | Domain / Use Cases       | Defines the "What" (Entities, Use Cases, Ports/Interfaces).                                      |
-| cli            | Interface Adapters       | Defines the "How" for the Command Line Interface (Clikt commands, presenters).                   |
-| infrastructure | Frameworks / Drivers     | Defines the "How" for the Operating System (e.g., UNIXSystemInfoProvider, DefaultProcessRunner). |
+| Package | Clean Architecture Layer | Responsibility                                                                                   |
+|---------|--------------------------|--------------------------------------------------------------------------------------------------|
+| core    | Domain / Use Cases       | Defines the "What" (Entities, Use Cases, Ports/Interfaces).                                      |
+| cli     | Interface Adapters       | Defines the "How" for the Command Line Interface (Clikt commands, presenters).                   |
+| infra   | Frameworks / Drivers     | Defines the "How" for the Operating System (e.g., UNIXSystemInfoProvider, DefaultProcessRunner). |
 
 ## Extensibility
 

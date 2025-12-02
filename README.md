@@ -116,7 +116,7 @@ Displays basic project and environment info.
 | `--alias <TEXT>`             | 🏷️  Certificate alias                                   |            |
 | `--dry-run`                  | 🛑 Preview changes without modifying anything            |            |
 
-## 🔍 find-cert
+### 🔍 find-cert
 
 **Options:**
 

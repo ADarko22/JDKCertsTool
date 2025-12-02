@@ -16,28 +16,20 @@ import java.nio.file.Paths
 fun ParameterHolder.dryRunOption(): OptionDelegate<Boolean> = option("--dry-run", help = "Preview changes only").flag()
 
 fun ParameterHolder.customJdkDirsOption(): OptionDelegate<List<Path>> =
-    option("--custom-jdk-dirs", help = "Comma-separated paths to JDK dirs")
-        .convert { it.toPaths() }
-        .default(emptyList())
+    option("--custom-jdk-dirs", help = "Comma-separated paths to JDK dirs").convert { it.toPaths() }.default(emptyList())
 
 fun ParameterHolder.keystorePasswordOption(): OptionDelegate<String> =
-    option("--keystore-password", help = "Keystore password")
-        .default("changeit")
+    option("--keystore-password", help = "Keystore password").default("changeit")
 
 fun ParameterHolder.certPathOption(): OptionDelegate<Path> =
-    option("--cert", help = "Path to the certificate file")
-        .convert { it.toPath() }
-        .required()
+    option("--cert", help = "Path to the certificate file").convert { it.toPath() }.required()
 
-fun ParameterHolder.aliasOption(): OptionDelegate<String> =
-    option("--alias", help = "Certificate alias")
-        .default("custom-cert")
+fun ParameterHolder.aliasOption(): OptionDelegate<String> = option("--alias", help = "Certificate alias").default("custom-cert")
 
 fun ParameterHolder.verboseOption(): OptionDelegate<Boolean> = option("--verbose", help = "Display more details").flag()
 
 /**
- * Helper functions are included to convert strings to [Path] objects and expand
- *  * home directories (`~`) automatically.
+ * Helper functions are included to convert strings to [Path] objects and expand home directories (`~`) automatically.
  */
 private fun String.toPaths(): List<Path> = split(",").map { it.trim().toPath() }
 

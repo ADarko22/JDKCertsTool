@@ -7,7 +7,7 @@ import java.time.format.DateTimeFormatter
 import java.time.format.DateTimeFormatterBuilder
 
 /**
- * Default  implementation of [CertificateInfoParser] that the detailed keytool output.
+ * Default implementation of [CertificateInfoParser] that parses the detailed keytool output.
  */
 class DefaultCertificateInfoParser : CertificateInfoParser {
     /**
