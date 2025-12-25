@@ -1,8 +1,10 @@
 package edu.adarko22.jdkcerts
 
 import edu.adarko22.jdkcerts.cli.CliBuilder
+import edu.adarko22.jdkcerts.core.jdk.parser.DefaultCertificateInfoParser
 import edu.adarko22.jdkcerts.core.jdk.parser.DefaultJavaInfoParser
 import edu.adarko22.jdkcerts.core.jdk.usecase.DiscoverJdksUseCase
+import edu.adarko22.jdkcerts.core.jdk.usecase.ExecuteFindCertificateKeytoolCommandUseCase
 import edu.adarko22.jdkcerts.core.jdk.usecase.ExecuteKeytoolCommandUseCase
 import edu.adarko22.jdkcerts.core.jdk.usecase.ResolveJavaInfoUseCase
 import edu.adarko22.jdkcerts.infra.execution.DefaultProcessRunner
@@ -29,6 +31,7 @@ fun main(args: Array<String>) {
     val systemType = SystemType.UNIX
     val processRunner = DefaultProcessRunner()
     val javaInfoParser = DefaultJavaInfoParser()
+    val certificateInfoParser = DefaultCertificateInfoParser()
 
     // Use-cases
     val resolveJavaInfo = ResolveJavaInfoUseCase(processRunner, javaInfoParser)
@@ -43,15 +46,22 @@ fun main(args: Array<String>) {
             discoverJdks,
             processRunner,
         )
+    val executeFindCertificateKeytoolCommandUseCase =
+        ExecuteFindCertificateKeytoolCommandUseCase(
+            executeKeytoolCommandUseCase,
+            certificateInfoParser,
+        )
 
     // Build the CLI and Run with args
     CliBuilder(
         discoverJdks,
         executeKeytoolCommandUseCase,
+        executeFindCertificateKeytoolCommandUseCase,
     ).withInfo()
         .withListJdks()
         .withInstallCert()
         .withRemoveCert()
+        .withFindCert()
         .build()
         .run(args)
 }

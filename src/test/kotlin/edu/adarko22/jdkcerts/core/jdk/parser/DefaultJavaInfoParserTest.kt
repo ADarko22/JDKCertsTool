@@ -7,7 +7,7 @@ import org.junit.jupiter.params.ParameterizedTest
 import org.junit.jupiter.params.provider.MethodSource
 import java.util.stream.Stream
 
-class JavaInfoParserTest {
+class DefaultJavaInfoParserTest {
     @ParameterizedTest(name = "#{index}: {0}")
     @MethodSource("versionTestCases")
     @DisplayName("Should parse Java version information correctly")

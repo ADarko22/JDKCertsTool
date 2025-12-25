@@ -12,8 +12,7 @@ class DefaultProcessRunnerTest {
         Assertions.assertEquals(0, result.exitCode)
         Assertions.assertEquals("", result.stdout)
         Assertions.assertEquals("", result.stderr)
-        Assertions.assertTrue(result.dryRunOutput.contains("Dry run: would run"))
-        Assertions.assertTrue(result.dryRunOutput.contains(cmd.joinToString(" ")))
+        Assertions.assertEquals("[Dry run] /bin/echo hello", result.dryRunOutput)
     }
 
     @Test
