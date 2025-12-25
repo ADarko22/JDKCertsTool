@@ -6,7 +6,7 @@ shadow = { id = "com.gradleup.shadow", version = "9.3.0" }
 [versions]
 clikt = "5.0.3"
 junit = "6.0.1"
-mockk = "1.14.6"
+mockk = "1.14.7"
 mockito = "5.20.0"
 mockito-kotlin = "6.1.0"
 
