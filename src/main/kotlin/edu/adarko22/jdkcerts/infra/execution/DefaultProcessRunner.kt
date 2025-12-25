@@ -23,7 +23,7 @@ class DefaultProcessRunner : ProcessRunner {
     ): ProcessResult {
         if (dryRun) {
             val asText = command.joinToString(" ")
-            val dryRunCommand = "Dry run: would run `$asText`"
+            val dryRunCommand = "[Dry run] $asText"
             return ProcessResult("", "", 0, dryRunCommand)
         }
 

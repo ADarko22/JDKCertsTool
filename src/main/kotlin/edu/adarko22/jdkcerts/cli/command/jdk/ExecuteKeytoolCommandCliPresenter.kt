@@ -10,7 +10,7 @@ import edu.adarko22.jdkcerts.core.jdk.KeytoolCommandResult
 /**
  * CLI presenter responsible for formatting the results for the console output.
  *
- * @param output Abstract printer used to emit formatted output to the console or other destinations.
+ * @param output Abstract printer used to emit formatted output.
  */
 class ExecuteKeytoolCommandCliPresenter(
     private val output: ToolOutputPrinter,
@@ -21,25 +21,47 @@ class ExecuteKeytoolCommandCliPresenter(
     ) {
         var successes = 0
         var failures = 0
-        results
-            .forEach {
-                if (dryRun) {
-                    output.print("\t${it.processResult.dryRunOutput}".yellow())
+
+        results.forEach { result ->
+            output.print("--------------------------------------------------".blue())
+
+            // 1. JDK Header
+            output.print("JDK: ${result.jdk.javaInfo.fullVersion} (${result.jdk.javaInfo.vendor})".blue())
+            output.print("Path: ${result.jdk.path}".blue())
+
+            // 2. Status and Output
+            when (result) {
+                is KeytoolCommandResult.Success -> {
+                    if (dryRun) {
+                        output.print("Status: DRY RUN".yellow())
+                        output.print("Command: ${result.processResult.dryRunOutput}")
+                    } else {
+                        output.print("Status: SUCCESS".green())
+                        output.print("Output:\n${result.processResult.stdout}".green())
+                    }
                     successes++
-                } else if (it.processResult.exitCode == 0) {
-                    output.print("\t${it.processResult.stdout}".green())
-                    successes++
-                } else {
-                    output.print("\t${it.processResult.stderr}".red())
+                }
+
+                is KeytoolCommandResult.Failure -> {
+                    output.print("Status: ERROR".red())
+                    output.print("Message: ${result.errorMessage}".red())
+                    output.print("Details:\n${result.processResult.stderr}".red())
                     failures++
                 }
             }
-        output.print(buildSummary(successes, failures, successes + failures))
+        }
+
+        output.print(buildSummary(successes, failures, results.size))
     }
 
     private fun buildSummary(
         successes: Int,
         failures: Int,
         total: Int,
-    ) = ("\nSummary: ").blue() + ("$successes/$total succeeded").green() + if (failures > 0) (", $failures/$total failed.").red() else ""
+    ): String {
+        val label = "\nSummary: ".blue()
+        val successPart = "$successes/$total succeeded".green()
+        val failurePart = if (failures > 0) (", $failures/$total failed.").red() else "."
+        return label + successPart + failurePart
+    }
 }

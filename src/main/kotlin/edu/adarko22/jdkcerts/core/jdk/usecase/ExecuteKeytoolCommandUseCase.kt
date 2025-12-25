@@ -33,13 +33,20 @@ class ExecuteKeytoolCommandUseCase(
         customJdkDirs: List<Path>,
         dryRun: Boolean,
     ): List<KeytoolCommandResult> =
-        discoverJdks
-            .discover(customJdkDirs)
-            .map {
-                val command = buildProcessRunnerCommand(keytoolCommand, it)
-                val processResult = processRunner.runCommand(command, dryRun)
-                KeytoolCommandResult(jdk = it, processResult)
+        discoverJdks.discover(customJdkDirs).map { jdk ->
+            val command = buildProcessRunnerCommand(keytoolCommand, jdk)
+            val result = processRunner.runCommand(command, dryRun)
+
+            if (result.exitCode == 0) {
+                KeytoolCommandResult.Success(jdk, result)
+            } else {
+                KeytoolCommandResult.Failure(
+                    jdk,
+                    result,
+                    "Keytool failed with exit code ${result.exitCode}: ${result.stderr}",
+                )
             }
+        }
 
     /**
      * Builds the full process command for a given JDK, including keytool path

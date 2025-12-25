@@ -7,12 +7,14 @@ plugins {
 }
 
 // Project metadata
-group = "edu.adarko22.jdkcerts"
-version = "1.0.0"
+
+group = findProperty("projectGroup") as String
+version = findProperty("projectVersion") as String
 
 // Repositories
 repositories {
     mavenCentral()
+    gradlePluginPortal()
 }
 
 // Dependencies
@@ -37,7 +39,7 @@ kotlin {
 
 // Application configuration
 application {
-    mainClass.set("edu.adarko22.jdkcerts.MainKt")
+    mainClass.set(findProperty("applicationMainClass") as String)
 }
 
 // Ktlint configuration

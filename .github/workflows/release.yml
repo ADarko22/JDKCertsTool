@@ -115,4 +115,3 @@ jobs:
           # Ensure brew shellenv is evaluated for cleanup.
           eval "$(/home/linuxbrew/.linuxbrew/bin/brew shellenv)"
           brew uninstall jdkcerts || true # Use || true to prevent the step from failing if uninstall fails (e.g., not installed)
-
