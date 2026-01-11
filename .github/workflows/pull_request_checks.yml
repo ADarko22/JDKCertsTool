@@ -2,7 +2,7 @@ name: Pull Request Checks (Lint & CodeQL)
 
 on:
   pull_request:
-    branches: [master]
+    branches: [ master ]
 
 permissions:
   contents: read           # For checking out code
@@ -38,7 +38,7 @@ jobs:
       - name: Set up JDK for CodeQL
         uses: actions/setup-java@v4
         with:
-          java-version: '17'
+          java-version: '21'
           distribution: 'temurin'
 
       - name: Set up Gradle for CodeQL
@@ -49,7 +49,12 @@ jobs:
         id: codeql
         uses: github/codeql-action/init@v3
         with:
-          languages: kotlin
+          languages: java-kotlin
+          config: |
+            paths-ignore:
+              - '**/*.gradle.kts'
+              - 'settings.gradle.kts'
+              - 'build.gradle.kts'
 
       - name: Build project for CodeQL analysis
         run: ./gradlew clean build

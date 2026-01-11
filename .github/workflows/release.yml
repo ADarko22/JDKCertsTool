@@ -39,7 +39,7 @@ jobs:
             git commit -m "Bump version to $VERSION"
           fi          
 
-      - name: Set up JDK
+      - name: Set up JDK 21
         uses: actions/setup-java@v4
         with:
           java-version: '21'
@@ -54,9 +54,7 @@ jobs:
       - name: Prepare release artifacts
         run: |
           mkdir release
-          cp build/libs/JDKCertsTool-*.jar release/jdkcertstool.jar
-          cp scripts/jdkcerts release/jdkcerts
-          chmod +x release/jdkcerts
+          cp build/libs/JDKCertsTool-*.jar release/JDKCertsTool-${{ github.event.inputs.tag }}.jar
 
       - name: Create GitHub Release
         uses: softprops/action-gh-release@v2
@@ -65,53 +63,17 @@ jobs:
           name: "Release ${{ github.event.inputs.tag }}"
           draft: false
           prerelease: false
-          files: |
-            release/jdkcertstool.jar
-            release/jdkcerts
+          files: release/JDKCertsTool-${{ github.event.inputs.tag }}.jar
 
-      - name: Generate Homebrew formula
-        run: |
-          ./scripts/generate_homebrew_formula.sh ${{ github.event.inputs.tag }}
-
-      - name: Commit and push Homebrew formula
-        # Only commit if there are changes. Push to the default branch (e.g., main).
-        run: |
-          git config user.name "github-actions"
-          git config user.email "github-actions@github.com"
-          git add Formula/jdkcerts.rb
-          git diff --cached --exit-code || git commit -m "Update Homebrew formula for ${{ github.event.inputs.tag }}"
-          git push origin master 
-
-      - name: Install Homebrew
-        id: setup-brew
-        run: |
-          # Ensure necessary dependencies for Homebrew.
-          sudo apt-get update
-          sudo apt-get install -y build-essential procps curl file git
-          
-          NONINTERACTIVE=1 /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
-          
-          # Configure environment variables for Homebrew.
-          echo "HOMEBREW_PREFIX=/home/linuxbrew/.linuxbrew" >> "$GITHUB_ENV"
-          echo "HOMEBREW_BIN=/home/linuxbrew/.linuxbrew/bin" >> "$GITHUB_ENV"
-          
-          # Evaluate shell environment immediately for this step
-          echo "eval \"$(/home/linuxbrew/.linuxbrew/bin/brew shellenv)\"" >> "$GITHUB_ENV"
-          eval "$(/home/linuxbrew/.linuxbrew/bin/brew shellenv)"
-
-      - name: Test Homebrew formula
-        # Ensure brew shellenv is evaluated before any brew commands.
-        run: |
-          eval "$(/home/linuxbrew/.linuxbrew/bin/brew shellenv)"
-          
-          brew install --verbose --debug ./Formula/jdkcerts.rb
-          
-          # Run a help command to verify it works
-          jdkcerts --help || (echo "Formula installed but command failed" && exit 1)
-
-      - name: Cleanup Homebrew formula
-        if: always()
-        run: |
-          # Ensure brew shellenv is evaluated for cleanup.
-          eval "$(/home/linuxbrew/.linuxbrew/bin/brew shellenv)"
-          brew uninstall jdkcerts || true # Use || true to prevent the step from failing if uninstall fails (e.g., not installed)
+      - name: Trigger Homebrew Formula Release Event
+        uses: peter-evans/repository-dispatch@v3
+        with:
+          token: ${{ secrets.TAP_GITHUB_TOKEN }}
+          repository: ADarko22/homebrew-tap
+          event-type: release-formula
+          client-payload: |
+            {
+              "formula_name": "jdkcerts",
+              "version": "${{ github.event.inputs.tag }}",
+              "artifact_name": "JDKCertsTool-${{ github.event.inputs.tag }}.jar"
+            }

@@ -20,18 +20,18 @@ Manual run via **GitHub Actions → Run workflow**, with one required input: `ta
 2. **Build**  
    Sets up **JDK 21** and builds the fat JAR using `./gradlew shadowJar`.
 
-3. **Release**  
-   Creates a GitHub Release and uploads:
-    - `jdkcertstool.jar`
-    - `scripts/jdkcerts`
+3. **GitHub Release**
 
-4. **Homebrew Update**  
-   Downloads release artifacts, computes SHA256 checksums, updates `Formula/jdkcerts.rb`, and commits the formula
-   update.
+   Creates a new formal release on GitHub and uploads the versioned artifact:
+    - JDKCertsTool-vX.Y.Z.jar
 
-5. **Integration Test**  
-   Installs Homebrew, installs the formula (`brew install ./Formula/jdkcerts.rb`), and runs `jdkcerts --help` to confirm
-   it works.
+4. **Tap Synchronization (Homebrew)**
+
+   Triggers a repository_dispatch event to the [ADarko22/homebrew-tap](https://github.com/ADarko22/homebrew-tap)
+   repository. This event passes the version and artifact name, prompting the Tap to:
+    - Download the new JAR.
+    - Calculate the new SHA256 checksum.
+    - Update the jdkcerts.rb formula.
 
 ---
 
