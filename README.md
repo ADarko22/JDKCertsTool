@@ -29,7 +29,7 @@ and implicitly assuming the **cacerts** keystore._
 ### ✅ Via Homebrew (macOS/Linux)
 
 ```bash
-brew tap ADarko22/JDKCertsTool https://github.com/ADarko22/JDKCertsTool
+brew tap ADarko22/tap
 brew install jdkcerts
 ````
 
