@@ -49,7 +49,12 @@ class FindCertCliPresenter(
                     output.print("Status: NOT FOUND".yellow())
                     output.print("Reason: ${result.reason}")
                     if (verbose) {
-                        output.print("Raw Stdout: ${result.stdout.take(100)}...")
+                        if (result.stdout.isNotBlank()) {
+                            output.print("Raw Stdout: ${result.stdout.take(500)}...")
+                        }
+                        if (result.stderr.isNotBlank()) {
+                            output.print("Raw StdErr: ${result.stderr.take(500)}...")
+                        }
                     }
                 }
 

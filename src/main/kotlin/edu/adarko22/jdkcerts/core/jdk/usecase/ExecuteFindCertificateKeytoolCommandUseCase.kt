@@ -35,46 +35,55 @@ class ExecuteFindCertificateKeytoolCommandUseCase(
         customJdkDirs: List<Path>,
     ): List<KeytoolFindCertResult> =
         executeKeytoolCommandUseCase
-            .execute(keytoolCommand, customJdkDirs, false)
-            .map { result ->
-                when (result) {
-                    // CASE 1: Process ran successfully (Exit Code 0)
-                    is KeytoolCommandResult.Success -> {
-                        try {
-                            val info = certificateInfoParser.parseCertificateInfo(result.processResult.stdout)
-                            KeytoolFindCertResult.Found(result.jdk, info)
-                        } catch (e: IllegalArgumentException) {
-                            // In keytool, exit 0 + missing fields usually means "Not Found" or unexpected format
-                            KeytoolFindCertResult.NotFound(
-                                jdk = result.jdk,
-                                reason = e.message ?: "Output parsing failed",
-                                stdout = result.processResult.stdout,
-                                stderr = result.processResult.stderr,
-                            )
-                        } catch (e: Exception) {
-                            // Unexpected system/logic error during parsing
-                            KeytoolFindCertResult.Error(result.jdk, "Unexpected parsing error", e)
-                        }
-                    }
+            .execute(keytoolCommand, customJdkDirs, dryRun = false)
+            .map { it.toFindCertResult() }
 
-                    // CASE 2: Process failed (Exit Code != 0)
-                    is KeytoolCommandResult.Failure -> {
-                        val stderr = result.processResult.stderr
-                        // Keytool typically exits with 1 if the alias does not exist
-                        if (stderr.contains("does not exist", ignoreCase = true)) {
-                            KeytoolFindCertResult.NotFound(
-                                jdk = result.jdk,
-                                reason = "Alias not found in keystore",
-                                stdout = result.processResult.stdout,
-                                stderr = stderr,
-                            )
-                        } else {
-                            KeytoolFindCertResult.Error(
-                                jdk = result.jdk,
-                                message = result.errorMessage,
-                            )
-                        }
-                    }
-                }
-            }
+    /**
+     * Maps the raw process result to a domain-specific certificate search result.
+     */
+    private fun KeytoolCommandResult.toFindCertResult(): KeytoolFindCertResult =
+        when (this) {
+            is KeytoolCommandResult.Success -> tryParseOutput(this)
+            is KeytoolCommandResult.Failure -> mapProcessFailure(this)
+        }
+
+    /**
+     * Handles the Happy Path: Process succeeded, now try to parse the output.
+     */
+    private fun tryParseOutput(result: KeytoolCommandResult.Success): KeytoolFindCertResult =
+        try {
+            val info = certificateInfoParser.parseCertificateInfo(result.processResult.stdout)
+            KeytoolFindCertResult.Found(result.jdk, info)
+        } catch (e: IllegalArgumentException) {
+            // Parser contract: Missing expected fields implies the output format didn't match  a valid certificate
+            KeytoolFindCertResult.NotFound(
+                jdk = result.jdk,
+                reason = e.message ?: "Output parsing failed",
+                stdout = result.processResult.stdout,
+                stderr = result.processResult.stderr,
+            )
+        } catch (e: Exception) {
+            KeytoolFindCertResult.Error(result.jdk, "Unexpected parsing error", e)
+        }
+
+    /**
+     * Handles the Failure Path: Process failed, check if it was just a missing alias.
+     */
+    private fun mapProcessFailure(result: KeytoolCommandResult.Failure): KeytoolFindCertResult {
+        // Standard Keytool behavior: Exit code 1 + "does not exist" message means missing alias.
+        val isAliasMissing =
+            listOf(result.processResult.stdout, result.processResult.stderr)
+                .any { it.contains("does not exist", ignoreCase = true) }
+
+        return if (isAliasMissing) {
+            KeytoolFindCertResult.NotFound(
+                jdk = result.jdk,
+                reason = "Alias not found in keystore",
+                stdout = result.processResult.stdout,
+                stderr = result.processResult.stderr,
+            )
+        } else {
+            KeytoolFindCertResult.Error(result.jdk, result.errorMessage)
+        }
+    }
 }

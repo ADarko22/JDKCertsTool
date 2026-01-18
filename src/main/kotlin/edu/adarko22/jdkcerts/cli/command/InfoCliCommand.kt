@@ -23,7 +23,8 @@ class InfoCliCommand(
     override fun run() {
         output.print("🔧 JDK Management Tool".blue().bold().italic())
         output.print(
-            "This tool helps you manage JDK installations, including listing JDKs, installing CA certificates, and removing them.".italic(),
+            "This tool helps you manage JDK installations, including listing JDKs, installing CA certificates, finding and removing them."
+                .italic(),
         )
         output.print("Version: $version".green())
         output.print("Author: ${"Angelo Buono".bold().italic()}".green())
