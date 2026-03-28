@@ -5,8 +5,10 @@ import com.github.ajalt.clikt.core.Context
 import edu.adarko22.jdkcerts.cli.output.ToolOutputPrinter
 import edu.adarko22.jdkcerts.cli.output.blue
 import edu.adarko22.jdkcerts.cli.output.bold
+import edu.adarko22.jdkcerts.cli.output.cyan
 import edu.adarko22.jdkcerts.cli.output.green
 import edu.adarko22.jdkcerts.cli.output.italic
+import edu.adarko22.jdkcerts.cli.output.yellow
 
 /**
  * Command that displays information about the JDK Certificate Management Tool.
@@ -21,12 +23,25 @@ class InfoCliCommand(
     override fun help(context: Context) = "Display information about the tool"
 
     override fun run() {
-        output.print("🔧 JDK Management Tool".blue().bold().italic())
         output.print(
-            "This tool helps you manage JDK installations, including listing JDKs, installing CA certificates, finding and removing them."
-                .italic(),
+            """
+   ▗▖▗▄▄▄ ▗▖ ▗▖ ▗▄▄▖▗▄▄▄▖▗▄▄▖▗▄▄▄▖▗▄▄▖
+   ▐▌▐▌  █▐▌▗▞▘▐▌   ▐▌   ▐▌ ▐▌ █ ▐▌   
+   ▐▌▐▌  █▐▛▚▖ ▐▌   ▐▛▀▀▘▐▛▀▚▖ █  ▝▀▚▖
+▗▄▄▞▘▐▙▄▄▀▐▌ ▐▌▝▚▄▄▖▐▙▄▄▖▐▌ ▐▌ █ ▗▄▄▞▘
+            """.blue().trimIndent(),
         )
-        output.print("Version: $version".green())
-        output.print("Author: ${"Angelo Buono".bold().italic()}".green())
+        output.print(
+            "Streamline your JDK certificate management workflow".blue().bold(),
+        )
+        output.print(
+            "Install, find and remove CA certificates across all your JDK installations.".italic(),
+        )
+        output.print("")
+        output.print("${"◆ Version:".bold()}       $version".green())
+        output.print("${"◆ Author:".bold()}        ${"Angelo Buono".cyan()}".green())
+        output.print("${"◆ License:".bold()}       ${"Apache License 2.0".yellow()}".green())
+        output.print("")
+        output.print("Explore more about JDK Certs Tool on ${"https://github.com/ADarko22/JDKCertsTool".cyan().bold()}")
     }
 }
