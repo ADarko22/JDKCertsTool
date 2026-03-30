@@ -8,6 +8,9 @@ import java.time.format.DateTimeFormatterBuilder
 
 /**
  * Default implementation of [CertificateInfoParser] that parses the detailed keytool output.
+ *
+ * Supports both single certificate parsing (from `keytool -list -v -alias <alias>`) and
+ * multiple certificate parsing (from `keytool -list -v` without alias).
  */
 class DefaultCertificateInfoParser : CertificateInfoParser {
     /**
@@ -41,23 +44,79 @@ class DefaultCertificateInfoParser : CertificateInfoParser {
         ?.getOrNull(groupIndex)
         ?.trim() ?: ""
 
-    override fun parseCertificateInfo(keytoolListAliasOutput: String): CertificateInfo {
+    /**
+     * Parses the output from `keytool -list -v` or `keytool -list -v -alias <alias>` containing one or more certificates.
+     *
+     * Iterates through the input string using a while loop, finding each certificate block
+     * by the "Alias name:" marker. Each certificate is independently parsed. Malformed certificates
+     * are captured as errors in the result while successful certificates are accumulated.
+     *
+     * @param keytoolListOutput The raw output string from 'keytool -list -v' command.
+     * @return A [CertificateParseResult] containing successfully parsed certificates and any errors.
+     */
+    override fun parseCertificateInfo(keytoolListOutput: String): CertificateParseResult {
+        if (keytoolListOutput.isBlank()) {
+            return CertificateParseResult(emptyList(), emptyList())
+        }
+
+        val certificates = mutableListOf<CertificateInfo>()
+        val errors = mutableListOf<ParseError>()
+        var startIndex = 0
+
+        while (startIndex < keytoolListOutput.length) {
+            val aliasMatch = aliasRegex.find(keytoolListOutput, startIndex) ?: break
+            val nextAliasMatch = aliasRegex.find(keytoolListOutput, aliasMatch.range.last + 1)
+            val endIndex = nextAliasMatch?.range?.first ?: keytoolListOutput.length
+
+            // Extract the current certificate block
+            val certificateBlock = keytoolListOutput.substring(aliasMatch.range.first, endIndex)
+
+            // Try to parse this certificate block
+            try {
+                val cert = parseSingleCertificate(certificateBlock)
+                certificates.add(cert)
+            } catch (e: Exception) {
+                // Capture parsing error with block and details
+                errors.add(
+                    ParseError(
+                        certificateBlock = certificateBlock,
+                        reason = e.message ?: "Unknown parsing error",
+                        cause = e,
+                    ),
+                )
+            }
+
+            // Move to next certificate
+            startIndex = endIndex
+        }
+
+        return CertificateParseResult(certificates, errors)
+    }
+
+    /**
+     * Parses a single certificate block from keytool output.
+     *
+     * @param certificateBlock The certificate text block to parse.
+     * @return A fully populated [CertificateInfo] domain object.
+     * @throws IllegalArgumentException if the block cannot be parsed.
+     */
+    private fun parseSingleCertificate(certificateBlock: String): CertificateInfo {
         try {
             // 1. Core String Extraction
-            val alias = aliasRegex.safeFind(keytoolListAliasOutput)
-            val owner = ownerRegex.safeFind(keytoolListAliasOutput)
-            val issuer = issuerRegex.safeFind(keytoolListAliasOutput)
-            val serial = serialRegex.safeFind(keytoolListAliasOutput)
+            val alias = aliasRegex.safeFind(certificateBlock)
+            val owner = ownerRegex.safeFind(certificateBlock)
+            val issuer = issuerRegex.safeFind(certificateBlock)
+            val serial = serialRegex.safeFind(certificateBlock)
 
-            val validMatch = validRegex.find(keytoolListAliasOutput)
+            val validMatch = validRegex.find(certificateBlock)
             val validFromRaw = validMatch?.groupValues?.getOrNull(1)?.trim()
             val validUntilRaw = validMatch?.groupValues?.getOrNull(2)?.trim()
 
-            val sha1 = sha1Regex.safeFind(keytoolListAliasOutput)
-            val sha256 = sha256Regex.safeFind(keytoolListAliasOutput)
-            val sigAlg = sigAlgRegex.safeFind(keytoolListAliasOutput)
+            val sha1 = sha1Regex.safeFind(certificateBlock)
+            val sha256 = sha256Regex.safeFind(certificateBlock)
+            val sigAlg = sigAlgRegex.safeFind(certificateBlock)
 
-            val isCa = caConstraintRegex.safeFind(keytoolListAliasOutput) == "true"
+            val isCa = caConstraintRegex.safeFind(certificateBlock) == "true"
 
             // 2. Date Parsing
             if (validFromRaw.isNullOrEmpty() || validUntilRaw.isNullOrEmpty()) {
