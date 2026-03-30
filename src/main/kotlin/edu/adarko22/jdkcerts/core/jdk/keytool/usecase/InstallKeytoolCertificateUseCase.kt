@@ -1,6 +1,6 @@
 package edu.adarko22.jdkcerts.core.jdk.keytool.usecase
 
-import edu.adarko22.jdkcerts.core.jdk.keytool.model.KeytoolCommandFactory
+import edu.adarko22.jdkcerts.core.jdk.keytool.model.InstallCertKeytoolCommand
 import edu.adarko22.jdkcerts.core.jdk.keytool.model.KeytoolCommandResult
 import java.nio.file.Path
 
@@ -33,12 +33,11 @@ class InstallKeytoolCertificateUseCase(
         dryRun: Boolean,
     ): List<KeytoolCommandResult> {
         val command =
-            KeytoolCommandFactory
-                .installCertificateKeytoolCommand(
-                    alias,
-                    keystorePassword,
-                    certificatePath.toAbsolutePath().toString(),
-                )
+            InstallCertKeytoolCommand(
+                alias,
+                keystorePassword,
+                certificatePath.toAbsolutePath().toString(),
+            )
         return executeKeytoolCommandUseCase.execute(command, customJdkDirs, dryRun)
     }
 }

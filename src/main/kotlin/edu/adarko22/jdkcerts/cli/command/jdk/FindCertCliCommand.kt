@@ -6,7 +6,7 @@ import edu.adarko22.jdkcerts.cli.command.aliasOption
 import edu.adarko22.jdkcerts.cli.command.customJdkDirsOption
 import edu.adarko22.jdkcerts.cli.command.keystorePasswordOption
 import edu.adarko22.jdkcerts.cli.command.verboseOption
-import edu.adarko22.jdkcerts.core.jdk.keytool.model.KeytoolCommandFactory
+import edu.adarko22.jdkcerts.core.jdk.keytool.model.SearchStrategy
 import edu.adarko22.jdkcerts.core.jdk.keytool.usecase.FindKeytoolCertificateUseCase
 import java.nio.file.Path
 
@@ -26,8 +26,13 @@ class FindCertCliCommand(
     override fun help(context: Context) = "Find certificate across all JDK keystores"
 
     override fun run() {
-        val command = KeytoolCommandFactory.findCertificateKeytoolCommand(alias, keystorePassword)
-        val results = findKeytoolCertificateUseCase.execute(keytoolCommand = command, customJdkDirs)
+        val results =
+            findKeytoolCertificateUseCase.execute(
+                alias,
+                keystorePassword,
+                customJdkDirs,
+                SearchStrategy.EXACT_MATCH,
+            )
         findCertCliPresenter.present(results, verbose, alias)
     }
 }
