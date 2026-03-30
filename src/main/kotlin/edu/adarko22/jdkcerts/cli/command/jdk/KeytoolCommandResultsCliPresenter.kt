@@ -12,7 +12,7 @@ import edu.adarko22.jdkcerts.core.jdk.keytool.model.KeytoolCommandResult
  *
  * @param output Abstract printer used to emit formatted output.
  */
-class ExecuteKeytoolCommandCliPresenter(
+class KeytoolCommandResultsCliPresenter(
     private val output: ToolOutputPrinter,
 ) {
     fun present(

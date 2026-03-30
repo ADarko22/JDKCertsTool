@@ -7,16 +7,15 @@ import edu.adarko22.jdkcerts.cli.command.certPathOption
 import edu.adarko22.jdkcerts.cli.command.customJdkDirsOption
 import edu.adarko22.jdkcerts.cli.command.dryRunOption
 import edu.adarko22.jdkcerts.cli.command.keystorePasswordOption
-import edu.adarko22.jdkcerts.core.jdk.keytool.model.KeytoolCommandFactory
-import edu.adarko22.jdkcerts.core.jdk.keytool.usecase.ExecuteKeytoolCommandUseCase
+import edu.adarko22.jdkcerts.core.jdk.keytool.usecase.InstallKeytoolCertificateUseCase
 import java.nio.file.Path
 
 /**
  * Command for installing certificates into JDK cacerts keystore across all the JDK installations discovered.
  */
 class InstallCertCliCommand(
-    private val executeKeytoolCommandUseCase: ExecuteKeytoolCommandUseCase,
-    val executeKeytoolCommandCliPresenter: ExecuteKeytoolCommandCliPresenter,
+    private val installKeytoolCertificateUseCase: InstallKeytoolCertificateUseCase,
+    val keytoolCommandResultsCliPresenter: KeytoolCommandResultsCliPresenter,
 ) : CliktCommand(name = "install-cert") {
     private val customJdkDirs: List<Path> by customJdkDirsOption()
     private val dryRun: Boolean by dryRunOption()
@@ -27,8 +26,15 @@ class InstallCertCliCommand(
     override fun help(context: Context) = "Install certificate across all JDK keystores"
 
     override fun run() {
-        val command = KeytoolCommandFactory.installCertificateKeytoolCommand(alias, keystorePassword, certPath.toAbsolutePath().toString())
-        val results = executeKeytoolCommandUseCase.execute(keytoolCommand = command, customJdkDirs, dryRun)
-        executeKeytoolCommandCliPresenter.present(results, dryRun)
+        val results =
+            installKeytoolCertificateUseCase
+                .execute(
+                    alias,
+                    keystorePassword,
+                    certPath,
+                    customJdkDirs,
+                    dryRun,
+                )
+        keytoolCommandResultsCliPresenter.present(results, dryRun)
     }
 }
