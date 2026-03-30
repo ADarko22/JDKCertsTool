@@ -1,7 +1,7 @@
 package edu.adarko22.jdkcerts.core.jdk.keytool.usecase
 
-import edu.adarko22.jdkcerts.core.jdk.keytool.model.KeytoolCommandFactory
 import edu.adarko22.jdkcerts.core.jdk.keytool.model.KeytoolCommandResult
+import edu.adarko22.jdkcerts.core.jdk.keytool.model.RemoveCertKeytoolCommand
 import java.nio.file.Path
 
 /**
@@ -30,7 +30,7 @@ class RemoveKeytoolCertificateUseCase(
         customJdkDirs: List<Path>,
         dryRun: Boolean,
     ): List<KeytoolCommandResult> {
-        val command = KeytoolCommandFactory.removeCertificateKeytoolCommand(alias, keystorePassword)
+        val command = RemoveCertKeytoolCommand(alias, keystorePassword)
         return executeKeytoolCommandUseCase.execute(command, customJdkDirs, dryRun)
     }
 }

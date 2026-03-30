@@ -7,6 +7,8 @@ import edu.adarko22.jdkcerts.core.jdk.java.usecase.ResolveJavaInfoUseCase
 import edu.adarko22.jdkcerts.core.jdk.keytool.parser.DefaultCertificateInfoParser
 import edu.adarko22.jdkcerts.core.jdk.keytool.usecase.ExecuteKeytoolCommandUseCase
 import edu.adarko22.jdkcerts.core.jdk.keytool.usecase.FindKeytoolCertificateUseCase
+import edu.adarko22.jdkcerts.core.jdk.keytool.usecase.InstallKeytoolCertificateUseCase
+import edu.adarko22.jdkcerts.core.jdk.keytool.usecase.RemoveKeytoolCertificateUseCase
 import edu.adarko22.jdkcerts.infra.execution.DefaultProcessRunner
 import edu.adarko22.jdkcerts.infra.system.SystemType
 
@@ -46,6 +48,8 @@ fun main(args: Array<String>) {
             discoverJdks,
             processRunner,
         )
+    val installKeytoolCertificateUseCase = InstallKeytoolCertificateUseCase(executeKeytoolCommandUseCase)
+    val removeKeytoolCertificateUseCase = RemoveKeytoolCertificateUseCase(executeKeytoolCommandUseCase)
     val findKeytoolCertificateUseCase =
         FindKeytoolCertificateUseCase(
             executeKeytoolCommandUseCase,
@@ -55,7 +59,8 @@ fun main(args: Array<String>) {
     // Build the CLI and Run with args
     CliBuilder(
         discoverJdks,
-        executeKeytoolCommandUseCase,
+        installKeytoolCertificateUseCase,
+        removeKeytoolCertificateUseCase,
         findKeytoolCertificateUseCase,
     ).withInfo()
         .withListJdks()
