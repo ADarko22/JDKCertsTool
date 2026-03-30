@@ -1,9 +1,9 @@
-package edu.adarko22.jdkcerts.core.jdk.usecase
+package edu.adarko22.jdkcerts.core.jdk.keytool.usecase
 
-import edu.adarko22.jdkcerts.core.jdk.KeytoolCommand
-import edu.adarko22.jdkcerts.core.jdk.KeytoolCommandResult
-import edu.adarko22.jdkcerts.core.jdk.KeytoolFindCertResult
-import edu.adarko22.jdkcerts.core.jdk.parser.CertificateInfoParser
+import edu.adarko22.jdkcerts.core.jdk.keytool.model.KeytoolCommand
+import edu.adarko22.jdkcerts.core.jdk.keytool.model.KeytoolCommandResult
+import edu.adarko22.jdkcerts.core.jdk.keytool.model.KeytoolFindCertResult
+import edu.adarko22.jdkcerts.core.jdk.keytool.parser.CertificateInfoParser
 import java.nio.file.Path
 
 /**
@@ -15,7 +15,7 @@ import java.nio.file.Path
  * @param executeKeytoolCommandUseCase The underlying use case for running keytool commands.
  * @param certificateInfoParser Component responsible for parsing raw keytool output into [KeytoolFindCertResult].
  */
-class ExecuteFindCertificateKeytoolCommandUseCase(
+class FindKeytoolCertificateUseCase(
     val executeKeytoolCommandUseCase: ExecuteKeytoolCommandUseCase,
     val certificateInfoParser: CertificateInfoParser,
 ) {

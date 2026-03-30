@@ -6,8 +6,8 @@ import edu.adarko22.jdkcerts.cli.command.aliasOption
 import edu.adarko22.jdkcerts.cli.command.customJdkDirsOption
 import edu.adarko22.jdkcerts.cli.command.dryRunOption
 import edu.adarko22.jdkcerts.cli.command.keystorePasswordOption
-import edu.adarko22.jdkcerts.core.jdk.KeytoolCommand
-import edu.adarko22.jdkcerts.core.jdk.usecase.ExecuteKeytoolCommandUseCase
+import edu.adarko22.jdkcerts.core.jdk.keytool.model.KeytoolCommandFactory
+import edu.adarko22.jdkcerts.core.jdk.keytool.usecase.ExecuteKeytoolCommandUseCase
 import java.nio.file.Path
 
 /**
@@ -25,17 +25,7 @@ class RemoveCertCliCommand(
     override fun help(context: Context) = "Remove certificate from all JDK keystores"
 
     override fun run() {
-        val command =
-            KeytoolCommand
-                .Builder()
-                .addArg("-delete")
-                .addArg("-alias")
-                .addArg(alias)
-                .addArg("-storepass")
-                .addArg(keystorePassword)
-                .withKeystoreResolution()
-                .build()
-
+        val command = KeytoolCommandFactory.removeCertificateKeytoolCommand(alias, keystorePassword)
         val results = executeKeytoolCommandUseCase.execute(keytoolCommand = command, customJdkDirs, dryRun)
         executeKeytoolCommandCliPresenter.present(results, dryRun)
     }

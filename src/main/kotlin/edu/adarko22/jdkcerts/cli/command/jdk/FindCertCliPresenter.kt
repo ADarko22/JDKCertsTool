@@ -5,8 +5,8 @@ import edu.adarko22.jdkcerts.cli.output.blue
 import edu.adarko22.jdkcerts.cli.output.green
 import edu.adarko22.jdkcerts.cli.output.red
 import edu.adarko22.jdkcerts.cli.output.yellow
-import edu.adarko22.jdkcerts.core.jdk.CertificateInfo
-import edu.adarko22.jdkcerts.core.jdk.KeytoolFindCertResult
+import edu.adarko22.jdkcerts.core.jdk.keytool.model.CertificateInfo
+import edu.adarko22.jdkcerts.core.jdk.keytool.model.KeytoolFindCertResult
 import java.time.format.DateTimeFormatter
 
 class FindCertCliPresenter(

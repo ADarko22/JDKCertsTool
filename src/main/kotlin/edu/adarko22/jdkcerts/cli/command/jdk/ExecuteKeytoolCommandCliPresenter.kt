@@ -5,7 +5,7 @@ import edu.adarko22.jdkcerts.cli.output.blue
 import edu.adarko22.jdkcerts.cli.output.green
 import edu.adarko22.jdkcerts.cli.output.red
 import edu.adarko22.jdkcerts.cli.output.yellow
-import edu.adarko22.jdkcerts.core.jdk.KeytoolCommandResult
+import edu.adarko22.jdkcerts.core.jdk.keytool.model.KeytoolCommandResult
 
 /**
  * CLI presenter responsible for formatting the results for the console output.

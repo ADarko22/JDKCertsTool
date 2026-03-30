@@ -6,7 +6,7 @@ import edu.adarko22.jdkcerts.cli.command.customJdkDirsOption
 import edu.adarko22.jdkcerts.cli.output.ToolOutputPrinter
 import edu.adarko22.jdkcerts.cli.output.green
 import edu.adarko22.jdkcerts.cli.output.red
-import edu.adarko22.jdkcerts.core.jdk.usecase.DiscoverJdksUseCase
+import edu.adarko22.jdkcerts.core.jdk.DiscoverJdksUseCase
 import java.nio.file.Path
 
 /**

@@ -1,4 +1,6 @@
-package edu.adarko22.jdkcerts.core.jdk
+package edu.adarko22.jdkcerts.core.jdk.keytool.model
+
+import edu.adarko22.jdkcerts.core.jdk.Jdk
 
 /**
  * Represents the high-level result of searching for a specific certificate in a JDK.

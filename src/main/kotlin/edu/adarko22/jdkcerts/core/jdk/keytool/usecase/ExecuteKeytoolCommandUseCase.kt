@@ -1,9 +1,10 @@
-package edu.adarko22.jdkcerts.core.jdk.usecase
+package edu.adarko22.jdkcerts.core.jdk.keytool.usecase
 
 import edu.adarko22.jdkcerts.core.execution.ProcessRunner
+import edu.adarko22.jdkcerts.core.jdk.DiscoverJdksUseCase
 import edu.adarko22.jdkcerts.core.jdk.Jdk
-import edu.adarko22.jdkcerts.core.jdk.KeytoolCommand
-import edu.adarko22.jdkcerts.core.jdk.KeytoolCommandResult
+import edu.adarko22.jdkcerts.core.jdk.keytool.model.KeytoolCommand
+import edu.adarko22.jdkcerts.core.jdk.keytool.model.KeytoolCommandResult
 import java.nio.file.Path
 import kotlin.io.path.absolutePathString
 

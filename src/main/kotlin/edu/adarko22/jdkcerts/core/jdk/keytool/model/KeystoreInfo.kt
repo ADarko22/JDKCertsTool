@@ -1,4 +1,4 @@
-package edu.adarko22.jdkcerts.core.jdk
+package edu.adarko22.jdkcerts.core.jdk.keytool.model
 
 import java.nio.file.Path
 

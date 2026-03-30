@@ -1,6 +1,7 @@
 package edu.adarko22.jdkcerts.core.jdk.parser
 
-import edu.adarko22.jdkcerts.core.jdk.CertificateInfo
+import edu.adarko22.jdkcerts.core.jdk.keytool.model.CertificateInfo
+import edu.adarko22.jdkcerts.core.jdk.keytool.parser.DefaultCertificateInfoParser
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.DisplayName
 import org.junit.jupiter.params.ParameterizedTest

@@ -1,4 +1,4 @@
-package edu.adarko22.jdkcerts.core.jdk
+package edu.adarko22.jdkcerts.core.jdk.java.model
 
 /**
  * Represents Java version information for a specific JDK.

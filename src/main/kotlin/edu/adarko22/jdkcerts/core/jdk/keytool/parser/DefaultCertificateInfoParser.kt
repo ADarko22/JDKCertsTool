@@ -1,6 +1,6 @@
-package edu.adarko22.jdkcerts.core.jdk.parser
+package edu.adarko22.jdkcerts.core.jdk.keytool.parser
 
-import edu.adarko22.jdkcerts.core.jdk.CertificateInfo
+import edu.adarko22.jdkcerts.core.jdk.keytool.model.CertificateInfo
 import java.time.ZoneId
 import java.time.ZonedDateTime
 import java.time.format.DateTimeFormatter

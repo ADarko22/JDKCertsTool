@@ -1,6 +1,6 @@
-package edu.adarko22.jdkcerts.core.jdk.parser
+package edu.adarko22.jdkcerts.core.jdk.java.parser
 
-import edu.adarko22.jdkcerts.core.jdk.JavaInfo
+import edu.adarko22.jdkcerts.core.jdk.java.model.JavaInfo
 
 /**
  * Parses Java version output and extracts structured [JavaInfo].
