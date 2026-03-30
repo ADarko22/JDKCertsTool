@@ -42,7 +42,7 @@ class FindCertCliPresenter(
 
             when (result) {
                 is KeytoolFindCertResult.Found -> {
-                    presentFound(result.certificateInfo, verbose)
+                    result.certificateInfos.forEach { presentFound(it, verbose) }
                 }
 
                 is KeytoolFindCertResult.NotFound -> {
@@ -79,7 +79,6 @@ class FindCertCliPresenter(
         cert: CertificateInfo,
         verbose: Boolean,
     ) {
-        output.print("Status: FOUND".green())
         output.print("\nCertificate Details:".green())
         output.print("  Alias: ${cert.alias}")
         output.print("  Owner: ${cert.owner}")

@@ -70,6 +70,8 @@ execute the tool directly from IntelliJ:
 - `Install JDK Cert`
 - `Remove JDK Cert`
 - `Find JDK Cert`
+- `Find JDK Cert with Closest Match`
+- `Find JDK Cert with RegEx`
 
 **Note**: you may need to edit the "Program arguments"  to replace placeholders like `<ALIAS>` and `<CERT_PATH>` with
 actual values, and to remove `--dry-run` for permanent changes.
@@ -82,51 +84,138 @@ actual values, and to remove `--dry-run` for permanent changes.
 
 Displays basic project and environment info.
 
-### 📋 list-jdks
+```bash
+jdkcerts info
+```
 
 **Options:**
 
-| Option                    | Description                                              |
-|---------------------------|----------------------------------------------------------|
-| -h, --help                | ❓ Show this message and exit                             |
-| --custom-jdk-dirs <VALUE> | 🗂️  Comma-separated paths to JDK directories (optional) |
+| Option       | Description          |
+|--------------|----------------------|
+| -h, --help   | Show this message and exit |
+
+---
+
+### 📋 list-jdks
+
+Lists all discovered JDK installations.
+
+```bash
+jdkcerts list-jdks [--custom-jdk-dirs <VALUE>]
+```
+
+**Options:**
+
+| Option                     | Description                                              |
+|----------------------------|----------------------------------------------------------|
+| --custom-jdk-dirs <VALUE>  | Comma-separated paths to JDK directories (optional)      |
+| -h, --help                 | Show this message and exit                               |
+
+---
 
 ### 📥 install-cert
 
+Installs a certificate across all discovered JDK keystores.
+
+```bash
+jdkcerts install-cert --cert <PATH> --alias <ALIAS> [--keystore-password <PASSWORD>] [--dry-run] [--custom-jdk-dirs <VALUE>]
+```
+
 **Options:**
 
 | Option                     | Description                                              | Default    |
 |----------------------------|----------------------------------------------------------|------------|
-| -h, --help                 | ❓ Show this message and exit                             |            |
-| --custom-jdk-dirs <VALUE>  | 🗂️  Comma-separated paths to JDK directories (optional) |            |
-| --cert <VALUE>             | 📄 Path to the certificate file (required)               |            |
-| --keystore-password <TEXT> | 🔐 Keystore password                                     | `changeit` |
-| --alias <TEXT>             | 🏷️  Certificate alias                                   |            |
-| --dry-run                  | 🛑 Preview changes without modifying anything            |            |
+| --cert <VALUE>             | Path to the certificate file (**required**)              |            |
+| --alias <TEXT>             | Certificate alias (**required**)                         |            |
+| --keystore-password <TEXT> | Keystore password                                        | `changeit` |
+| --custom-jdk-dirs <VALUE>  | Comma-separated paths to JDK directories (optional)      |            |
+| --dry-run                  | Preview changes without modifying anything               |            |
+| -h, --help                 | Show this message and exit                               |            |
+
+**Example:**
+
+```bash
+# Preview installation
+jdkcerts install-cert --cert /path/to/cert.pem --alias my-cert --dry-run
+
+# Actually install with default password
+jdkcerts install-cert --cert /path/to/cert.pem --alias my-cert
+```
+
+---
 
 ### 🗑️ remove-cert
 
+Removes a certificate by alias from all discovered JDK keystores.
+
+```bash
+jdkcerts remove-cert --alias <ALIAS> [--keystore-password <PASSWORD>] [--dry-run] [--custom-jdk-dirs <VALUE>]
+```
+
 **Options:**
 
 | Option                     | Description                                              | Default    |
 |----------------------------|----------------------------------------------------------|------------|
-| -h, --help                 | ❓ Show this message and exit                             |            |
-| --custom-jdk-dirs <VALUE>  | 🗂️  Comma-separated paths to JDK directories (optional) |            |
-| --keystore-password <TEXT> | 🔐 Keystore password                                     | `changeit` |
-| --alias <TEXT>             | 🏷️  Certificate alias                                   |            |
-| --dry-run                  | 🛑 Preview changes without modifying anything            |            |
+| --alias <TEXT>             | Certificate alias (**required**)                         |            |
+| --keystore-password <TEXT> | Keystore password                                        | `changeit` |
+| --custom-jdk-dirs <VALUE>  | Comma-separated paths to JDK directories (optional)      |            |
+| --dry-run                  | Preview changes without modifying anything               |            |
+| -h, --help                 | Show this message and exit                               |            |
+
+**Example:**
+
+```bash
+# Preview removal
+jdkcerts remove-cert --alias my-cert --dry-run
+
+# Actually remove
+jdkcerts remove-cert --alias my-cert
+```
+
+---
 
 ### 🔍 find-cert
+
+Finds and displays certificate details by alias across all JDK keystores.
+
+Supports three search strategies for maximum flexibility:
+- **EXACT_MATCH** (default): Fast direct alias lookup using keytool's `-alias` option
+- **REGEX**: Pattern-based matching across all keystore entries (use `--regex` flag)
+- **CLOSEST_MATCH**: Fuzzy matching for approximate alias names (use `--closest-match` flag)
+
+```bash
+jdkcerts find-cert --alias <ALIAS> [--keystore-password <PASSWORD>] [--verbose] [--regex|--closest-match] [--custom-jdk-dirs <VALUE>]
+```
 
 **Options:**
 
 | Option                     | Description                                                     | Default    |
 |----------------------------|-----------------------------------------------------------------|------------|
-| -h, --help                 | ❓ Show this message and exit                                    |            |
-| --custom-jdk-dirs <VALUE>  | 🗂️ Comma-separated paths to JDK directories (optional)         |            |
-| --keystore-password <TEXT> | 🔐 Keystore password                                            | `changeit` |
-| --alias <TEXT>             | 🏷️ Certificate alias (**required**)                            |            |
-| -v, --verbose              | 🔬 Display all certificate details (SHA1, SHA256, Serial, etc.) | `false`    |
+| --alias <TEXT>             | Certificate alias or search pattern (**required**)              |            |
+| --keystore-password <TEXT> | Keystore password                                               | `changeit` |
+| --verbose                  | Display all certificate details (SHA1, SHA256, Serial, etc.)    | `false`    |
+| --regex                    | Search by regex pattern instead of exact match                  |            |
+| --closest-match            | Search by closest match (fuzzy matching for typos)              |            |
+| --custom-jdk-dirs <VALUE>  | Comma-separated paths to JDK directories (optional)             |            |
+| -h, --help                 | Show this message and exit                                      |            |
+
+**Examples:**
+
+```bash
+# Exact match (fastest, uses keytool internals)
+jdkcerts find-cert --alias my-cert
+
+# Display verbose certificate details
+jdkcerts find-cert --alias my-cert --verbose
+
+# Regex search (searches all entries)
+jdkcerts find-cert --alias ".*internal.*" --regex
+
+# Fuzzy match (best for typos)
+jdkcerts find-cert --alias "star" --closest-match
+```
+
+**Note:** The `--regex` and `--closest-match` flags cannot be used together. Choose one search strategy.
 
 ---
 
