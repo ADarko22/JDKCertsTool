@@ -1,8 +1,8 @@
 <component name="ProjectRunConfigurationManager">
-  <configuration default="false" name="Find JDK Cert" type="JetRunConfigurationType">
+  <configuration default="false" name="Find JDK Cert with RegEx" type="JetRunConfigurationType">
     <option name="MAIN_CLASS_NAME" value="edu.adarko22.jdkcerts.MainKt" />
     <module name="JDKCertsTool.main" />
-    <option name="PROGRAM_PARAMETERS" value="find-cert --alias &quot;ou_starfield_class_2_certification_authority,o_starfield_technologies__inc,c_us [jdk]&quot;" />
+    <option name="PROGRAM_PARAMETERS" value="find-cert --alias &quot;.*star.*&quot; --regex" />
     <shortenClasspath name="NONE" />
     <extension name="software.aws.toolkits.jetbrains.core.execution.JavaAwsConnectionExtension">
       <option name="credential" />
