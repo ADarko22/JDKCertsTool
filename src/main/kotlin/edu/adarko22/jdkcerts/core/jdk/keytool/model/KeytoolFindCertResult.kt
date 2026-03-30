@@ -12,11 +12,11 @@ sealed class KeytoolFindCertResult {
      * Indicates the certificate was located and its details were successfully parsed.
      *
      * @property jdk The JDK where the certificate exists.
-     * @property certificateInfo The parsed domain model containing fingerprints, dates, and owner info.
+     * @property certificateInfos The list of parsed domain model containing fingerprints, dates, and owner info.
      */
     data class Found(
         override val jdk: Jdk,
-        val certificateInfo: CertificateInfo,
+        val certificateInfos: List<CertificateInfo>,
     ) : KeytoolFindCertResult()
 
     /**
