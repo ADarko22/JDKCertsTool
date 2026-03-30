@@ -1,8 +1,9 @@
 package edu.adarko22.jdkcerts.core.jdk.keytool.usecase
 
-import edu.adarko22.jdkcerts.core.jdk.keytool.model.KeytoolCommand
+import edu.adarko22.jdkcerts.core.jdk.keytool.model.FindCertKeytoolCommand
 import edu.adarko22.jdkcerts.core.jdk.keytool.model.KeytoolCommandResult
 import edu.adarko22.jdkcerts.core.jdk.keytool.model.KeytoolFindCertResult
+import edu.adarko22.jdkcerts.core.jdk.keytool.model.SearchStrategy
 import edu.adarko22.jdkcerts.core.jdk.keytool.parser.CertificateInfoParser
 import java.nio.file.Path
 
@@ -31,12 +32,19 @@ class FindKeytoolCertificateUseCase(
      * @return List of [KeytoolFindCertResult] for successfully found and parsed certificates.
      */
     fun execute(
-        keytoolCommand: KeytoolCommand,
+        alias: String,
+        keystorePassword: String,
         customJdkDirs: List<Path>,
-    ): List<KeytoolFindCertResult> =
-        executeKeytoolCommandUseCase
-            .execute(keytoolCommand, customJdkDirs, dryRun = false)
-            .map { it.toFindCertResult() }
+        searchStrategy: SearchStrategy,
+    ): List<KeytoolFindCertResult> {
+        val command = FindCertKeytoolCommand(alias, keystorePassword, searchStrategy)
+        val results =
+            executeKeytoolCommandUseCase
+                .execute(command, customJdkDirs, dryRun = false)
+
+        // todo based on the strategy selected apply correct search logic
+        return results.map { it.toFindCertResult() }
+    }
 
     /**
      * Maps the raw process result to a domain-specific certificate search result.
