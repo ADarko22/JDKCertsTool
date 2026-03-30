@@ -1,20 +1,21 @@
 package edu.adarko22.jdkcerts.core.jdk.keytool.parser
 
-import edu.adarko22.jdkcerts.core.jdk.keytool.model.CertificateInfo
-
 /**
- * Contract for parsing raw keytool output into a structured [CertificateInfo] object.
+ * Contract for parsing raw keytool output into a structured [CertificateParseResult].
  *
- * Implementations are responsible for converting raw 'keytool -list -v -alias <alias>' command
- * output into a [CertificateInfo] object.
+ * The parser handles both single and multiple certificate parsing. Results are returned
+ * as a [CertificateParseResult] containing successfully parsed certificates and any errors
+ * encountered during parsing.
  */
 interface CertificateInfoParser {
     /**
-     * Parses the detailed output from a 'keytool -list -v -alias <alias>' command.
+     * Parses the detailed output from a keytool command (single or multiple certificates).
      *
-     * @param keytoolListAliasOutput The raw standard output string from the keytool process.
-     * @return A fully populated [CertificateInfo] domain object.
-     * @throws IllegalArgumentException if the output cannot be parsed due to missing fields or incorrect date format.
+     * This method attempts to parse all certificates in the provided output. Malformed
+     * certificates are captured as errors in the result, allowing partial parsing success.
+     *
+     * @param keytoolListOutput The raw standard output string from the keytool process.
+     * @return A [CertificateParseResult] containing successfully parsed certificates and any errors.
      */
-    fun parseCertificateInfo(keytoolListAliasOutput: String): CertificateInfo
+    fun parseCertificateInfo(keytoolListOutput: String): CertificateParseResult
 }
