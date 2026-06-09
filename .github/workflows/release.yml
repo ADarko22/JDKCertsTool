@@ -56,5 +56,6 @@ jobs:
             {
               "formula_name": "jdkcerts",
               "version": "${{ github.event.inputs.tag }}",
-              "artifact_name": "JDKCertsTool-${{ github.event.inputs.tag }}.jar"
+              "artifact_name": "JDKCertsTool-${{ github.event.inputs.tag }}.jar",
+              "download_url": "https://github.com/ADarko22/JDKCertsTool/releases/download/${{ github.event.inputs.tag }}/JDKCertsTool-${{ github.event.inputs.tag }}.jar"
             }
