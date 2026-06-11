@@ -1,40 +1,42 @@
 package edu.adarko22.jdkcerts.core.jdk.keytool.usecase
 
+import edu.adarko22.jdkcerts.core.algorithms.strings.FuzzyMatcher
+import edu.adarko22.jdkcerts.core.algorithms.strings.LevenshteinDistanceFuzzyMatcher
 import edu.adarko22.jdkcerts.core.jdk.keytool.model.FindCertKeytoolCommand
 import edu.adarko22.jdkcerts.core.jdk.keytool.model.KeytoolCommandResult
 import edu.adarko22.jdkcerts.core.jdk.keytool.model.KeytoolFindCertResult
 import edu.adarko22.jdkcerts.core.jdk.keytool.model.SearchStrategy
 import edu.adarko22.jdkcerts.core.jdk.keytool.parser.CertificateInfoParser
 import java.nio.file.Path
+import java.util.regex.PatternSyntaxException
 
 /**
- * Use case that executes a keytool command to retrieve certificate information from all discovered JDKs
- * (e.g., `keytool -list -v -alias <alias>`) and transforms the successful result into a list of [KeytoolFindCertResult].
+ * Finds certificates across all JDK keystores using configurable search strategies.
  *
- * This use case delegates the execution to [ExecuteKeytoolCommandUseCase] and handles the subsequent parsing
- * with strategy-specific logic based on the [SearchStrategy] used.
+ * Executes keytool on each discovered JDK, parses results, and applies strategy-specific logic.
  *
- * @param executeKeytoolCommandUseCase The underlying use case for running keytool commands.
- * @param certificateInfoParser Component responsible for parsing raw keytool output into [CertificateParseResult].
+ * @param executeKeytoolCommandUseCase Executes keytool commands
+ * @param certificateInfoParser Parses keytool output into certificate objects
  */
 class FindKeytoolCertificateUseCase(
     val executeKeytoolCommandUseCase: ExecuteKeytoolCommandUseCase,
     val certificateInfoParser: CertificateInfoParser,
+    val fuzzyMatcher: FuzzyMatcher = LevenshteinDistanceFuzzyMatcher(),
+    val similarityThreshold: Double = 0.3,
 ) {
     /**
-     * Executes the find certificate command across all JDKs and returns structured information
-     * only for those where the command executed successfully (exit code 0) and the
-     * certificate details could be successfully parsed.
+     * Searches for certificates across all discovered JDKs.
      *
-     * The behavior depends on the [SearchStrategy]:
-     * - EXACT_MATCH: Treats result as Found, NotFound, or Error based on parsing
-     * - REGEX, CLOSEST_MATCH: Placeholder for future implementation (returns Error for now)
+     * Behavior depends on [searchStrategy]:
+     * - **EXACT_MATCH**: Direct alias lookup using keytool's `-alias` option (fastest)
+     * - **REGEX**: Pattern matching across all keystore entries (slower, may have multiple matches)
+     * - **CLOSEST_MATCH**: Fuzzy matching using edit/vector distance (slowest, single best match)
      *
-     * Note: Results where the alias was not found or a system error occurred are filtered out.
-     *
-     * @param keytoolCommand The keytool command (must be a LIST command with alias).
-     * @param customJdkDirs Optional custom JDK directories.
-     * @return List of [KeytoolFindCertResult] for successfully found and parsed certificates.
+     * @param alias Certificate alias or search pattern (interpretation depends on strategy)
+     * @param keystorePassword Keystore password
+     * @param customJdkDirs Optional custom JDK directories
+     * @param searchStrategy Search strategy to apply
+     * @return List of results, one per JDK (Found, NotFound, or Error)
      */
     fun execute(
         alias: String,
@@ -43,39 +45,37 @@ class FindKeytoolCertificateUseCase(
         searchStrategy: SearchStrategy,
     ): List<KeytoolFindCertResult> {
         val command = FindCertKeytoolCommand(alias, keystorePassword, searchStrategy)
-        val results =
-            executeKeytoolCommandUseCase
-                .execute(command, customJdkDirs, dryRun = false)
-
-        return results.map { commandResult ->
-            when (searchStrategy) {
-                SearchStrategy.EXACT_MATCH -> toFindCertResultExactMatch(commandResult)
-                SearchStrategy.REGEX -> handleRegexSearch(commandResult)
-                SearchStrategy.CLOSEST_MATCH -> handleClosestMatchSearch(commandResult)
+        return executeKeytoolCommandUseCase.execute(command, customJdkDirs, dryRun = false).map {
+            when (it) {
+                is KeytoolCommandResult.Success -> handleKeytoolCommandSuccess(it, alias, searchStrategy)
+                is KeytoolCommandResult.Failure -> handleProcessFailure(it)
             }
         }
     }
 
-    /**
-     * Maps the raw process result to a domain-specific certificate search result for EXACT_MATCH strategy.
-     */
-    private fun toFindCertResultExactMatch(result: KeytoolCommandResult): KeytoolFindCertResult =
-        when (result) {
-            is KeytoolCommandResult.Success -> tryParseOutputExactMatch(result)
-            is KeytoolCommandResult.Failure -> mapProcessFailure(result)
+    private fun handleKeytoolCommandSuccess(
+        result: KeytoolCommandResult.Success,
+        alias: String,
+        searchStrategy: SearchStrategy,
+    ): KeytoolFindCertResult =
+        when (searchStrategy) {
+            SearchStrategy.EXACT_MATCH -> handleExactMatchSearch(result)
+            SearchStrategy.REGEX -> handleRegexSearch(result, alias)
+            SearchStrategy.CLOSEST_MATCH -> handleClosestMatchSearch(result, alias)
         }
 
     /**
-     * Handles the Happy Path: Process succeeded, now try to parse the output using exact match logic.
+     * Handles exact alias lookup: keytool -list -v -alias <alias>.
+     *
+     * Expected: Single certificate or "alias does not exist" error.
      */
-    private fun tryParseOutputExactMatch(result: KeytoolCommandResult.Success): KeytoolFindCertResult {
+    private fun handleExactMatchSearch(result: KeytoolCommandResult.Success): KeytoolFindCertResult {
         val parseResult = certificateInfoParser.parseCertificateInfo(result.processResult.stdout)
 
-        return if (parseResult.hasCertificates) {
-            // For exact match, should have exactly one certificate
+        if (parseResult.hasCertificates) {
             val certificateInfo = parseResult.certificates.firstOrNull()
-            if (certificateInfo != null) {
-                KeytoolFindCertResult.Found(result.jdk, certificateInfo)
+            return if (certificateInfo != null) {
+                KeytoolFindCertResult.Found(result.jdk, listOf(certificateInfo))
             } else {
                 KeytoolFindCertResult.NotFound(
                     jdk = result.jdk,
@@ -85,13 +85,13 @@ class FindKeytoolCertificateUseCase(
                 )
             }
         } else if (parseResult.errors.isNotEmpty()) {
-            KeytoolFindCertResult.Error(
+            return KeytoolFindCertResult.Error(
                 jdk = result.jdk,
-                message = "Certificate parsing failed: ${parseResult.errors.first().reason}",
-                cause = parseResult.errors.first().cause,
+                message = "Certificate parsing failed: ${parseResult.errors.firstOrNull()?.reason}",
+                cause = parseResult.errors.firstOrNull()?.cause,
             )
         } else {
-            KeytoolFindCertResult.NotFound(
+            return KeytoolFindCertResult.NotFound(
                 jdk = result.jdk,
                 reason = "Output parsing failed: No certificates found",
                 stdout = result.processResult.stdout,
@@ -101,13 +101,92 @@ class FindKeytoolCertificateUseCase(
     }
 
     /**
-     * Handles the Failure Path: Process failed, check if it was just a missing alias.
+     * Handles regex strategy: loads all certificates and applies regex matching.
      */
-    private fun mapProcessFailure(result: KeytoolCommandResult.Failure): KeytoolFindCertResult {
-        // Standard Keytool behavior: Exit code 1 + "does not exist" message means missing alias.
+    private fun handleRegexSearch(
+        result: KeytoolCommandResult.Success,
+        alias: String,
+    ): KeytoolFindCertResult {
+        val parseResult = certificateInfoParser.parseCertificateInfo(result.processResult.stdout)
+
+        try {
+            val aliasRegex = Regex(alias)
+
+            if (parseResult.hasCertificates) {
+                val matchedCertificates = parseResult.certificates.filter { it.alias.matches(aliasRegex) }
+
+                return if (matchedCertificates.isNotEmpty()) {
+                    KeytoolFindCertResult.Found(
+                        result.jdk,
+                        certificateInfos = matchedCertificates,
+                    )
+                } else {
+                    KeytoolFindCertResult.NotFound(
+                        result.jdk,
+                        "No Alias Name found matching regex `$alias`",
+                        stdout = result.processResult.stdout,
+                        stderr = result.processResult.stderr,
+                    )
+                }
+            } else {
+                return KeytoolFindCertResult.Error(
+                    jdk = result.jdk,
+                    message = "No certificates found in keystore",
+                )
+            }
+        } catch (e: PatternSyntaxException) {
+            return KeytoolFindCertResult.Error(
+                jdk = result.jdk,
+                message = "Invalid regex pattern: ${e.message}",
+                cause = e,
+            )
+        }
+    }
+
+    /**
+     * Handles closest match strategy: loads all certificates and finds best match by distance.
+     */
+    private fun handleClosestMatchSearch(
+        result: KeytoolCommandResult.Success,
+        alias: String,
+    ): KeytoolFindCertResult {
+        val parseResult = certificateInfoParser.parseCertificateInfo(result.processResult.stdout)
+
+        if (parseResult.hasCertificates) {
+            val certificatesWithScores = parseResult.certificates.associateWith { fuzzyMatcher.similarityScore(it.alias, alias) }
+            val highestSimilarityScore = certificatesWithScores.values.maxOrNull() ?: 0.0
+
+            if (highestSimilarityScore < similarityThreshold) {
+                return KeytoolFindCertResult.NotFound(
+                    result.jdk,
+                    "No Alias Name found as closest match to `$alias`",
+                    stdout = result.processResult.stdout,
+                    stderr = result.processResult.stderr,
+                )
+            }
+
+            val topResults = certificatesWithScores.filterValues { it == highestSimilarityScore }.keys.toList()
+            return KeytoolFindCertResult.Found(
+                jdk = result.jdk,
+                certificateInfos = topResults,
+            )
+        } else {
+            return KeytoolFindCertResult.Error(
+                jdk = result.jdk,
+                message = "No certificates found in keystore",
+            )
+        }
+    }
+
+    /**
+     * Handles process failures: distinguishes missing aliases from system errors.
+     *
+     * Keytool exit 1 with "does not exist" = missing alias (NotFound).
+     * Other failures = system/permission error (Error).
+     */
+    private fun handleProcessFailure(result: KeytoolCommandResult.Failure): KeytoolFindCertResult {
         val isAliasMissing =
-            listOf(result.processResult.stdout, result.processResult.stderr)
-                .any { it.contains("does not exist", ignoreCase = true) }
+            listOf(result.processResult.stdout, result.processResult.stderr).any { it.contains("does not exist", ignoreCase = true) }
 
         return if (isAliasMissing) {
             KeytoolFindCertResult.NotFound(
@@ -120,48 +199,4 @@ class FindKeytoolCertificateUseCase(
             KeytoolFindCertResult.Error(result.jdk, result.errorMessage)
         }
     }
-
-    /**
-     * Placeholder for REGEX search strategy.
-     *
-     * TODO: Implement regex-based certificate search logic
-     */
-    private fun handleRegexSearch(result: KeytoolCommandResult): KeytoolFindCertResult =
-        when (result) {
-            is KeytoolCommandResult.Success -> {
-                // TODO: Parse output and apply regex search logic
-                KeytoolFindCertResult.Error(
-                    jdk = result.jdk,
-                    message = "Regex search strategy not yet implemented",
-                )
-            }
-            is KeytoolCommandResult.Failure -> {
-                KeytoolFindCertResult.Error(
-                    jdk = result.jdk,
-                    message = result.errorMessage,
-                )
-            }
-        }
-
-    /**
-     * Placeholder for CLOSEST_MATCH search strategy.
-     *
-     * TODO: Implement closest match (edit distance/vector distance) search logic
-     */
-    private fun handleClosestMatchSearch(result: KeytoolCommandResult): KeytoolFindCertResult =
-        when (result) {
-            is KeytoolCommandResult.Success -> {
-                // TODO: Parse output and apply closest match logic
-                KeytoolFindCertResult.Error(
-                    jdk = result.jdk,
-                    message = "Closest match search strategy not yet implemented",
-                )
-            }
-            is KeytoolCommandResult.Failure -> {
-                KeytoolFindCertResult.Error(
-                    jdk = result.jdk,
-                    message = result.errorMessage,
-                )
-            }
-        }
 }
