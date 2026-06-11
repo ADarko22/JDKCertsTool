@@ -4,17 +4,18 @@ import com.github.ajalt.clikt.core.CliktCommand
 import com.github.ajalt.clikt.core.main
 import com.github.ajalt.clikt.core.subcommands
 import edu.adarko22.jdkcerts.cli.command.InfoCliCommand
-import edu.adarko22.jdkcerts.cli.command.jdk.ExecuteKeytoolCommandCliPresenter
 import edu.adarko22.jdkcerts.cli.command.jdk.FindCertCliCommand
 import edu.adarko22.jdkcerts.cli.command.jdk.FindCertCliPresenter
 import edu.adarko22.jdkcerts.cli.command.jdk.InstallCertCliCommand
+import edu.adarko22.jdkcerts.cli.command.jdk.KeytoolCommandResultsCliPresenter
 import edu.adarko22.jdkcerts.cli.command.jdk.ListJDKsCliCommand
 import edu.adarko22.jdkcerts.cli.command.jdk.RemoveCertCliCommand
 import edu.adarko22.jdkcerts.cli.output.DefaultToolOutputPrinter
 import edu.adarko22.jdkcerts.cli.output.ToolOutputPrinter
-import edu.adarko22.jdkcerts.core.jdk.usecase.DiscoverJdksUseCase
-import edu.adarko22.jdkcerts.core.jdk.usecase.ExecuteFindCertificateKeytoolCommandUseCase
-import edu.adarko22.jdkcerts.core.jdk.usecase.ExecuteKeytoolCommandUseCase
+import edu.adarko22.jdkcerts.core.jdk.DiscoverJdksUseCase
+import edu.adarko22.jdkcerts.core.jdk.keytool.usecase.FindKeytoolCertificateUseCase
+import edu.adarko22.jdkcerts.core.jdk.keytool.usecase.InstallKeytoolCertificateUseCase
+import edu.adarko22.jdkcerts.core.jdk.keytool.usecase.RemoveKeytoolCertificateUseCase
 
 /**
  * Builder for assembling the JDKCertsTool CLI application.
@@ -23,20 +24,23 @@ import edu.adarko22.jdkcerts.core.jdk.usecase.ExecuteKeytoolCommandUseCase
  * and wires them with the necessary use cases and output printer.
  *
  * @param discoverJdks Use case for discovering installed JDKs.
- * @param executeKeytoolCommandUseCase Use case for executing keytool commands.
+ * @param installKeytoolCertificateUseCase Use case for installing certificates.
+ * @param removeKeytoolCertificateUseCase Use case for removing certificates.
+ * @param findKeytoolCertificateUseCase Use case for finding certificates.
  * @param toolOutputPrinter Output printer used for CLI messages (default is [DefaultToolOutputPrinter]).
  */
 class CliBuilder(
     private val discoverJdks: DiscoverJdksUseCase,
-    private val executeKeytoolCommandUseCase: ExecuteKeytoolCommandUseCase,
-    private val executeFindCertificateKeytoolCommandUseCase: ExecuteFindCertificateKeytoolCommandUseCase,
+    private val installKeytoolCertificateUseCase: InstallKeytoolCertificateUseCase,
+    private val removeKeytoolCertificateUseCase: RemoveKeytoolCertificateUseCase,
+    private val findKeytoolCertificateUseCase: FindKeytoolCertificateUseCase,
     private val toolOutputPrinter: ToolOutputPrinter = DefaultToolOutputPrinter(),
 ) : CliEntryPoint {
     // Internal list to hold the selected subcommands
     private val subcommands = mutableListOf<CliktCommand>()
 
-    private val executeKeytoolCommandCliPresenter by lazy {
-        ExecuteKeytoolCommandCliPresenter(toolOutputPrinter)
+    private val keytoolCommandResultsCliPresenter by lazy {
+        KeytoolCommandResultsCliPresenter(toolOutputPrinter)
     }
 
     private val findCertCliPresenter by lazy {
@@ -71,8 +75,8 @@ class CliBuilder(
         apply {
             subcommands.add(
                 InstallCertCliCommand(
-                    executeKeytoolCommandUseCase,
-                    executeKeytoolCommandCliPresenter,
+                    installKeytoolCertificateUseCase,
+                    keytoolCommandResultsCliPresenter,
                 ),
             )
         }
@@ -84,8 +88,8 @@ class CliBuilder(
         apply {
             subcommands.add(
                 RemoveCertCliCommand(
-                    executeKeytoolCommandUseCase,
-                    executeKeytoolCommandCliPresenter,
+                    removeKeytoolCertificateUseCase,
+                    keytoolCommandResultsCliPresenter,
                 ),
             )
         }
@@ -97,7 +101,7 @@ class CliBuilder(
         apply {
             subcommands.add(
                 FindCertCliCommand(
-                    executeFindCertificateKeytoolCommandUseCase,
+                    findKeytoolCertificateUseCase,
                     findCertCliPresenter,
                 ),
             )

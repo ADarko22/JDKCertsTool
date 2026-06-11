@@ -7,16 +7,15 @@ import edu.adarko22.jdkcerts.cli.command.certPathOption
 import edu.adarko22.jdkcerts.cli.command.customJdkDirsOption
 import edu.adarko22.jdkcerts.cli.command.dryRunOption
 import edu.adarko22.jdkcerts.cli.command.keystorePasswordOption
-import edu.adarko22.jdkcerts.core.jdk.KeytoolCommand
-import edu.adarko22.jdkcerts.core.jdk.usecase.ExecuteKeytoolCommandUseCase
+import edu.adarko22.jdkcerts.core.jdk.keytool.usecase.InstallKeytoolCertificateUseCase
 import java.nio.file.Path
 
 /**
  * Command for installing certificates into JDK cacerts keystore across all the JDK installations discovered.
  */
 class InstallCertCliCommand(
-    private val executeKeytoolCommandUseCase: ExecuteKeytoolCommandUseCase,
-    val executeKeytoolCommandCliPresenter: ExecuteKeytoolCommandCliPresenter,
+    private val installKeytoolCertificateUseCase: InstallKeytoolCertificateUseCase,
+    val keytoolCommandResultsCliPresenter: KeytoolCommandResultsCliPresenter,
 ) : CliktCommand(name = "install-cert") {
     private val customJdkDirs: List<Path> by customJdkDirsOption()
     private val dryRun: Boolean by dryRunOption()
@@ -27,22 +26,15 @@ class InstallCertCliCommand(
     override fun help(context: Context) = "Install certificate across all JDK keystores"
 
     override fun run() {
-        val command =
-            KeytoolCommand
-                .Builder()
-                .addArg("-importcert")
-                .addArg("-noprompt")
-                .addArg("-trustcacerts")
-                .addArg("-alias")
-                .addArg(alias)
-                .addArg("-file")
-                .addArg("$certPath")
-                .addArg("-storepass")
-                .addArg(keystorePassword)
-                .withKeystoreResolution()
-                .build()
-
-        val results = executeKeytoolCommandUseCase.execute(keytoolCommand = command, customJdkDirs, dryRun)
-        executeKeytoolCommandCliPresenter.present(results, dryRun)
+        val results =
+            installKeytoolCertificateUseCase
+                .execute(
+                    alias,
+                    keystorePassword,
+                    certPath,
+                    customJdkDirs,
+                    dryRun,
+                )
+        keytoolCommandResultsCliPresenter.present(results, dryRun)
     }
 }

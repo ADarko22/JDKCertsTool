@@ -1,5 +1,7 @@
 package edu.adarko22.jdkcerts.core.jdk
 
+import edu.adarko22.jdkcerts.core.jdk.java.model.JavaInfo
+import edu.adarko22.jdkcerts.core.jdk.keytool.model.KeystoreInfo
 import java.nio.file.Path
 import kotlin.io.path.absolutePathString
 

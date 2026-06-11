@@ -1,6 +1,6 @@
 package edu.adarko22.jdkcerts.infra.system.unix
 
-import edu.adarko22.jdkcerts.core.jdk.JavaInfo
+import edu.adarko22.jdkcerts.core.jdk.java.model.JavaInfo
 import org.junit.jupiter.api.Assertions
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.io.TempDir

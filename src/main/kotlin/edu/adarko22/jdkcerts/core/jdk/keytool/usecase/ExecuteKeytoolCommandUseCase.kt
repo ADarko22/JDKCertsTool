@@ -1,11 +1,10 @@
-package edu.adarko22.jdkcerts.core.jdk.usecase
+package edu.adarko22.jdkcerts.core.jdk.keytool.usecase
 
 import edu.adarko22.jdkcerts.core.execution.ProcessRunner
-import edu.adarko22.jdkcerts.core.jdk.Jdk
-import edu.adarko22.jdkcerts.core.jdk.KeytoolCommand
-import edu.adarko22.jdkcerts.core.jdk.KeytoolCommandResult
+import edu.adarko22.jdkcerts.core.jdk.DiscoverJdksUseCase
+import edu.adarko22.jdkcerts.core.jdk.keytool.model.KeytoolCommand
+import edu.adarko22.jdkcerts.core.jdk.keytool.model.KeytoolCommandResult
 import java.nio.file.Path
-import kotlin.io.path.absolutePathString
 
 /**
  * Use case for executing [KeytoolCommand] on all discovered JDKs.
@@ -23,7 +22,7 @@ class ExecuteKeytoolCommandUseCase(
     /**
      * Executes the given keytool command across all discovered JDKs.
      *
-     * @param keytoolCommand The keytool command to execute.
+     * @param keytoolCommand The keytool command to execute (responsible for building its own command line).
      * @param customJdkDirs Optional custom JDK directories to include in discovery.
      * @param dryRun If true, commands are not actually executed but simulated.
      * @return List of [KeytoolCommandResult] objects representing the outcome for each JDK.
@@ -34,7 +33,7 @@ class ExecuteKeytoolCommandUseCase(
         dryRun: Boolean,
     ): List<KeytoolCommandResult> =
         discoverJdks.discover(customJdkDirs).map { jdk ->
-            val command = buildProcessRunnerCommand(keytoolCommand, jdk)
+            val command = keytoolCommand.buildCommand(jdk)
             val result = processRunner.runCommand(command, dryRun)
 
             if (result.exitCode == 0) {
@@ -47,29 +46,4 @@ class ExecuteKeytoolCommandUseCase(
                 )
             }
         }
-
-    /**
-     * Builds the full process command for a given JDK, including keytool path
-     * and resolved keystore arguments.
-     */
-    private fun buildProcessRunnerCommand(
-        keytoolCommand: KeytoolCommand,
-        jdk: Jdk,
-    ): List<String> {
-        val keytoolExecutable = jdk.keytoolPath.absolutePathString()
-        val keystoreInfo = jdk.keystoreInfo
-
-        val keystoreArgs =
-            when {
-                !keytoolCommand.resolveKeystore -> emptyList()
-                keystoreInfo.cacertsShortcutEnabled -> listOf("-cacerts")
-                else -> listOf("-keystore", keystoreInfo.keystorePath.absolutePathString())
-            }
-
-        return buildList {
-            add(keytoolExecutable)
-            addAll(keytoolCommand.args)
-            addAll(keystoreArgs)
-        }
-    }
 }

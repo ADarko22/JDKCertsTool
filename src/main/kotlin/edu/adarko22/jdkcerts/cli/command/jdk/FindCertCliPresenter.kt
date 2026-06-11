@@ -5,8 +5,8 @@ import edu.adarko22.jdkcerts.cli.output.blue
 import edu.adarko22.jdkcerts.cli.output.green
 import edu.adarko22.jdkcerts.cli.output.red
 import edu.adarko22.jdkcerts.cli.output.yellow
-import edu.adarko22.jdkcerts.core.jdk.CertificateInfo
-import edu.adarko22.jdkcerts.core.jdk.KeytoolFindCertResult
+import edu.adarko22.jdkcerts.core.jdk.keytool.model.CertificateInfo
+import edu.adarko22.jdkcerts.core.jdk.keytool.model.KeytoolFindCertResult
 import java.time.format.DateTimeFormatter
 
 class FindCertCliPresenter(
@@ -42,7 +42,7 @@ class FindCertCliPresenter(
 
             when (result) {
                 is KeytoolFindCertResult.Found -> {
-                    presentFound(result.certificateInfo, verbose)
+                    result.certificateInfos.forEach { presentFound(it, verbose) }
                 }
 
                 is KeytoolFindCertResult.NotFound -> {
@@ -79,7 +79,6 @@ class FindCertCliPresenter(
         cert: CertificateInfo,
         verbose: Boolean,
     ) {
-        output.print("Status: FOUND".green())
         output.print("\nCertificate Details:".green())
         output.print("  Alias: ${cert.alias}")
         output.print("  Owner: ${cert.owner}")

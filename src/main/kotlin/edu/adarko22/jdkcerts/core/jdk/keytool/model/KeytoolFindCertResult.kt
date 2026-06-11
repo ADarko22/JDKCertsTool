@@ -1,4 +1,6 @@
-package edu.adarko22.jdkcerts.core.jdk
+package edu.adarko22.jdkcerts.core.jdk.keytool.model
+
+import edu.adarko22.jdkcerts.core.jdk.Jdk
 
 /**
  * Represents the high-level result of searching for a specific certificate in a JDK.
@@ -10,11 +12,11 @@ sealed class KeytoolFindCertResult {
      * Indicates the certificate was located and its details were successfully parsed.
      *
      * @property jdk The JDK where the certificate exists.
-     * @property certificateInfo The parsed domain model containing fingerprints, dates, and owner info.
+     * @property certificateInfos The list of parsed domain model containing fingerprints, dates, and owner info.
      */
     data class Found(
         override val jdk: Jdk,
-        val certificateInfo: CertificateInfo,
+        val certificateInfos: List<CertificateInfo>,
     ) : KeytoolFindCertResult()
 
     /**

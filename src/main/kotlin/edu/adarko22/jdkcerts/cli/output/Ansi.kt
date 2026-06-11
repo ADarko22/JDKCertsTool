@@ -20,6 +20,8 @@ fun String.blue() = "\u001B[34m$this\u001B[0m"
 
 fun String.yellow() = "\u001B[33m$this\u001B[0m"
 
+fun String.cyan() = "\u001B[36m$this\u001B[0m"
+
 fun String.bold() = "\u001B[1m$this\u001B[0m"
 
 fun String.italic() = "\u001B[3m$this\u001B[0m"
