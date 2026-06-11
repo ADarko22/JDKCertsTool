@@ -12,9 +12,9 @@ import edu.adarko22.jdkcerts.cli.command.jdk.ListJDKsCliCommand
 import edu.adarko22.jdkcerts.cli.command.jdk.RemoveCertCliCommand
 import edu.adarko22.jdkcerts.cli.output.DefaultToolOutputPrinter
 import edu.adarko22.jdkcerts.cli.output.ToolOutputPrinter
-import edu.adarko22.jdkcerts.core.jdk.usecase.DiscoverJdksUseCase
-import edu.adarko22.jdkcerts.core.jdk.usecase.ExecuteFindCertificateKeytoolCommandUseCase
-import edu.adarko22.jdkcerts.core.jdk.usecase.ExecuteKeytoolCommandUseCase
+import edu.adarko22.jdkcerts.core.jdk.DiscoverJdksUseCase
+import edu.adarko22.jdkcerts.core.jdk.keytool.usecase.ExecuteKeytoolCommandUseCase
+import edu.adarko22.jdkcerts.core.jdk.keytool.usecase.FindKeytoolCertificateUseCase
 
 /**
  * Builder for assembling the JDKCertsTool CLI application.
@@ -29,7 +29,7 @@ import edu.adarko22.jdkcerts.core.jdk.usecase.ExecuteKeytoolCommandUseCase
 class CliBuilder(
     private val discoverJdks: DiscoverJdksUseCase,
     private val executeKeytoolCommandUseCase: ExecuteKeytoolCommandUseCase,
-    private val executeFindCertificateKeytoolCommandUseCase: ExecuteFindCertificateKeytoolCommandUseCase,
+    private val findKeytoolCertificateUseCase: FindKeytoolCertificateUseCase,
     private val toolOutputPrinter: ToolOutputPrinter = DefaultToolOutputPrinter(),
 ) : CliEntryPoint {
     // Internal list to hold the selected subcommands
@@ -97,7 +97,7 @@ class CliBuilder(
         apply {
             subcommands.add(
                 FindCertCliCommand(
-                    executeFindCertificateKeytoolCommandUseCase,
+                    findKeytoolCertificateUseCase,
                     findCertCliPresenter,
                 ),
             )

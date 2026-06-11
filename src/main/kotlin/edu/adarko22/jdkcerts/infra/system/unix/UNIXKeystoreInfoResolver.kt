@@ -1,7 +1,7 @@
 package edu.adarko22.jdkcerts.infra.system.unix
 
-import edu.adarko22.jdkcerts.core.jdk.JavaInfo
-import edu.adarko22.jdkcerts.core.jdk.KeystoreInfo
+import edu.adarko22.jdkcerts.core.jdk.java.model.JavaInfo
+import edu.adarko22.jdkcerts.core.jdk.keytool.model.KeystoreInfo
 import edu.adarko22.jdkcerts.infra.system.KeystoreInfoResolver
 import java.nio.file.Files
 import java.nio.file.Path

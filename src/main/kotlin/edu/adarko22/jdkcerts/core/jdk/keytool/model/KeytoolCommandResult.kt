@@ -1,6 +1,7 @@
-package edu.adarko22.jdkcerts.core.jdk
+package edu.adarko22.jdkcerts.core.jdk.keytool.model
 
 import edu.adarko22.jdkcerts.core.execution.ProcessResult
+import edu.adarko22.jdkcerts.core.jdk.Jdk
 
 /**
  * Represents the outcome of a keytool process execution on a specific JDK.

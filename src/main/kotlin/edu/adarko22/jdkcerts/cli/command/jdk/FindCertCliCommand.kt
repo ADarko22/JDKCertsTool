@@ -6,15 +6,15 @@ import edu.adarko22.jdkcerts.cli.command.aliasOption
 import edu.adarko22.jdkcerts.cli.command.customJdkDirsOption
 import edu.adarko22.jdkcerts.cli.command.keystorePasswordOption
 import edu.adarko22.jdkcerts.cli.command.verboseOption
-import edu.adarko22.jdkcerts.core.jdk.KeytoolCommand
-import edu.adarko22.jdkcerts.core.jdk.usecase.ExecuteFindCertificateKeytoolCommandUseCase
+import edu.adarko22.jdkcerts.core.jdk.keytool.model.KeytoolCommandFactory
+import edu.adarko22.jdkcerts.core.jdk.keytool.usecase.FindKeytoolCertificateUseCase
 import java.nio.file.Path
 
 /**
  * Command for finding a certificate, by its alias, from JDK cacerts keystore across all the JDK installations discovered.
  */
 class FindCertCliCommand(
-    val executeFindCertificateKeytoolCommandUseCase: ExecuteFindCertificateKeytoolCommandUseCase,
+    val findKeytoolCertificateUseCase: FindKeytoolCertificateUseCase,
     private val findCertCliPresenter: FindCertCliPresenter,
 ) : CliktCommand(name = "find-cert") {
     private val customJdkDirs: List<Path> by customJdkDirsOption()
@@ -26,19 +26,8 @@ class FindCertCliCommand(
     override fun help(context: Context) = "Find certificate across all JDK keystores"
 
     override fun run() {
-        val command =
-            KeytoolCommand
-                .Builder()
-                .addArg("-list")
-                .addArg("-v")
-                .addArg("-alias")
-                .addArg(alias)
-                .addArg("-storepass")
-                .addArg(keystorePassword)
-                .withKeystoreResolution()
-                .build()
-
-        val results = executeFindCertificateKeytoolCommandUseCase.execute(keytoolCommand = command, customJdkDirs)
+        val command = KeytoolCommandFactory.findCertificateKeytoolCommand(alias, keystorePassword)
+        val results = findKeytoolCertificateUseCase.execute(keytoolCommand = command, customJdkDirs)
         findCertCliPresenter.present(results, verbose, alias)
     }
 }

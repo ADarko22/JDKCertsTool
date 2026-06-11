@@ -1,6 +1,6 @@
-package edu.adarko22.jdkcerts.core.jdk.parser
+package edu.adarko22.jdkcerts.core.jdk.keytool.parser
 
-import edu.adarko22.jdkcerts.core.jdk.CertificateInfo
+import edu.adarko22.jdkcerts.core.jdk.keytool.model.CertificateInfo
 
 /**
  * Contract for parsing raw keytool output into a structured [CertificateInfo] object.

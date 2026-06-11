@@ -1,12 +1,12 @@
 package edu.adarko22.jdkcerts
 
 import edu.adarko22.jdkcerts.cli.CliBuilder
-import edu.adarko22.jdkcerts.core.jdk.parser.DefaultCertificateInfoParser
-import edu.adarko22.jdkcerts.core.jdk.parser.DefaultJavaInfoParser
-import edu.adarko22.jdkcerts.core.jdk.usecase.DiscoverJdksUseCase
-import edu.adarko22.jdkcerts.core.jdk.usecase.ExecuteFindCertificateKeytoolCommandUseCase
-import edu.adarko22.jdkcerts.core.jdk.usecase.ExecuteKeytoolCommandUseCase
-import edu.adarko22.jdkcerts.core.jdk.usecase.ResolveJavaInfoUseCase
+import edu.adarko22.jdkcerts.core.jdk.DiscoverJdksUseCase
+import edu.adarko22.jdkcerts.core.jdk.java.parser.DefaultJavaInfoParser
+import edu.adarko22.jdkcerts.core.jdk.java.usecase.ResolveJavaInfoUseCase
+import edu.adarko22.jdkcerts.core.jdk.keytool.parser.DefaultCertificateInfoParser
+import edu.adarko22.jdkcerts.core.jdk.keytool.usecase.ExecuteKeytoolCommandUseCase
+import edu.adarko22.jdkcerts.core.jdk.keytool.usecase.FindKeytoolCertificateUseCase
 import edu.adarko22.jdkcerts.infra.execution.DefaultProcessRunner
 import edu.adarko22.jdkcerts.infra.system.SystemType
 
@@ -46,8 +46,8 @@ fun main(args: Array<String>) {
             discoverJdks,
             processRunner,
         )
-    val executeFindCertificateKeytoolCommandUseCase =
-        ExecuteFindCertificateKeytoolCommandUseCase(
+    val findKeytoolCertificateUseCase =
+        FindKeytoolCertificateUseCase(
             executeKeytoolCommandUseCase,
             certificateInfoParser,
         )
@@ -56,7 +56,7 @@ fun main(args: Array<String>) {
     CliBuilder(
         discoverJdks,
         executeKeytoolCommandUseCase,
-        executeFindCertificateKeytoolCommandUseCase,
+        findKeytoolCertificateUseCase,
     ).withInfo()
         .withListJdks()
         .withInstallCert()

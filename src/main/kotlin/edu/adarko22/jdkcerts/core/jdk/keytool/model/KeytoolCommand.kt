@@ -1,4 +1,4 @@
-package edu.adarko22.jdkcerts.core.jdk
+package edu.adarko22.jdkcerts.core.jdk.keytool.model
 
 /**
  * Represents a `keytool` command with arguments and optional keystore resolution.
