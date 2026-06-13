@@ -8,6 +8,7 @@ import edu.adarko22.jdkcerts.cli.command.customJdkDirsOption
 import edu.adarko22.jdkcerts.cli.command.dryRunOption
 import edu.adarko22.jdkcerts.cli.command.keystorePasswordOption
 import edu.adarko22.jdkcerts.core.jdk.keytool.usecase.InstallKeytoolCertificateUseCase
+import kotlinx.coroutines.runBlocking
 import java.nio.file.Path
 
 /**
@@ -27,14 +28,16 @@ class InstallCertCliCommand(
 
     override fun run() {
         val results =
-            installKeytoolCertificateUseCase
-                .execute(
-                    alias,
-                    keystorePassword,
-                    certPath,
-                    customJdkDirs,
-                    dryRun,
-                )
+            runBlocking {
+                installKeytoolCertificateUseCase
+                    .execute(
+                        alias,
+                        keystorePassword,
+                        certPath,
+                        customJdkDirs,
+                        dryRun,
+                    )
+            }
         keytoolCommandResultsCliPresenter.present(results, dryRun)
     }
 }

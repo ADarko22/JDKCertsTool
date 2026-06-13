@@ -19,7 +19,11 @@ repositories {
 
 // Dependencies
 dependencies {
+    // cli
     implementation(libs.clikt)
+
+    // clid + core + infra
+    implementation(libs.coroutines)
 
     testImplementation(libs.junit.api)
     testImplementation(libs.junit.params)
@@ -27,6 +31,7 @@ dependencies {
     testImplementation(libs.mockito.junit)
     testImplementation(libs.mockito.core)
     testImplementation(libs.mockito.kotlin)
+    testImplementation(libs.coroutines.test)
 
     testRuntimeOnly(libs.junit.engine)
     testRuntimeOnly(libs.junit.platform.reporting)

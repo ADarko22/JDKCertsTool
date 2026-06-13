@@ -25,7 +25,7 @@ class ResolveJavaInfoUseCase(
      * @param jdkPath Path to the JDK installation.
      * @return A [JavaInfo] object containing vendor, full version, and major version.
      */
-    fun resolve(jdkPath: Path): JavaInfo {
+    suspend fun resolve(jdkPath: Path): JavaInfo {
         val javaPath = jdkPath.resolve("bin/java")
         val command = listOf(javaPath.absolutePathString(), "-version")
         val output =

@@ -7,6 +7,7 @@ import edu.adarko22.jdkcerts.cli.command.customJdkDirsOption
 import edu.adarko22.jdkcerts.cli.command.dryRunOption
 import edu.adarko22.jdkcerts.cli.command.keystorePasswordOption
 import edu.adarko22.jdkcerts.core.jdk.keytool.usecase.RemoveKeytoolCertificateUseCase
+import kotlinx.coroutines.runBlocking
 import java.nio.file.Path
 
 /**
@@ -25,13 +26,15 @@ class RemoveCertCliCommand(
 
     override fun run() {
         val results =
-            removeKeytoolCertificateUseCase
-                .execute(
-                    alias,
-                    keystorePassword,
-                    customJdkDirs,
-                    dryRun,
-                )
+            runBlocking {
+                removeKeytoolCertificateUseCase
+                    .execute(
+                        alias,
+                        keystorePassword,
+                        customJdkDirs,
+                        dryRun,
+                    )
+            }
         keytoolCommandResultsCliPresenter.present(results, dryRun)
     }
 }
