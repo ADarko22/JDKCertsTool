@@ -3,55 +3,82 @@ package edu.adarko22.jdkcerts.core.algorithms.strings
 import kotlin.math.max
 
 /**
- * Levenshtein-distance based fuzzy matcher.
+ * A token-aware, Levenshtein-distance based fuzzy matcher.
  *
  * Computes the normalized Levenshtein distance between two character sequences and
- * returns a similarity score in the range 0.0..1.0 where 1.0 is an exact match.
+ * returns a similarity score in the range `0.0..1.0`, where `1.0` is an exact match.
  *
- * The normalized score is computed as:
- *   1.0 - (levenshteinDistance(s1, s2) / max(|s1|, |s2|))
+ * **Token Matching:**
+ * To support domain-specific naming conventions (e.g., `my-cert-alias`), the target text
+ * is split by common delimiters (`-`, `_`, `.`, `:`). The matcher evaluates the search key
+ * against the full text AND each individual token, returning the highest score.
  *
- * Special cases:
- * - Both inputs empty -> returns 1.0
- * - One input empty -> returns 0.0
+ * **Special cases:**
+ * - Case-insensitive: All inputs are normalized to lowercase before comparison.
+ * - Empty inputs: Throws an [IllegalArgumentException] to prevent meaningless comparisons.
  */
 class LevenshteinDistanceFuzzyMatcher : FuzzyMatcher {
     override fun similarityScore(
-        s1: CharSequence,
-        s2: CharSequence,
+        text: String,
+        key: String,
     ): Double {
-        val s1Length = s1.length
-        val s2Length = s2.length
+        if (text.isEmpty() || key.isEmpty()) throw IllegalArgumentException()
 
-        if (s1Length == 0 && s2Length == 0) return 1.0
+        val normalizedText = text.lowercase()
+        val normalizedKey = key.lowercase()
 
-        if (s1Length == 0 || s2Length == 0) return 0.0
+        val tokens = normalizedText.split('-', '_', '.', ':').filter(String::isNotEmpty)
 
-        val d = Array(s1Length + 1) { Array(s2Length + 1) { 0 } }
+        val bestTokenScore =
+            tokens.maxOfOrNull {
+                score(editDistance(it, normalizedKey), it.length, normalizedKey.length)
+            } ?: 0.0
 
-        for (i in 1..s1Length) {
-            d[i][0] = i
-        }
+        val fullTextScore = score(editDistance(normalizedText, normalizedKey), normalizedText.length, normalizedKey.length)
 
-        for (j in 1..s2Length) {
-            d[0][j] = j
-        }
+        return maxOf(bestTokenScore, fullTextScore)
+    }
 
-        for (i in 1..s1Length) {
-            for (j in 1..s2Length) {
-                val editCost = if (s1[i - 1] == s2[j - 1]) 0 else 1
-                d[i][j] =
+    private fun score(
+        editDistance: Int,
+        textLen: Int,
+        keyLen: Int,
+    ): Double {
+        val maxLen = max(textLen, keyLen).toDouble()
+        return (maxLen - editDistance) / maxLen
+    }
+
+    /**
+     * Space-optimized Levenshtein Distance.
+     * Uses two 1D primitive arrays instead of a full 2D object matrix to minimize GC overhead.
+     */
+    private fun editDistance(
+        text: CharSequence,
+        key: CharSequence,
+    ): Int {
+        var v0 = IntArray(key.length + 1) { it }
+        var v1 = IntArray(key.length + 1)
+
+        for (i in text.indices) {
+            v1[0] = i + 1
+            for (j in key.indices) {
+                val cost = if (text[i] == key[j]) 0 else 1
+                v1[j + 1] =
                     minOf(
                         // deletion
-                        d[i - 1][j] + 1,
-                        // insert
-                        d[i][j - 1] + 1,
+                        v1[j] + 1,
+                        // insertion
+                        v0[j + 1] + 1,
                         // substitution
-                        d[i - 1][j - 1] + editCost,
+                        v0[j] + cost,
                     )
             }
+            // Swap arrays for the next row
+            val temp = v0
+            v0 = v1
+            v1 = temp
         }
 
-        return 1.0 - d[s1Length][s2Length].toDouble() / max(s1Length, s2Length)
+        return v0[key.length]
     }
 }
