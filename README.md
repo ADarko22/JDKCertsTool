@@ -9,11 +9,12 @@ A command-line utility to manage certificates in all the installed JDKs discover
 Modern JDKs rely on a **trusted certificate store** to securely connect to HTTPS services. But managing these
 certificates—especially across multiple installed JDKs—can be a pain.
 
-**JDKCertsTool makes it easy:**
+**JDKCertsTool makes devs life easy!**
 
-- ✅ **Add or remove custom certificates** (like corporate or internal CA certs)
-- 🔍 **List installed JDKs**
-- 🔐 Uses [keytool](https://docs.oracle.com/javase/10/tools/keytool.htm) under the hood — no need to learn its syntax
+- ✅ **Add or remove custom certificates** (like corporate or internal CA certs).
+- 🔍 **Search Certificates** by _exact-match, fuzzy-match or regex_ on alias.
+- 🔍 **Discover installed JDKs**.
+- 🔐 Uses [keytool](https://docs.oracle.com/javase/10/tools/keytool.htm) under the hood — no need to learn its syntax.
 - ⚡ Executes keytool operations in parallel across discovered JDKs for better throughput.
 
 If you’ve ever hit SSL or trust errors when using Java with internal services, APIs, or behind proxies, **this tool
@@ -217,12 +218,10 @@ jdkcerts find-cert --alias ".*internal.*" --regex
 jdkcerts find-cert --alias "star" --closest-match
 ```
 
-**Note:** The `--regex` and `--closest-match` flags cannot be used together. Choose one search strategy.
+**Notes:**
 
-The CLOSEST_MATCH strategy uses a default similarity threshold of `0.3` (see
-`src/main/kotlin/edu/adarko22/jdkcerts/core/jdk/keytool/usecase/FindKeytoolCertificateUseCase.kt`). Matches with a
-similarity score below this threshold are not reported. Consider making this threshold configurable in a future
-release (e.g. a `--closest-match-threshold` flag).
+- The `--regex` and `--closest-match` flags cannot be used together.
+- The`closest-match` strategy is case-insensitive and uses a default similarity threshold of `0.3`.
 
 ---
 
