@@ -19,6 +19,7 @@ jobs:
         uses: actions/checkout@v4
         with:
           fetch-depth: 0 # Needed for git operations like checking for existing tags
+          token: ${{ secrets.PUSH_TO_MAIN_TOKEN }}
 
       - name: Set up JDK 21
         uses: actions/setup-java@v4
@@ -29,22 +30,44 @@ jobs:
       - name: Set up Gradle
         uses: gradle/actions/setup-gradle@v3
 
+      - name: Calculate and Validate Versions
+        id: calc_versions
+        run: |
+          RAW_VERSION="${{ inputs.tag }}"
+          
+          # Fail-fast validation: Ensure it matches semantic format (e.g., 1.0.0 or v1.0.0)
+          if [[ ! "$RAW_VERSION" =~ ^v?[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
+            echo "::error::Invalid version tag format '$RAW_VERSION'. Must be X.Y.Z or vX.Y.Z"
+            exit 1
+          fi
+          
+          # Strip the 'v' prefix if present
+          CLEAN_VERSION="${RAW_VERSION#v}"
+          echo "RELEASE_VERSION=$CLEAN_VERSION" >> $GITHUB_ENV
+          
+          # Idiomatic AWK bump: sets Output Field Separator to '.' and increments last digit
+          NEXT_SNAPSHOT=$(echo "$CLEAN_VERSION" | awk -F. -v OFS=. '{$NF = $NF + 1; print $0 "-SNAPSHOT"}')
+          echo "NEXT_SNAPSHOT=$NEXT_SNAPSHOT" >> $GITHUB_ENV
+          
+          echo "Release version: $CLEAN_VERSION"
+          echo "Next snapshot: $NEXT_SNAPSHOT"
+
       - name: Build fat JAR
-        run: ./gradlew shadowJar
+        run: ./gradlew shadowJar --PprojectVersion=${{ env.RELEASE_VERSION }}
 
       - name: Prepare release artifacts
         run: |
           mkdir release
-          cp build/libs/JDKCertsTool-*.jar release/JDKCertsTool-${{ github.event.inputs.tag }}.jar
+          cp build/libs/JDKCertsTool-*.jar release/JDKCertsTool-${{ inputs.tag }}.jar
 
       - name: Create GitHub Release
         uses: softprops/action-gh-release@v2
         with:
-          tag_name: ${{ github.event.inputs.tag }}
-          name: "Release ${{ github.event.inputs.tag }}"
+          tag_name: ${{ inputs.tag }}
+          name: "Release ${{ inputs.tag }}"
           draft: false
           prerelease: false
-          files: release/JDKCertsTool-${{ github.event.inputs.tag }}.jar
+          files: release/JDKCertsTool-${{ inputs.tag }}.jar
 
       - name: Trigger Homebrew Formula Release Event
         uses: peter-evans/repository-dispatch@v3
@@ -55,7 +78,24 @@ jobs:
           client-payload: |
             {
               "formula_name": "jdkcerts",
-              "version": "${{ github.event.inputs.tag }}",
-              "artifact_name": "JDKCertsTool-${{ github.event.inputs.tag }}.jar",
-              "download_url": "https://github.com/ADarko22/JDKCertsTool/releases/download/${{ github.event.inputs.tag }}/JDKCertsTool-${{ github.event.inputs.tag }}.jar"
+              "version": "${{ inputs.tag }}",
+              "artifact_name": "JDKCertsTool-${{ inputs.tag }}.jar",
+              "download_url": "https://github.com/ADarko22/JDKCertsTool/releases/download/${{ inputs.tag }}/JDKCertsTool-${{ inputs.tag }}.jar"
             }
+
+      - name: Commit and push next snapshot to main
+        run: |
+          # Configure Git as a bot
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          
+          # Fetch and rebase right before making changes to minimize race condition failures
+          git pull origin main --rebase
+          
+          # Replaces the line starting with "projectVersion=" with the new snapshot version
+          sed -i "s/^projectVersion=.*/projectVersion=${{ env.NEXT_SNAPSHOT }}/" gradle.properties
+          
+          # Stage, commit, and push directly to main
+          git add gradle.properties
+          git commit -m "chore: bump version to ${{ env.NEXT_SNAPSHOT }} [skip ci]"
+          git push origin HEAD:main
