@@ -10,6 +10,7 @@ import edu.adarko22.jdkcerts.cli.command.keystorePasswordOption
 import edu.adarko22.jdkcerts.cli.command.verboseOption
 import edu.adarko22.jdkcerts.core.jdk.keytool.model.SearchStrategy
 import edu.adarko22.jdkcerts.core.jdk.keytool.usecase.FindKeytoolCertificateUseCase
+import kotlinx.coroutines.runBlocking
 import java.nio.file.Path
 
 /**
@@ -50,18 +51,21 @@ class FindCertCliCommand(
                     )
                     throw IllegalArgumentException("Conflicting search strategy flags")
                 }
+
                 useRegex -> SearchStrategy.REGEX
                 useClosestMatch -> SearchStrategy.CLOSEST_MATCH
                 else -> SearchStrategy.EXACT_MATCH
             }
 
         val results =
-            findKeytoolCertificateUseCase.execute(
-                alias,
-                keystorePassword,
-                customJdkDirs,
-                searchStrategy,
-            )
+            runBlocking {
+                findKeytoolCertificateUseCase.execute(
+                    alias,
+                    keystorePassword,
+                    customJdkDirs,
+                    searchStrategy,
+                )
+            }
         findCertCliPresenter.present(results, verbose, alias)
     }
 }

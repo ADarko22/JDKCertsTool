@@ -38,7 +38,7 @@ class FindKeytoolCertificateUseCase(
      * @param searchStrategy Search strategy to apply
      * @return List of results, one per JDK (Found, NotFound, or Error)
      */
-    fun execute(
+    suspend fun execute(
         alias: String,
         keystorePassword: String,
         customJdkDirs: List<Path>,

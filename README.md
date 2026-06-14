@@ -14,6 +14,7 @@ certificates—especially across multiple installed JDKs—can be a pain.
 - ✅ **Add or remove custom certificates** (like corporate or internal CA certs)
 - 🔍 **List installed JDKs**
 - 🔐 Uses [keytool](https://docs.oracle.com/javase/10/tools/keytool.htm) under the hood — no need to learn its syntax
+- ⚡ Executes keytool operations in parallel across discovered JDKs for better throughput.
 
 If you’ve ever hit SSL or trust errors when using Java with internal services, APIs, or behind proxies, **this tool
 helps you fix that in seconds.**

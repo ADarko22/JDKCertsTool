@@ -20,11 +20,11 @@ Contextualization.
 
 ## High-Level Package Structure
 
-| Package | Clean Architecture Layer | Responsibility                                                                                   |
-|---------|--------------------------|--------------------------------------------------------------------------------------------------|
-| core    | Domain / Use Cases       | Defines the "What" (Entities, Use Cases, Ports/Interfaces).                                      |
-| cli     | Interface Adapters       | Defines the "How" for the Command Line Interface (Clikt commands, presenters).                   |
-| infra   | Frameworks / Drivers     | Defines the "How" for the Operating System (e.g., UNIXSystemInfoProvider, DefaultProcessRunner). |
+| Package | Clean Architecture Layer | Responsibility                                                                                  |
+|---------|--------------------------|-------------------------------------------------------------------------------------------------|
+| core    | Domain / Use Cases       | Defines the "What" (Entities, Use Cases, Ports/Interfaces).                                     |
+| cli     | Interface Adapters       | Defines the "How" for the Command Line Interface (Clikt commands, presenters).                  |
+| infra   | Frameworks / Drivers     | Defines the "How" for the Operating System (e.g., UNIXSystemInfoProvider, SystemProcessRunner). |
 
 ## Extensibility
 

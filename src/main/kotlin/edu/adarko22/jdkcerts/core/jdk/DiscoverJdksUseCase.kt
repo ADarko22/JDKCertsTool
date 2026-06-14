@@ -3,17 +3,27 @@ package edu.adarko22.jdkcerts.core.jdk
 import edu.adarko22.jdkcerts.core.jdk.java.usecase.ResolveJavaInfoUseCase
 import edu.adarko22.jdkcerts.infra.system.JdkPathsDiscovery
 import edu.adarko22.jdkcerts.infra.system.KeystoreInfoResolver
+import kotlinx.coroutines.async
+import kotlinx.coroutines.awaitAll
+import kotlinx.coroutines.coroutineScope
 import java.nio.file.Path
 
 /**
- * Use case for discovering installed JDKs on the system and creating [Jdk] objects.
+ * Orchestrates the discovery and parallel assembly of [Jdk] domain objects.
  *
- * It combines JDK path discovery, Java version resolution, and keystore information
- * to produce fully populated [Jdk] instances.
+ * This use case acts as a high-performance factory pipeline. It first scans the file system
+ * for valid JDK installation paths, and then concurrently resolves the heavy I/O metadata
+ * (Java version, vendor details, and keystore configurations) for every discovered path.
  *
- * @param jdkPathsDiscovery Component responsible for finding JDK directories.
- * @param keystoreInfoResolver Component responsible for resolving keystore paths and settings.
- * @param resolveJavaInfo Use case for resolving Java version and vendor information.
+ * **Architectural Notes:**
+ * - **I/O Parallelism:** By delegating the metadata resolution to concurrent `async` blocks,
+ * slow operations (like spawning `java -version` processes) on one JDK will not block the processing of others.
+ * - **Structured Concurrency:** This pipeline runs within a `coroutineScope`. This provides a strict guarantee:
+ * if the discovery process is canceled by the user (e.g., CLI exit), all underlying active I/O tasks are immediately terminated.
+ *
+ * @param jdkPathsDiscovery Component responsible for sweeping the file system for JDK root directories.
+ * @param keystoreInfoResolver Component responsible for determining the default keystore path and password.
+ * @param resolveJavaInfo Use case that extracts Java vendor and version by invoking the JDK's binary.
  */
 class DiscoverJdksUseCase(
     private val jdkPathsDiscovery: JdkPathsDiscovery,
@@ -21,20 +31,26 @@ class DiscoverJdksUseCase(
     private val resolveJavaInfo: ResolveJavaInfoUseCase,
 ) {
     /**
-     * Discovers all JDKs, optionally including custom directories.
+     * Sweeps the system for JDKs and resolves their metadata concurrently.
      *
-     * @param customJdkDirs Additional directories to search for JDKs.
-     * @return List of discovered [Jdk] objects with resolved Java and keystore info.
+     * **Error Handling:** Because this operates under a `coroutineScope`, an unhandled exception
+     * thrown during the resolution of a single JDK will cancel the `async` jobs of all other JDKs
+     * and bubble up to the caller.
+     *
+     * @param customJdkDirs Optional user-provided directories to search in addition to system defaults.
+     * @return A list of fully populated [Jdk] instances, ready for domain operations.
      */
-    fun discover(customJdkDirs: List<Path> = emptyList()): List<Jdk> {
-        val jdkPaths = jdkPathsDiscovery.discover(customJdkDirs)
-        return jdkPaths.map { jdkPath -> createJdk(jdkPath) }
-    }
+    suspend fun discover(customJdkDirs: List<Path> = emptyList()): List<Jdk> =
+        coroutineScope {
+            val jdkPaths = jdkPathsDiscovery.discover(customJdkDirs)
+            jdkPaths.map { jdkPath -> async { createJdk(jdkPath) } }.awaitAll()
+        }
 
     /**
-     * Creates a [Jdk] instance from a given path by resolving Java info and keystore info.
+     * Internal factory method that orchestrates the data gathering for a single JDK path.
+     * This function suspends while waiting for the underlying I/O resolution tasks to finish.
      */
-    private fun createJdk(jdkPath: Path): Jdk {
+    private suspend fun createJdk(jdkPath: Path): Jdk {
         val javaInfo = resolveJavaInfo.resolve(jdkPath)
         val keystoreInfo = keystoreInfoResolver.resolve(jdkPath, javaInfo)
         return Jdk(

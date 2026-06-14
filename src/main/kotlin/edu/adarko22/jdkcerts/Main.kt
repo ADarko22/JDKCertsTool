@@ -9,7 +9,7 @@ import edu.adarko22.jdkcerts.core.jdk.keytool.usecase.ExecuteKeytoolCommandUseCa
 import edu.adarko22.jdkcerts.core.jdk.keytool.usecase.FindKeytoolCertificateUseCase
 import edu.adarko22.jdkcerts.core.jdk.keytool.usecase.InstallKeytoolCertificateUseCase
 import edu.adarko22.jdkcerts.core.jdk.keytool.usecase.RemoveKeytoolCertificateUseCase
-import edu.adarko22.jdkcerts.infra.execution.DefaultProcessRunner
+import edu.adarko22.jdkcerts.infra.execution.SystemProcessRunner
 import edu.adarko22.jdkcerts.infra.system.SystemType
 
 /**
@@ -31,7 +31,11 @@ import edu.adarko22.jdkcerts.infra.system.SystemType
 fun main(args: Array<String>) {
     // Details
     val systemType = SystemType.UNIX
-    val processRunner = DefaultProcessRunner()
+    val processRunner =
+        SystemProcessRunner(
+            Runtime.getRuntime().availableProcessors().coerceAtLeast(2),
+            10_000L,
+        )
     val javaInfoParser = DefaultJavaInfoParser()
     val certificateInfoParser = DefaultCertificateInfoParser()
 

@@ -25,7 +25,7 @@ class InstallKeytoolCertificateUseCase(
      * @param dryRun If true, the installation is simulated without making changes.
      * @return List of [KeytoolCommandResult] objects representing the outcome for each JDK.
      */
-    fun execute(
+    suspend fun execute(
         alias: String,
         keystorePassword: String,
         certificatePath: Path,

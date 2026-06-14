@@ -24,7 +24,7 @@ class RemoveKeytoolCertificateUseCase(
      * @param dryRun If true, the removal is simulated without making changes.
      * @return List of [KeytoolCommandResult] objects representing the outcome for each JDK.
      */
-    fun execute(
+    suspend fun execute(
         alias: String,
         keystorePassword: String,
         customJdkDirs: List<Path>,

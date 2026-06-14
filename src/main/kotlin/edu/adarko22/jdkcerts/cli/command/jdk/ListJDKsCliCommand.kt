@@ -7,6 +7,7 @@ import edu.adarko22.jdkcerts.cli.output.ToolOutputPrinter
 import edu.adarko22.jdkcerts.cli.output.green
 import edu.adarko22.jdkcerts.cli.output.red
 import edu.adarko22.jdkcerts.core.jdk.DiscoverJdksUseCase
+import kotlinx.coroutines.runBlocking
 import java.nio.file.Path
 
 /**
@@ -24,7 +25,10 @@ class ListJDKsCliCommand(
     override fun help(context: Context) = "List all discovered JDKs"
 
     override fun run() {
-        val jdks = discoverJdks.discover(customJdkDirs)
+        val jdks =
+            runBlocking {
+                discoverJdks.discover(customJdkDirs)
+            }
 
         if (jdks.isEmpty()) {
             output.print("No JDKs found. Use `--custom-jdk-dirs`.".red())
