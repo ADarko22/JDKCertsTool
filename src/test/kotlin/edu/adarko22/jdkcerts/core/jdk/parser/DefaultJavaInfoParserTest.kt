@@ -3,18 +3,50 @@ package edu.adarko22.jdkcerts.core.jdk.parser
 import edu.adarko22.jdkcerts.core.jdk.java.model.JavaInfo
 import edu.adarko22.jdkcerts.core.jdk.java.parser.DefaultJavaInfoParser
 import org.junit.jupiter.api.Assertions.assertEquals
+import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.api.DisplayName
+import org.junit.jupiter.api.Test
+import org.junit.jupiter.api.assertThrows
 import org.junit.jupiter.params.ParameterizedTest
 import org.junit.jupiter.params.provider.MethodSource
 import java.util.stream.Stream
 
 class DefaultJavaInfoParserTest {
+    private val parser = DefaultJavaInfoParser()
+
     @ParameterizedTest(name = "#{index}: {0}")
     @MethodSource("versionTestCases")
     @DisplayName("Should parse Java version information correctly")
     fun `test version parsing`(testCase: VersionTestCase) {
         val actualVersion = DefaultJavaInfoParser().parseVersionInfo(testCase.output)
         assertEquals(testCase.expectedVersion, actualVersion, "Version parsing failed for: ${testCase.description}")
+    }
+
+    @Test
+    @DisplayName("Should throw IllegalStateException when version string is completely missing")
+    fun `throws on missing version`() {
+        val badOutput =
+            """
+            Unrecognized option: -version
+            Error: Could not create the Java Virtual Machine.
+            Error: A fatal exception has occurred. Program will exit.
+            """.trimIndent()
+
+        val exception = assertThrows<IllegalStateException> { parser.parseVersionInfo(badOutput) }
+        assertTrue(exception.message!!.contains("No version string found"))
+    }
+
+    @Test
+    @DisplayName("Should throw IllegalStateException when major version cannot be parsed as an integer")
+    fun `throws on unparseable major version`() {
+        val badOutput =
+            """
+            openjdk version "X.Y.Z"
+            OpenJDK Runtime Environment (build X.Y.Z)
+            """.trimIndent()
+
+        val exception = assertThrows<IllegalStateException> { parser.parseVersionInfo(badOutput) }
+        assertEquals("Could not parse major version from 'X.Y.Z'", exception.message)
     }
 
     companion object {
@@ -30,6 +62,7 @@ class DefaultJavaInfoParserTest {
                 VersionTestCase.IbmSemeru11,
                 VersionTestCase.OpenJDK25,
                 VersionTestCase.Jetbrains21,
+                VersionTestCase.Unknown,
             )
     }
 }
@@ -141,5 +174,16 @@ sealed class VersionTestCase(
             """.trimIndent(),
         expectedVersion = JavaInfo("JetBrains", "21.0.8", 21),
         description = "JetBrains Runtime",
+    )
+
+    object Unknown : VersionTestCase(
+        output =
+            """
+            java version "11.0.12" 2021-07-20
+            CustomCompany Runtime Environment (build 11.0.12+7)
+            CustomCompany 64-Bit Server VM
+            """.trimIndent(),
+        expectedVersion = JavaInfo("Unknown", "11.0.12", 11),
+        description = "Unknown Runtime",
     )
 }
