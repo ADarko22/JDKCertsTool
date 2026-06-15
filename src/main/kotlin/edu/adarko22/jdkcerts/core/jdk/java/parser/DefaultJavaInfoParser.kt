@@ -6,35 +6,40 @@ import edu.adarko22.jdkcerts.core.jdk.java.model.JavaInfo
  * Default implementation of [JavaInfoParser] that parses typical Java version output.
  */
 class DefaultJavaInfoParser : JavaInfoParser {
-    // todo add defensive checks for regex groups, avoid fixed substring indices,
-    //  validate numeric conversions with safe parsing, and consider returning a Result/sealed error type
-    //  or domain-specific exception so callers can present friendly errors
+    companion object {
+        // Compile regex once per classloader, not once per method call
+        private val VERSION_REGEX = Regex("\"([^\"]+)\"")
+    }
+
     override fun parseVersionInfo(javaVersionOutput: String): JavaInfo {
         val lines = javaVersionOutput.lines()
+
+        // Safe regex matching
         val versionString =
             lines
                 .firstOrNull { "version" in it }
-                ?.let { Regex("\"([^\"]+)\"").find(it)?.groupValues?.get(1) }
-                ?: throw IllegalStateException("No version string found")
+                ?.let { VERSION_REGEX.find(it)?.groupValues?.get(1) }
+                ?: throw IllegalStateException("No version string found in output '$javaVersionOutput'")
 
-        val major =
-            when {
-                versionString.startsWith("1.") -> versionString.substring(2, 3).toInt()
-
-                else -> versionString.split(".")[0].toInt()
+        // Safe numeric parsing without index bounds
+        val majorStr =
+            if (versionString.startsWith("1.")) {
+                versionString.substringAfter("1.").substringBefore(".")
+            } else {
+                versionString.substringBefore(".")
             }
 
+        val major = majorStr.toIntOrNull() ?: throw IllegalStateException("Could not parse major version from '$versionString'")
+
         return JavaInfo(
-            vendor = detectVendor(lines),
+            vendor = detectVendor(javaVersionOutput),
             fullVersion = versionString,
             major = major,
         )
     }
 
-    private fun detectVendor(lines: List<String>): String {
-        val output = lines.joinToString("\n")
-
-        return when {
+    private fun detectVendor(output: String): String =
+        when {
             // == Proprietary ==
             "Java(TM)" in output -> "Oracle"
             "GraalVM" in output -> "GraalVM"
@@ -56,8 +61,10 @@ class DefaultJavaInfoParser : JavaInfoParser {
             "AdoptOpenJDK" in output -> "AdoptOpenJDK"
             "OpenJ9" in output -> "IBM"
 
+            // Open JDK
+            "openjdk" in output -> "OpenJDK"
+
             // == Default Fallback ==
-            else -> "OpenJDK"
+            else -> "Unknown"
         }
-    }
 }
