@@ -14,24 +14,35 @@ Manual run via **GitHub Actions → Run workflow**, with one required input: `ta
 
 ## 🔄 Pipeline Summary
 
-1. **Version Bump**  
-   Updates `version` in `build.gradle.kts` and commits the change.
+1. **Calculate & Validate**
 
-2. **Build**  
-   Sets up **JDK 21** and builds the fat JAR using `./gradlew shadowJar`.
+   Ensures the tag follows Semantic Versioning (X.Y.Z) and calculates the next -SNAPSHOT version.
+
+2. **Build**
+
+   Sets up JDK 21 and builds the fat JAR using `./gradlew shadowJar`.
 
 3. **GitHub Release**
 
-   Creates a new formal release on GitHub and uploads the versioned artifact:
-    - JDKCertsTool-vX.Y.Z.jar
+   Creates a formal GitHub release and uploads `JDKCertsTool-vX.Y.Z.jar`.
 
 4. **Tap Synchronization (Homebrew)**
 
-   Triggers a repository_dispatch event to the [ADarko22/homebrew-tap](https://github.com/ADarko22/homebrew-tap)
-   repository. This event passes the version and artifact name, prompting the Tap to:
-    - Download the new JAR.
-    - Calculate the new SHA256 checksum.
-    - Update the jdkcerts.rb formula.
+   Triggers a repository_dispatch to [ADarko22/homebrew-tap](https://github.com/ADarko22/homebrew-tap) , prompting the
+   tap to update the `jdkcerts` formula with the new version and SHA256.
+
+5. **Post-Release Version Bump**
+
+   Updates projectVersion in `gradle.properties` to the next snapshot version and pushes directly to main.
+
+## 🔐 Required SecretsTo
+
+The pipeline requires and uses the following secrets:
+
+| Name                 | Purpose                                             | Required For                                                                                      |
+|:---------------------|:----------------------------------------------------|:--------------------------------------------------------------------------------------------------|
+| `PUSH_TO_MAIN_TOKEN` | Fine-grained PAT with Contents: `Read/WriteRelease` | Pipeline (bypass branch protection)                                                               |
+| `TAP_GITHUB_TOKEN`   | PAT for cross-repo events                           | Homebrew Tap synchronization to [ADarko22/homebrew-tap](https://github.com/ADarko22/homebrew-tap) |
 
 ---
 
