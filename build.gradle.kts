@@ -7,7 +7,6 @@ plugins {
 }
 
 // Project metadata
-
 group = findProperty("projectGroup") as String
 version = findProperty("projectVersion") as String
 
