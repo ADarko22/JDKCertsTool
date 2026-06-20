@@ -1,16 +1,15 @@
 [plugins]
 kotlin-jvm = { id = "org.jetbrains.kotlin.jvm", version = "2.2.21" }
 ktlint = { id = "org.jlleitschuh.gradle.ktlint", version = "14.1.0" }
-shadow = { id = "com.gradleup.shadow", version = "9.4.1" }
+shadow = { id = "com.gradleup.shadow", version = "9.4.2" }
 
 [versions]
 clikt = "5.1.0"
-coroutines = "1.10.2"
-junit = "6.0.3"
+coroutines = "1.11.0"
+junit = "6.1.0"
 mockk = "1.14.9"
 mockito = "5.23.0"
 mockito-kotlin = "6.2.3"
-coroutines-test = "1.10.2"
 
 [libraries]
 clikt = { module = "com.github.ajalt.clikt:clikt", version.ref = "clikt" }
@@ -20,7 +19,7 @@ junit-api = { module = "org.junit.jupiter:junit-jupiter-api", version.ref = "jun
 junit-params = { module = "org.junit.jupiter:junit-jupiter-params", version.ref = "junit" }
 junit-engine = { module = "org.junit.jupiter:junit-jupiter-engine", version.ref = "junit" }
 
-junit-platform-reporting = { module = "org.junit.platform:junit-platform-reporting", version = "6.0.3" }
+junit-platform-reporting = { module = "org.junit.platform:junit-platform-reporting", version = "junit" }
 
 mockk = { module = "io.mockk:mockk", version.ref = "mockk" }
 
@@ -28,4 +27,4 @@ mockito-core = { module = "org.mockito:mockito-core", version.ref = "mockito" }
 mockito-junit = { module = "org.mockito:mockito-junit-jupiter", version.ref = "mockito" }
 mockito-kotlin = { module = "org.mockito.kotlin:mockito-kotlin", version.ref = "mockito-kotlin" }
 
-coroutines-test = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-test", version.ref = "coroutines-test" }
+coroutines-test = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-test", version.ref = "coroutines" }
