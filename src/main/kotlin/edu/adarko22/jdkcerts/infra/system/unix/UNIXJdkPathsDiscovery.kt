@@ -23,10 +23,14 @@ class UNIXJdkPathsDiscovery(
             systemInfoProvider.getUserHome().resolve(".sdkman/candidates/java").takeIf(Files::isDirectory),
         )
 
+    /**
+     * Validates candidate roots by confirming the active existence of structural execution subfiles
+     * via [isValidJavaHome] before calculating real paths to eliminate symlink duplicates.
+     */
     override fun discover(customJdkDirs: List<Path>): List<Path> {
-        val allSearchRoots = defaultDirs + discoverJetBrainsRuntimeHomes() + customJdkDirs.filter(Files::isDirectory)
-
-        return allSearchRoots
+        val searchDirs = customJdkDirs.ifEmpty { defaultDirs + discoverJetBrainsRuntimeHomes() }
+        return searchDirs
+            .filter(Files::isDirectory)
             .asSequence()
             .flatMap { Files.newDirectoryStream(it) }
             .map { toJavaHome(it) }
@@ -36,7 +40,10 @@ class UNIXJdkPathsDiscovery(
             .toList()
     }
 
-    // Now uses the class's userHome property
+    /**
+     * Inspects active user context home regions to isolate runtimes packaged inside
+     * desktop IntelliJ IDEA applications and JetBrains Toolbox installation hubs.
+     */
     internal fun discoverJetBrainsRuntimeHomes(): List<Path> {
         val jdkPaths = mutableListOf<Path>()
 

@@ -3,14 +3,18 @@ package edu.adarko22.jdkcerts.infra.system
 import java.nio.file.Path
 
 /**
- * Discovers JDK installation paths on the host system.
+ * Strategy boundary for identifying JDK installation paths on the host system.
  */
 interface JdkPathsDiscovery {
     /**
-     * Provides JDK installation paths on the host system.
+     * Resolves and validates absolute home paths of available JDK installations.
      *
-     * @param customJdkDirs Optional list of additional directories to search.
-     * @return List of discovered JDK home paths.
+     * ### Discovery Modes:
+     * - **Automatic Mode (Empty List):** The scanner falls back to standard platform locations .
+     * - **Exclusive Mode (Non-Empty List):** Scan only the paths provided in [customJdkDirs].
+     *
+     * @param customJdkDirs Explicit root directories provided by the runtime context to restrict searching.
+     * @return A distinct, filtered list of validated Java home paths containing runnable binaries.
      */
-    fun discover(customJdkDirs: List<Path> = emptyList()): List<Path>
+    fun discover(customJdkDirs: List<Path>): List<Path>
 }
