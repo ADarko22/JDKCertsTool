@@ -83,19 +83,19 @@ jobs:
               "download_url": "https://github.com/ADarko22/JDKCertsTool/releases/download/${{ inputs.tag }}/JDKCertsTool-${{ inputs.tag }}.jar"
             }
 
-      - name: Commit and push next snapshot to main
+      - name: Commit and push next snapshot to master
         run: |
           # Configure Git as a bot
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           
           # Fetch and rebase right before making changes to minimize race condition failures
-          git pull origin main --rebase
+          git pull origin master --rebase
           
           # Replaces the line starting with "projectVersion=" with the new snapshot version
           sed -i "s/^projectVersion=.*/projectVersion=${{ env.NEXT_SNAPSHOT }}/" gradle.properties
           
-          # Stage, commit, and push directly to main
+          # Stage, commit, and push directly to master
           git add gradle.properties
           git commit -m "chore: bump version to ${{ env.NEXT_SNAPSHOT }} [skip ci]"
-          git push origin HEAD:main
+          git push origin HEAD:master
