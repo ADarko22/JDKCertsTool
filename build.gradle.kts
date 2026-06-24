@@ -37,6 +37,10 @@ dependencies {
     testRuntimeOnly(libs.junit.platform.reporting)
 }
 
+dependencyLocking {
+    lockAllConfigurations()
+}
+
 // Toolchain
 kotlin {
     jvmToolchain(21)
