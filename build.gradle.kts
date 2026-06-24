@@ -4,6 +4,7 @@ plugins {
     alias(libs.plugins.kotlin.jvm)
     alias(libs.plugins.ktlint)
     alias(libs.plugins.shadow)
+    alias(libs.plugins.sonar)
 }
 
 // Project metadata
@@ -53,6 +54,17 @@ ktlint {
     reporters {
         reporter(org.jlleitschuh.gradle.ktlint.reporter.ReporterType.PLAIN)
         reporter(org.jlleitschuh.gradle.ktlint.reporter.ReporterType.CHECKSTYLE)
+    }
+}
+
+// Sonar configration
+sonar {
+    properties {
+        property("sonar.host.url", "https://sonarcloud.io")
+        property("sonar.organization", "adarko22-dev")
+        property("sonar.projectKey", "ADarko22_JDKCertsTool")
+
+        property("sonar.coverage.exclusions", "edu.adarko22.jdkcerts.cli/**")
     }
 }
 

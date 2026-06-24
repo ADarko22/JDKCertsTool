@@ -46,7 +46,7 @@ The pipeline requires and uses the following secrets:
 
 ---
 
-# 🧪 Build & Test Workflow ([build-and-test.yml](build-and-test.yml))
+# 🧪 Build, Test & Analyse Workflow ([build-test-analyse.yml](build-test-analyse.yml))
 
 Ensures every commit and PR builds cleanly, passes tests, and produces coverage reports.
 
@@ -57,35 +57,19 @@ Ensures every commit and PR builds cleanly, passes tests, and produces coverage 
 
 ## 🔄 Pipeline Summary
 
-1. Build & Test
-    - Checkout code, set up **JDK 17** and Gradle
-    - Run `clean build`, `test`, and `jacocoTestReport`
-
-2. Artifacts (always uploaded)
-    - JUnit XML + HTML test reports
-    - JaCoCo coverage report
-
-3. Test Summary
-    - Published via `dorny/test-reporter@v1`
-
----
-
-# 🔍 PR Linting & Security ([pull_request_checks.yml](pull_request_checks.yml))
-
-Provides linting and CodeQL security analysis on pull requests.
-
-## 🎯 Trigger
-
-- `pull_request` → `master`
-
-## 🔄 Pipeline Summary
-
-1. Linting (Super-Linter)
+1. **Linting (Super-Linter)**
     - Validates Kotlin changed files
     - Adds comments and status updates to the PR.
 
-2. CodeQL Analysis
+2. **Build Test & Analysis**
     - Sets up JDK 17 & Gradle
     - Initializes CodeQL for Kotlin
-    - Builds the project
+    - Builds the project & runs Sonar analysis
     - Uploads security findings
+
+3. **Artifacts (always uploaded)**
+    - JUnit XML + HTML test reports
+    - JaCoCo coverage report
+
+4. **Test Summary**
+    - Published via `dorny/test-reporter@v1`
