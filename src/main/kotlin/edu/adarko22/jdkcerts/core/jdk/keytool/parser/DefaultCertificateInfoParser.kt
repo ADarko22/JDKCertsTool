@@ -119,9 +119,7 @@ class DefaultCertificateInfoParser : CertificateInfoParser {
             val isCa = caConstraintRegex.safeFind(certificateBlock) == "true"
 
             // 2. Date Parsing
-            if (validFromRaw.isNullOrEmpty() || validUntilRaw.isNullOrEmpty()) {
-                throw IllegalArgumentException("Missing validity dates in keytool output.")
-            }
+            require(!(validFromRaw.isNullOrEmpty() || validUntilRaw.isNullOrEmpty())) { "Missing validity dates in keytool output." }
 
             // keytool output includes a timezone abbreviation (z) which requires ZonedDateTime parsing first
             val validFromZoned: ZonedDateTime = ZonedDateTime.parse(validFromRaw, keytoolZonedDateFormatter)
@@ -131,9 +129,7 @@ class DefaultCertificateInfoParser : CertificateInfoParser {
             val validUntil = validUntilZoned.toLocalDateTime()
 
             // 3. Validation and Return
-            if (alias.isEmpty() || owner.isEmpty()) {
-                throw IllegalArgumentException("Required certificate fields (alias/owner) are missing.")
-            }
+            require(!(alias.isEmpty() || owner.isEmpty())) { "Required certificate fields (alias/owner) are missing." }
 
             return CertificateInfo(
                 alias = alias,
