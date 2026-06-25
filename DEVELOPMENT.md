@@ -82,12 +82,16 @@ If you modify dependencies, update your lock files by running:
 
 ### 2. Dependency Verification (Checksums & Signatures)
 
-We verify the integrity of all external artifacts using SHA-256 and PGP keys.
-If you add a library, Gradle will fail until you refresh the verification rules:
+We verify the cryptographic integrity of all external artifacts using pure offline SHA-256 checksums.
+This is a security gate that esnures downloaded binaries match what we expect without relying on public PGP key servers.
+
+If you add or upgrade a library, the build will fail in CI until you refresh the local verification rules:
 
 ```bash
-./gradlew --write-verification-metadata pgp,sha256 --export-keys
-
+./gradlew clean build --write-verification-metadata sha256
 ```
 
-> ⚠️ **Note:** This must always be run manually and reviewed by a developer to safely check and audit the modifications.
+More details
+at [Dependency Verification | Gradle](https://docs.gradle.org/current/userguide/dependency_verification.html).
+
+> ⚠️ **Note:** Always review the changes generated in `gradle/verification-metadata.xml` before committing them.
