@@ -7,7 +7,7 @@ import java.nio.file.Path
 /**
  * Resolves keystore information for a given JDK installation.
  */
-interface KeystoreInfoResolver {
+fun interface KeystoreInfoResolver {
     /**
      * Returns keystore information for the specified JDK.
      *

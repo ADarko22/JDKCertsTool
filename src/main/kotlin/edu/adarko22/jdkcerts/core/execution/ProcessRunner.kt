@@ -15,7 +15,7 @@ package edu.adarko22.jdkcerts.core.execution
  * - **Resource Management:** Implementations should handle OS resource limits (like file descriptors
  * or thread exhaustion) safely, either through throttling or explicit error reporting.
  */
-interface ProcessRunner {
+fun interface ProcessRunner {
     /**
      * Spawns and executes the specified system command.
      * * This is a suspending function. It will yield the caller's thread while the external
