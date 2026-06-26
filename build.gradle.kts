@@ -68,7 +68,10 @@ sonar {
         property("sonar.organization", "adarko22-dev")
         property("sonar.projectKey", "ADarko22_JDKCertsTool")
 
-        property("sonar.coverage.exclusions", "edu.adarko22.jdkcerts.cli/**")
+        property(
+            "sonar.coverage.exclusions",
+            "**/cli/**/*",
+        )
     }
 }
 

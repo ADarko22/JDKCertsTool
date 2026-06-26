@@ -5,7 +5,7 @@ import java.nio.file.Path
 /**
  * Strategy boundary for identifying JDK installation paths on the host system.
  */
-interface JdkPathsDiscovery {
+fun interface JdkPathsDiscovery {
     /**
      * Resolves and validates absolute home paths of available JDK installations.
      *

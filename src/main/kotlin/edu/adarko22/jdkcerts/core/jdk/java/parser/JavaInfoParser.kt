@@ -8,7 +8,7 @@ import edu.adarko22.jdkcerts.core.jdk.java.model.JavaInfo
  * Implementations are responsible for converting raw `java -version` command
  * output into a [JavaInfo] object.
  */
-interface JavaInfoParser {
+fun interface JavaInfoParser {
     /**
      * Parses the provided Java version output.
      *

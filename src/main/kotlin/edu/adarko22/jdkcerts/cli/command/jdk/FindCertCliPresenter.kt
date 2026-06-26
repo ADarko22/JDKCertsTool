@@ -34,44 +34,49 @@ class FindCertCliPresenter(
             output.print("Certificate alias '$alias' was not found in any JDK keystores.\n".yellow())
         }
 
-        // 2. Iterate through all results using exhaustive when
-        results.forEach { result ->
-            output.print("--------------------------------------------------".blue())
-            output.print("JDK: ${result.jdk.javaInfo.fullVersion} (${result.jdk.javaInfo.vendor})".blue())
-            output.print("Path: ${result.jdk.path}".blue())
-
-            when (result) {
-                is KeytoolFindCertResult.Found -> {
-                    result.certificateInfos.forEach { presentFound(it, verbose) }
-                }
-
-                is KeytoolFindCertResult.NotFound -> {
-                    output.print("Status: NOT FOUND".yellow())
-                    output.print("Reason: ${result.reason}")
-                    if (verbose) {
-                        if (result.stdout.isNotBlank()) {
-                            output.print("Raw Stdout: ${result.stdout.take(500)}...")
-                        }
-                        if (result.stderr.isNotBlank()) {
-                            output.print("Raw StdErr: ${result.stderr.take(500)}...")
-                        }
-                    }
-                }
-
-                is KeytoolFindCertResult.Error -> {
-                    output.print("Status: ERROR".red())
-                    output.print("Message: ${result.message}")
-                    if (verbose && result.cause != null) {
-                        output.print("Trace: ${result.cause.message}")
-                    }
-                }
-            }
-        }
+        // 2. Iterate through all results and process one at a time
+        results.forEach { result -> processResult(result, verbose) }
 
         // 3. Footer Summary for Errors
         val errors = results.filterIsInstance<KeytoolFindCertResult.Error>()
         if (errors.isNotEmpty()) {
             output.print("Note: ${errors.size} JDKs encountered execution errors. Use --verbose for details.".red())
+        }
+    }
+
+    private fun processResult(
+        result: KeytoolFindCertResult,
+        verbose: Boolean,
+    ) {
+        output.print("--------------------------------------------------".blue())
+        output.print("JDK: ${result.jdk.javaInfo.fullVersion} (${result.jdk.javaInfo.vendor})".blue())
+        output.print("Path: ${result.jdk.path}".blue())
+
+        when (result) {
+            is KeytoolFindCertResult.Found -> {
+                result.certificateInfos.forEach { presentFound(it, verbose) }
+            }
+
+            is KeytoolFindCertResult.NotFound -> {
+                output.print("Status: NOT FOUND".yellow())
+                output.print("Reason: ${result.reason}")
+                if (verbose) {
+                    if (result.stdout.isNotBlank()) {
+                        output.print("Raw Stdout: ${result.stdout}")
+                    }
+                    if (result.stderr.isNotBlank()) {
+                        output.print("Raw StdErr: ${result.stderr}")
+                    }
+                }
+            }
+
+            is KeytoolFindCertResult.Error -> {
+                output.print("Status: ERROR".red())
+                output.print("Message: ${result.message}")
+                if (verbose && result.cause != null) {
+                    output.print("Trace: ${result.cause.message}")
+                }
+            }
         }
     }
 

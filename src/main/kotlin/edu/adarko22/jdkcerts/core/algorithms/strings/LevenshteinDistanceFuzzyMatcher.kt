@@ -22,7 +22,7 @@ class LevenshteinDistanceFuzzyMatcher : FuzzyMatcher {
         text: String,
         key: String,
     ): Double {
-        if (text.isEmpty() || key.isEmpty()) throw IllegalArgumentException()
+        require(!(text.isEmpty() || key.isEmpty()))
 
         val normalizedText = text.lowercase()
         val normalizedKey = key.lowercase()

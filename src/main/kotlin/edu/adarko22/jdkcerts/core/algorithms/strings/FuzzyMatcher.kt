@@ -9,7 +9,7 @@ package edu.adarko22.jdkcerts.core.algorithms.strings
  *
  * @see LevenshteinDistanceFuzzyMatcher
  */
-interface FuzzyMatcher {
+fun interface FuzzyMatcher {
     /**
      * Evaluates how closely the search [key] matches the target [text].
      *

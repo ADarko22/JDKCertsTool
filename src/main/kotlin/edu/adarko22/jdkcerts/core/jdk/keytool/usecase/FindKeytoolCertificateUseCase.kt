@@ -72,9 +72,9 @@ class FindKeytoolCertificateUseCase(
     private fun handleExactMatchSearch(result: KeytoolCommandResult.Success): KeytoolFindCertResult {
         val parseResult = certificateInfoParser.parseCertificateInfo(result.processResult.stdout)
 
-        if (parseResult.hasCertificates) {
+        return if (parseResult.hasCertificates) {
             val certificateInfo = parseResult.certificates.firstOrNull()
-            return if (certificateInfo != null) {
+            if (certificateInfo != null) {
                 KeytoolFindCertResult.Found(result.jdk, listOf(certificateInfo))
             } else {
                 KeytoolFindCertResult.NotFound(
@@ -85,13 +85,13 @@ class FindKeytoolCertificateUseCase(
                 )
             }
         } else if (parseResult.errors.isNotEmpty()) {
-            return KeytoolFindCertResult.Error(
+            KeytoolFindCertResult.Error(
                 jdk = result.jdk,
                 message = "Certificate parsing failed: ${parseResult.errors.firstOrNull()?.reason}",
                 cause = parseResult.errors.firstOrNull()?.cause,
             )
         } else {
-            return KeytoolFindCertResult.NotFound(
+            KeytoolFindCertResult.NotFound(
                 jdk = result.jdk,
                 reason = "Output parsing failed: No certificates found",
                 stdout = result.processResult.stdout,

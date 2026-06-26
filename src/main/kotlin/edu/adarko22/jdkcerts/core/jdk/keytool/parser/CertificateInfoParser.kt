@@ -7,7 +7,7 @@ package edu.adarko22.jdkcerts.core.jdk.keytool.parser
  * as a [CertificateParseResult] containing successfully parsed certificates and any errors
  * encountered during parsing.
  */
-interface CertificateInfoParser {
+fun interface CertificateInfoParser {
     /**
      * Parses the detailed output from a keytool command (single or multiple certificates).
      *
