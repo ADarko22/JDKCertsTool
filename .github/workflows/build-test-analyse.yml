@@ -72,7 +72,14 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
-        run: ./gradlew clean build sonar --info
+        # Only run Sonar if the SONAR_TOKEN secret is actually available (e.g., internal branches/cron)
+        run: |
+          if [ -n "${{ secrets.SONAR_TOKEN }}" ]; then
+            ./gradlew clean build sonar --info
+          else
+            echo "SONAR_TOKEN is missing (likely a fork PR). Skipping Sonar analysis but running the build."
+            ./gradlew clean build --info
+          fi
 
       # 7. Finalize Security Scanning (CodeQL Analysis)
       - name: Perform CodeQL Analysis
