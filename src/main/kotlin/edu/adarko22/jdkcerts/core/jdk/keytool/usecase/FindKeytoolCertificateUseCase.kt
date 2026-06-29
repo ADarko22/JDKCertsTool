@@ -112,10 +112,10 @@ class FindKeytoolCertificateUseCase(
         try {
             val aliasRegex = Regex(alias)
 
-            if (parseResult.hasCertificates) {
+            return if (parseResult.hasCertificates) {
                 val matchedCertificates = parseResult.certificates.filter { it.alias.matches(aliasRegex) }
 
-                return if (matchedCertificates.isNotEmpty()) {
+                if (matchedCertificates.isNotEmpty()) {
                     KeytoolFindCertResult.Found(
                         result.jdk,
                         certificateInfos = matchedCertificates,
@@ -129,7 +129,7 @@ class FindKeytoolCertificateUseCase(
                     )
                 }
             } else {
-                return KeytoolFindCertResult.Error(
+                KeytoolFindCertResult.Error(
                     jdk = result.jdk,
                     message = "No certificates found in keystore",
                 )
@@ -152,26 +152,27 @@ class FindKeytoolCertificateUseCase(
     ): KeytoolFindCertResult {
         val parseResult = certificateInfoParser.parseCertificateInfo(result.processResult.stdout)
 
-        if (parseResult.hasCertificates) {
+        return if (parseResult.hasCertificates) {
             val certificatesWithScores = parseResult.certificates.associateWith { fuzzyMatcher.similarityScore(it.alias, alias) }
             val highestSimilarityScore = certificatesWithScores.values.maxOrNull() ?: 0.0
 
             if (highestSimilarityScore < similarityThreshold) {
-                return KeytoolFindCertResult.NotFound(
+                KeytoolFindCertResult.NotFound(
                     result.jdk,
                     "No Alias Name found as closest match to `$alias`",
                     stdout = result.processResult.stdout,
                     stderr = result.processResult.stderr,
                 )
-            }
+            } else {
+                val topResults = certificatesWithScores.filterValues { it == highestSimilarityScore }.keys.toList()
 
-            val topResults = certificatesWithScores.filterValues { it == highestSimilarityScore }.keys.toList()
-            return KeytoolFindCertResult.Found(
-                jdk = result.jdk,
-                certificateInfos = topResults,
-            )
+                KeytoolFindCertResult.Found(
+                    jdk = result.jdk,
+                    certificateInfos = topResults,
+                )
+            }
         } else {
-            return KeytoolFindCertResult.Error(
+            KeytoolFindCertResult.Error(
                 jdk = result.jdk,
                 message = "No certificates found in keystore",
             )
