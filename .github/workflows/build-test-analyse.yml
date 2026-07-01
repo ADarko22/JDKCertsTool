@@ -1,9 +1,14 @@
-name: Lint, Build, Test & Analyse
+name: Code Quality & Security
 
 on:
+  push:
+    branches: [ master ]
   pull_request:
     branches: [ master ]
-    types: [opened, synchronize, reopened]
+    types: [ opened, synchronize, reopened ]
+    paths-ignore:
+      - '**.md'
+      - 'docs/**'
   schedule:
     - cron: "0 5 * * *" # every day at 5 am
 
@@ -16,27 +21,33 @@ permissions:
   checks: write
 
 jobs:
-  pipeline:
+  lint:
     runs-on: ubuntu-latest
 
     steps:
-      # 1. Initialization
       - name: Checkout code
         uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
         with:
-          fetch-depth: 0 # Required for deep Sonar and Super-Linter structural analysis
+          fetch-depth: 0
 
-      # 2. Static Code Analysis (Linting)
       - name: Run Super-Linter
         uses: github/super-linter@4ce20838b8ab83717e78138c5b3a1407148e0918 # v8.7.0
         env:
           DEFAULT_BRANCH: master
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           VALIDATE_KOTLIN: true
-          VALIDATE_ALL_CODEBASE: false
+          VALIDATE_ALL_CODEBASE: ${{ github.event_name == 'schedule' || github.event_name == 'push' }}
           ENABLE_GITHUB_ACTIONS_STEP_SUMMARY: true
 
-      # 3. Environment Setup
+  build-test-sonar:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
+        with:
+          fetch-depth: 0
+
       - name: Set up JDK 21
         uses: actions/setup-java@1bcf9fb12cf4aa7d266a90ae39939e61372fe520 # v5.4.0
         with:
@@ -46,19 +57,6 @@ jobs:
       - name: Set up Gradle
         uses: gradle/actions/setup-gradle@3f131e8634966bd73d06cc69884922b02e6faf92 # v6.2.0
 
-      # 4. Security Scanning Setup (CodeQL Init)
-      - name: Initialize CodeQL
-        uses: github/codeql-action/init@8aad20d150bbac5944a9f9d289da16a4b0d87c1e # v4.36.2
-        with:
-          languages: java-kotlin
-          build-mode: manual
-          config: |
-            paths-ignore:
-              - '**/*.gradle.kts'
-              - 'settings.gradle.kts'
-              - 'build.gradle.kts'
-
-      # 5. Remote Cache Provisioning
       - name: Cache SonarQube packages
         uses: actions/cache@2c8a9bd7457de244a408f35966fab2fb45fda9c8 # v6.0.0
         with:
@@ -66,8 +64,6 @@ jobs:
           key: ${{ runner.os }}-sonar
           restore-keys: ${{ runner.os }}-sonar
 
-      # 6. Build, Testing & Sonar (if SONAR_TOKEN is available)
-      # Executing 'build' covers compile, tests, and jacoco
       - name: Build & Test
         run: ./gradlew clean build --info
 
@@ -82,11 +78,6 @@ jobs:
             echo "SONAR_TOKEN not configured. Skipping Sonar analysis."
           fi
 
-      # 7. Finalize Security Scanning (CodeQL Analysis)
-      - name: Perform CodeQL Analysis
-        uses: github/codeql-action/analyze@8aad20d150bbac5944a9f9d289da16a4b0d87c1e # v4.36.2
-
-      # 8. Test Reporting & Artifact Archiving
       - name: Upload Test Results
         uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
         with:
@@ -105,10 +96,43 @@ jobs:
           name: code-coverage-report
           path: build/reports/jacoco/test/html
 
-      # 9. Test Report Summary
       - name: Report Test Summary
         uses: dorny/test-reporter@a43b3a5f7366b97d083190328d2c652e1a8b6aa2 # v3.0.0
         with:
           name: JUnit Tests
           path: build/test-results/test/TEST-*.xml
           reporter: java-junit
+
+  codeql:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
+        with:
+          fetch-depth: 0
+
+      - name: Set up JDK 21
+        uses: actions/setup-java@1bcf9fb12cf4aa7d266a90ae39939e61372fe520 # v5.4.0
+        with:
+          java-version: '21'
+          distribution: 'temurin'
+
+      - name: Set up Gradle
+        uses: gradle/actions/setup-gradle@3f131e8634966bd73d06cc69884922b02e6faf92 # v6.2.0
+
+      - name: Initialize CodeQL
+        uses: github/codeql-action/init@8aad20d150bbac5944a9f9d289da16a4b0d87c1e # v4.36.2
+        with:
+          languages: java-kotlin
+          config: |
+            paths-ignore:
+              - '**/*.gradle.kts'
+              - 'settings.gradle.kts'
+              - 'build.gradle.kts'
+
+      - name: Build for CodeQL
+        run: ./gradlew clean build assemble
+
+      - name: Perform CodeQL Analysis
+        uses: github/codeql-action/analyze@8aad20d150bbac5944a9f9d289da16a4b0d87c1e # v4.36.2

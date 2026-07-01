@@ -1,0 +1,36 @@
+site_name: JDKCertsTool
+site_url: https://adarko22.github.io/JDKCertsTool/
+
+theme:
+  name: material
+  features:
+    - navigation.tabs      # Top-level navigation tabs
+    - navigation.sections  # Visual groupings in the sidebar
+    - navigation.expand    # Auto-expands subcategories
+    - search.suggest       # Smart search autocomplete
+    - search.highlight     # Highlights terms from search results
+
+markdown_extensions:
+  - admonition             # Enables !!! note and !!! warning blocks
+  - pymdownx.details       # Enables collapsible disclosure elements
+  - pymdownx.superfences   # Enhanced code block support
+
+nav:
+  - Home:
+      - JdkCertsTool: website/home/index.md
+      - Installation: website/home/installation.md
+      - Use Cases: website/home/usecases.md
+  - Commands Reference:
+      - Overview: website/commands/overview.md
+      - ️️️ℹ️ info: website/commands/info.md
+      - 📋 list-jdks: website/commands/list-jdks.md
+      - 📥 install-cert: website/commands/install-cert.md
+      - 🗑️ remove-cert: website/commands/remove-cert.md
+      - 🔍 find-cert: website/commands/find-cert.md
+  - Architecture:
+      - Overview & Layers: website/architecture/layers.md
+      - Extensibility & Evolution: website/architecture/extensibility.md
+  - Contributing:
+      - Getting Started: website/development/getting-started.md
+      - Commands & Style: website/development/commands-style.md
+      - Build Security: website/development/security.md

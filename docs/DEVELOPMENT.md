@@ -28,7 +28,6 @@ Simply clone the repository and execute the initial check:
 git clone https://github.com/ADarko22/JDKCertsTool.git
 cd JDKCertsTool
 ./gradlew check
-
 ```
 
 ---
@@ -63,6 +62,11 @@ The build will fail if code style violations are discovered.
 * **Check code style:** `./gradlew ktlintCheck`
 * **Auto-format code:** `./gradlew ktlintFormat`
 
+### Clean Architecture
+
+This project follows the Clean Architecture principles. Please have a look at the [architecture](ARCHITECTURE.md)
+section for a quick overview of the project structure and principles to follow.
+
 ---
 
 ## 🔒 Build Security
@@ -95,3 +99,29 @@ More details
 at [Dependency Verification | Gradle](https://docs.gradle.org/current/userguide/dependency_verification.html).
 
 > ⚠️ **Note:** Always review the changes generated in `gradle/verification-metadata.xml` before committing them.
+
+---
+
+## 🧪 Run from Source
+
+### Run with Gradle
+
+```bash
+./gradlew run --args="--help"
+```
+
+### Run from IntelliJ
+
+You can use the provided run configurations in [runConfigurations](../.idea/runConfigurations)`.idea/runConfigurations` to
+execute the tool directly from IntelliJ:
+
+- `Info`
+- `List JDKs`
+- `Install JDK Cert`
+- `Remove JDK Cert`
+- `Find JDK Cert`
+- `Find JDK Cert with Closest Match`
+- `Find JDK Cert with RegEx`
+
+**Note**: you may need to edit the "Program arguments"  to replace placeholders like `<ALIAS>` and `<CERT_PATH>` with
+actual values, and to remove `--dry-run` for permanent changes.

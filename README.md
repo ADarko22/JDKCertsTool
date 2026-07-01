@@ -28,7 +28,7 @@ and implicitly assuming the **cacerts** keystore._
 
 ## 📦 Installation
 
-### ✅ Via Homebrew (macOS/Linux)
+### Via Homebrew (macOS/Linux)
 
 ```bash
 brew tap ADarko22/tap
@@ -45,239 +45,21 @@ Use the installed `jdkcerts` command:
 jdkcerts --help
 ```
 
----
+### 💡 Commands Overview
 
-## 🧪 Run from Source
-
-### Clone the Repository
-
-```bash
-git clone https://github.com/ADarko22/JDKCertsTool.git
-cd JDKCertsTool
-```
-
-### Run with Gradle
-
-```bash
-./gradlew run --args="--help"
-```
-
-### Run from IntelliJ
-
-You can use the provided run configurations in [runConfigurations](.idea/runConfigurations)`.idea/runConfigurations` to
-execute the tool directly from IntelliJ:
-
-- `Info`
-- `List JDKs`
-- `Install JDK Cert`
-- `Remove JDK Cert`
-- `Find JDK Cert`
-- `Find JDK Cert with Closest Match`
-- `Find JDK Cert with RegEx`
-
-**Note**: you may need to edit the "Program arguments"  to replace placeholders like `<ALIAS>` and `<CERT_PATH>` with
-actual values, and to remove `--dry-run` for permanent changes.
-
----
-
-## 💡 Commands Overview
-
-> ⚠️ **Default Scanning vs Custom Override Mode:**
->
-> Using the `--custom-jdk-dirs` option disables automatic system scanning.
-> The tool will run strictly on the paths you provide, keeping your execution isolated and safe.
-
-### 🔍 info
-
-Displays basic project and environment info.
-
-```bash
-jdkcerts info
-```
-
-**Options:**
-
-| Option     | Description                |
-|------------|----------------------------|
-| -h, --help | Show this message and exit |
-
----
-
-### 📋 list-jdks
-
-Lists all discovered JDK installations.
-
-```bash
-jdkcerts list-jdks [--custom-jdk-dirs <VALUE>]
-```
-
-**Options:**
-
-| Option                    | Description                                                                     |
-|---------------------------|---------------------------------------------------------------------------------|
-| --custom-jdk-dirs <VALUE> | Comma-separated paths to JDK directories (optional). Bypasses default scanning. |
-| -h, --help                | Show this message and exit                                                      |
-
----
-
-### 📥 install-cert
-
-Installs a certificate across all discovered JDK keystores.
-
-```bash
-jdkcerts install-cert --cert <PATH> --alias <ALIAS> [--keystore-password <PASSWORD>] [--dry-run] [--custom-jdk-dirs <VALUE>]
-```
-
-**Options:**
-
-| Option                     | Description                                                                     | Default    |
-|----------------------------|---------------------------------------------------------------------------------|------------|
-| --cert <VALUE>             | Path to the certificate file (**required**)                                     |            |
-| --alias <TEXT>             | Certificate alias (**required**)                                                |            |
-| --keystore-password <TEXT> | Keystore password                                                               | `changeit` |
-| --custom-jdk-dirs <VALUE>  | Comma-separated paths to JDK directories (optional). Bypasses default scanning. |            |
-| --dry-run                  | Preview changes without modifying anything                                      |            |
-| -h, --help                 | Show this message and exit                                                      |            |
-
-**Example:**
-
-```bash
-# Preview installation
-jdkcerts install-cert --cert /path/to/cert.pem --alias my-cert --dry-run
-
-# Actually install with default password
-jdkcerts install-cert --cert /path/to/cert.pem --alias my-cert
-```
-
----
-
-### 🗑️ remove-cert
-
-Removes a certificate by alias from all discovered JDK keystores.
-
-```bash
-jdkcerts remove-cert --alias <ALIAS> [--keystore-password <PASSWORD>] [--dry-run] [--custom-jdk-dirs <VALUE>]
-```
-
-**Options:**
-
-| Option                     | Description                                                                     | Default    |
-|----------------------------|---------------------------------------------------------------------------------|------------|
-| --alias <TEXT>             | Certificate alias (**required**)                                                |            |
-| --keystore-password <TEXT> | Keystore password                                                               | `changeit` |
-| --custom-jdk-dirs <VALUE>  | Comma-separated paths to JDK directories (optional). Bypasses default scanning. |            |
-| --dry-run                  | Preview changes without modifying anything                                      |            |
-| -h, --help                 | Show this message and exit                                                      |            |
-
-**Example:**
-
-```bash
-# Preview removal
-jdkcerts remove-cert --alias my-cert --dry-run
-
-# Actually remove
-jdkcerts remove-cert --alias my-cert
-```
-
----
-
-### 🔍 find-cert
-
-Finds and displays certificate details by alias across all JDK keystores.
-
-Supports three search strategies for maximum flexibility:
-
-- **EXACT_MATCH** (default): Fast direct alias lookup using keytool's `-alias` option
-- **REGEX**: Pattern-based matching across all keystore entries (use `--regex` flag)
-- **CLOSEST_MATCH**: Fuzzy matching for approximate alias names (use `--closest-match` flag)
-
-```bash
-jdkcerts find-cert --alias <ALIAS> [--keystore-password <PASSWORD>] [--verbose] [--regex|--closest-match] [--custom-jdk-dirs <VALUE>]
-```
-
-**Options:**
-
-| Option                     | Description                                                                     | Default    |
-|----------------------------|---------------------------------------------------------------------------------|------------|
-| --alias <TEXT>             | Certificate alias or search pattern (**required**)                              |            |
-| --keystore-password <TEXT> | Keystore password                                                               | `changeit` |
-| --verbose                  | Display all certificate details (SHA1, SHA256, Serial, etc.)                    | `false`    |
-| --regex                    | Search by regex pattern instead of exact match                                  |            |
-| --closest-match            | Search by closest match (fuzzy matching for typos)                              |            |
-| --custom-jdk-dirs <VALUE>  | Comma-separated paths to JDK directories (optional). Bypasses default scanning. |            |
-| -h, --help                 | Show this message and exit                                                      |            |
-
-**Examples:**
-
-```bash
-# Exact match (fastest, uses keytool internals)
-jdkcerts find-cert --alias my-cert
-
-# Display verbose certificate details
-jdkcerts find-cert --alias my-cert --verbose
-
-# Regex search (searches all entries)
-jdkcerts find-cert --alias ".*internal.*" --regex
-
-# Fuzzy match (best for typos)
-jdkcerts find-cert --alias "star" --closest-match
-```
-
-**Notes:**
-
-- The `--regex` and `--closest-match` flags cannot be used together.
-- The`closest-match` strategy is case-insensitive and uses a default similarity threshold of `0.3`.
+Checkout the [Commands Overview](docs/USAGE.md) section to learn about the commands, their options and examples.
 
 ---
 
 ## 💼 Use Cases
 
-JDKCertsTool addresses common real-world scenarios where managing JDK truststores becomes a bottleneck. Rather than
-manually fighting with `keytool` for every Java version on your machine, this tool manages the entire lifecycle of your
-certificates globally.
 
-### 1. Enterprise Setup & Provisioning
+---
 
-**Problem:** Corporate environments frequently use SSL inspection via internal Certificate Authorities (CAs), or
-developers rely on self-signed certificates for local staging servers. If your JDKs don't trust these certificates,
-IDEs, build tools (Maven/Gradle), and local applications will throw SSL connection errors.
-Modern developers also commonly have multiple JDK distributions installed simultaneously, making certificate management
-tedious and error-prone.
+## 💻 Contributing
 
-**Solution:** Use `list-jdks` to verify your environment footprint, then inject a required corporate or local
-certificate into all discovered JDKs in a single operation.
-
-```bash
-jdkcerts install-cert --cert /path/to/corp-ca.pem --alias corp-ca --dry-run
- ```
-
-### 2. Troubleshooting Trust Errors
-
-**Problem:** The dreaded `PKIX path building failed` error appears, but you're not sure whether:
-
-- The required certificate is missing
-- The certificate has expired
-- The certificate was installed under an unexpected alias
-
-**Solution:** Use flexible search strategies to locate certificates even when you only remember part of the alias or
-made a typo during installation.
-
-```bash
-jdkcerts find-cert --alias "dev-srvr" --closest-match --verbose
-```
-
-### 3. Auditing & Security Hygiene
-
-**Problem:** Over time, developer workstations and CI/CD runners accumulate obsolete, unused, or expired certificates.
-Retaining compromised or expired root CAs increases security risk and can lead to unexpected runtime failures.
-
-**Solution:** Perform periodic audits using regex-based searches to identify related certificate groups, then remove
-obsolete entries from every JDK on the system with a single command.
-
-```bash
-jdkcerts find-cert --alias ".*legacy.*" --regex
-jdkcerts remove-cert --alias legacy-dev-2023
-```
+Your contributions are welcome! 
+Have a look at the dedicated [contribution](docs/DEVELOPMENT.md) section for further details.
 
 ---
 
