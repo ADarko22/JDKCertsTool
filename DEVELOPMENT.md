@@ -112,7 +112,7 @@ at [Dependency Verification | Gradle](https://docs.gradle.org/current/userguide/
 
 ### Run from IntelliJ
 
-You can use the provided run configurations in [runConfigurations](../.idea/runConfigurations)`.idea/runConfigurations` to
+You can use the provided run configurations in [runConfigurations](.idea/runConfigurations)`.idea/runConfigurations` to
 execute the tool directly from IntelliJ:
 
 - `Info`

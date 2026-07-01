@@ -17,7 +17,7 @@ markdown_extensions:
 
 nav:
   - Home:
-      - JdkCertsTool: website/home/index.md
+      - JdkCertsTool: index.md
       - Installation: website/home/installation.md
       - Use Cases: website/home/usecases.md
   - Commands Reference:
