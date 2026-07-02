@@ -1,19 +1,48 @@
+# https://squidfunk.github.io/mkdocs-material/setup/
 site_name: JDKCertsTool
 site_url: https://adarko22.github.io/JDKCertsTool/
 
+repo_url: https://github.com/ADarko22/JDKCertsTool/
+edit_uri: edit/master/docs/
+
 theme:
   name: material
+  palette:
+    # Palette toggle for light mode
+    - scheme: default
+      primary: teal
+      accent: amber
+      toggle:
+        icon: material/weather-night
+        name: Switch to dark mode
+
+    # Palette toggle for dark mode
+    - scheme: slate
+      primary: teal
+      accent: amber
+      toggle:
+        icon: material/weather-sunny
+        name: Switch to light mode
+  font:
+    code: calm
+  icon:
+    repo: fontawesome/brands/github
+    edit: material/pencil
+    view: material/eye
   features:
     - navigation.tabs      # Top-level navigation tabs
     - navigation.sections  # Visual groupings in the sidebar
     - navigation.expand    # Auto-expands subcategories
     - search.suggest       # Smart search autocomplete
     - search.highlight     # Highlights terms from search results
+    - content.action.view  # Displays the "View source of this page" eye button
+    - content.action.edit  # Displays the "Edit this page" pencil button
 
 markdown_extensions:
   - admonition             # Enables !!! note and !!! warning blocks
   - pymdownx.details       # Enables collapsible disclosure elements
   - pymdownx.superfences   # Enhanced code block support
+  - attr_list
 
 nav:
   - Home:
