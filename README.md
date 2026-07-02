@@ -47,7 +47,7 @@ jdkcerts --help
 
 ### 💡 Commands Overview
 
-Checkout the [Commands Overview](docs/USAGE.md) section to learn about the commands, their options and examples.
+Checkout the [Commands Overview](USAGE.md) section to learn about the commands, their options and examples.
 
 ---
 
@@ -59,7 +59,7 @@ Checkout the [Commands Overview](docs/USAGE.md) section to learn about the comma
 ## 💻 Contributing
 
 Your contributions are welcome! 
-Have a look at the dedicated [contribution](docs/DEVELOPMENT.md) section for further details.
+Have a look at the dedicated [contribution](DEVELOPMENT.md) section for further details.
 
 ---
 

@@ -6,13 +6,13 @@ testability, maintainability, and independence from external frameworks (like th
 The architecture is strictly separated into three layers, adhering to the Dependency Rule (dependencies only flow
 inward):
 
-1. [core](../src/main/kotlin/edu/adarko22/jdkcerts/core) (Domain/Use Cases): Contains the business logic (e.g., the
+1. [core](src/main/kotlin/edu/adarko22/jdkcerts/core) (Domain/Use Cases): Contains the business logic (e.g., the
    rules for discovering a JDK, for managing a certificate). It is entirely decoupled from the OS and CLI.
 
-2. [cli](../src/main/kotlin/edu/adarko22/jdkcerts/cli) (Interface Adapters): Translates user input (CLI arguments) into
+2. [cli](src/main/kotlin/edu/adarko22/jdkcerts/cli) (Interface Adapters): Translates user input (CLI arguments) into
    calls to the Core Use Cases, and formats the Core's output for display.
 
-3. [infra](../src/main/kotlin/edu/adarko22/jdkcerts/infra) (Drivers/OS): Contains the concrete, low-level implementations
+3. [infra](src/main/kotlin/edu/adarko22/jdkcerts/infra) (Drivers/OS): Contains the concrete, low-level implementations
    for interacting with the operating system (e.g., executing the keytool binary, scanning the filesystem).
 
 For a detailed breakdown of the layers and components, please refer to the dedicated documentation: Project Architecture

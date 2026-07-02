@@ -42,20 +42,7 @@ class FindCertCliCommand(
 
     override fun run() {
         // Determine search strategy from flags
-        val searchStrategy =
-            when {
-                useRegex && useClosestMatch -> {
-                    echo(
-                        "Error: Cannot use both --regex and --closest-match. Please choose one.",
-                        err = true,
-                    )
-                    throw IllegalArgumentException("Conflicting search strategy flags")
-                }
-
-                useRegex -> SearchStrategy.REGEX
-                useClosestMatch -> SearchStrategy.CLOSEST_MATCH
-                else -> SearchStrategy.EXACT_MATCH
-            }
+        val searchStrategy = parseStrategy()
 
         val results =
             runBlocking {
@@ -68,4 +55,27 @@ class FindCertCliCommand(
             }
         findCertCliPresenter.present(results, verbose, alias)
     }
+
+    private fun parseStrategy(): SearchStrategy =
+        when {
+            useRegex && useClosestMatch -> {
+                echo(
+                    "Error: Cannot use both --regex and --closest-match. Please choose one.",
+                    err = true,
+                )
+                throw IllegalArgumentException("Conflicting search strategy flags")
+            }
+
+            useRegex -> {
+                SearchStrategy.REGEX
+            }
+
+            useClosestMatch -> {
+                SearchStrategy.CLOSEST_MATCH
+            }
+
+            else -> {
+                SearchStrategy.EXACT_MATCH
+            }
+        }
 }
