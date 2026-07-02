@@ -28,4 +28,6 @@ jobs:
       # 2. Deploy gh pages with mkdocs
       - name: Deploy to GitHub Pages
         run: |
+          git config user.name "${{ github.actor }}"
+          git config user.email "${{ github.actor_id }}+${{ github.actor }}@users.noreply.github.com"
           mkdocs gh-deploy --force

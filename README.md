@@ -3,6 +3,7 @@
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 
 A command-line utility to manage certificates in all the installed JDKs discovered.
+Visitthe [JDKCertsTool official page](https://adarko22.github.io/JDKCertsTool/website) to discover more about!
 
 ## ❓ Why JDKCertsTool?
 
@@ -33,6 +34,9 @@ and implicitly assuming the **cacerts** keystore._
 ```bash
 brew tap ADarko22/tap
 brew install jdkcerts
+
+# or upgrade with
+brew upgrade jdkcerts
 ````
 
 ---
@@ -48,11 +52,6 @@ jdkcerts --help
 ### 💡 Commands Overview
 
 Checkout the [Commands Overview](USAGE.md) section to learn about the commands, their options and examples.
-
----
-
-## 💼 Use Cases
-
 
 ---
 
