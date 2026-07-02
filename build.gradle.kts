@@ -53,8 +53,17 @@ application {
 
 // Ktlint configuration
 ktlint {
+    // Force engine to match the version used by Super-Linter (CI)
+    version.set("1.8.0")
     android.set(false)
+    ignoreFailures.set(false)
     outputColorName.set("RED")
+
+    filter {
+        // Explicitly include the kotlin source files
+        include("**/*.kt")
+    }
+
     reporters {
         reporter(org.jlleitschuh.gradle.ktlint.reporter.ReporterType.PLAIN)
         reporter(org.jlleitschuh.gradle.ktlint.reporter.ReporterType.CHECKSTYLE)
