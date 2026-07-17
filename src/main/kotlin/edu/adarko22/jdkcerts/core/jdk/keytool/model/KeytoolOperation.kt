@@ -4,20 +4,29 @@ import edu.adarko22.jdkcerts.core.jdk.Jdk
 import kotlin.collections.List
 import kotlin.io.path.absolutePathString
 
+/**
+ * Represents a keytool operation and composes the full CLI invocation.
+ *
+ * Implementations provide operation-specific args via [getArgs]. [buildCommand]
+ * prefixes the keytool executable from the target [Jdk] and appends keystore args.
+ */
 sealed interface KeytoolOperation {
+    /**
+     * The alias associated with the operation (if applicable).
+     */
     val alias: String
 
     /**
-     * Returns the command-line arguments for this keytool operation (without keytool executable or keystore args).
+     * Returns the keytool-specific command-line arguments for this operation (excluding the
+     * keytool executable and keystore selection arguments).
      */
     fun getArgs(): List<String>
 
     /**
      * Builds the full process command including keytool executable path and keystore resolution arguments.
-     * This implementation is shared across all command types to avoid duplication.
      *
      * @param jdk The JDK instance providing keytool path and keystore information.
-     * @param keystorePassword The keystore password.
+     * @param keystorePassword The keystore password to pass as `-storepass`.
      * @return Complete command list ready for process execution.
      */
     fun buildCommand(
@@ -42,6 +51,13 @@ sealed interface KeytoolOperation {
 }
 
 // QRS Separations
+
+/**
+ * Marker for mutating keytool operations (commands) such as import or delete.
+ */
 sealed interface KeytoolCommand : KeytoolOperation
 
+/**
+ * Marker for read-only keytool operations (queries) such as listing certificates.
+ */
 sealed interface KeytoolQuery : KeytoolOperation
