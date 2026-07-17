@@ -7,8 +7,7 @@ import edu.adarko22.jdkcerts.core.jdk.java.usecase.ResolveJavaInfoUseCase
 import edu.adarko22.jdkcerts.core.jdk.keytool.parser.DefaultCertificateInfoParser
 import edu.adarko22.jdkcerts.core.jdk.keytool.usecase.ExecuteKeytoolCommandUseCase
 import edu.adarko22.jdkcerts.core.jdk.keytool.usecase.FindKeytoolCertificateUseCase
-import edu.adarko22.jdkcerts.core.jdk.keytool.usecase.InstallKeytoolCertificateUseCase
-import edu.adarko22.jdkcerts.core.jdk.keytool.usecase.RemoveKeytoolCertificateUseCase
+import edu.adarko22.jdkcerts.infra.execution.KeytoolProcessRunnerImpl
 import edu.adarko22.jdkcerts.infra.execution.SystemProcessRunner
 import edu.adarko22.jdkcerts.infra.system.SystemType
 
@@ -36,35 +35,27 @@ fun main(args: Array<String>) {
             Runtime.getRuntime().availableProcessors().coerceAtLeast(2),
             10_000L,
         )
+    val keytoolProcessRunner = KeytoolProcessRunnerImpl(processRunner)
     val javaInfoParser = DefaultJavaInfoParser()
     val certificateInfoParser = DefaultCertificateInfoParser()
 
     // Use-cases
-    val resolveJavaInfo = ResolveJavaInfoUseCase(processRunner, javaInfoParser)
-    val discoverJdks =
+    val resolveJavaInfoUseCase = ResolveJavaInfoUseCase(processRunner, javaInfoParser)
+    val discoverJdksUseCase =
         DiscoverJdksUseCase(
             systemType.jdkPathDiscovery(),
             systemType.keystoreInfoResolver(),
-            resolveJavaInfo,
+            resolveJavaInfoUseCase,
         )
-    val executeKeytoolCommandUseCase =
-        ExecuteKeytoolCommandUseCase(
-            discoverJdks,
-            processRunner,
-        )
-    val installKeytoolCertificateUseCase = InstallKeytoolCertificateUseCase(executeKeytoolCommandUseCase)
-    val removeKeytoolCertificateUseCase = RemoveKeytoolCertificateUseCase(executeKeytoolCommandUseCase)
+
+    val executeKeytoolCommandUseCase = ExecuteKeytoolCommandUseCase(discoverJdksUseCase, keytoolProcessRunner)
     val findKeytoolCertificateUseCase =
-        FindKeytoolCertificateUseCase(
-            executeKeytoolCommandUseCase,
-            certificateInfoParser,
-        )
+        FindKeytoolCertificateUseCase(discoverJdksUseCase, keytoolProcessRunner, certificateInfoParser)
 
     // Build the CLI and Run with args
     CliBuilder(
-        discoverJdks,
-        installKeytoolCertificateUseCase,
-        removeKeytoolCertificateUseCase,
+        discoverJdksUseCase,
+        executeKeytoolCommandUseCase,
         findKeytoolCertificateUseCase,
     ).withInfo()
         .withListJdks()

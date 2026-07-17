@@ -9,7 +9,7 @@ import edu.adarko22.jdkcerts.core.jdk.Jdk
  * This sealed hierarchy distinguishes between commands that finished with a success exit code
  * and those that encountered system or execution failures.
  */
-sealed class KeytoolCommandResult {
+sealed class KeytoolOperationResult {
     abstract val jdk: Jdk
 
     /**
@@ -21,7 +21,7 @@ sealed class KeytoolCommandResult {
     data class Success(
         override val jdk: Jdk,
         val processResult: ProcessResult,
-    ) : KeytoolCommandResult()
+    ) : KeytoolOperationResult()
 
     /**
      * Represents a command that failed to execute correctly (typically a non-zero exit code).
@@ -34,5 +34,5 @@ sealed class KeytoolCommandResult {
         override val jdk: Jdk,
         val processResult: ProcessResult,
         val errorMessage: String,
-    ) : KeytoolCommandResult()
+    ) : KeytoolOperationResult()
 }

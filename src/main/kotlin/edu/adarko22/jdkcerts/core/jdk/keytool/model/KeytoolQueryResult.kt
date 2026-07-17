@@ -5,7 +5,7 @@ import edu.adarko22.jdkcerts.core.jdk.Jdk
 /**
  * Represents the high-level result of searching for a specific certificate in a JDK.
  */
-sealed class KeytoolFindCertResult {
+sealed class KeytoolQueryResult {
     abstract val jdk: Jdk
 
     /**
@@ -17,7 +17,7 @@ sealed class KeytoolFindCertResult {
     data class Found(
         override val jdk: Jdk,
         val certificateInfos: List<CertificateInfo>,
-    ) : KeytoolFindCertResult()
+    ) : KeytoolQueryResult()
 
     /**
      * Indicates the process completed, but the specific alias or certificate could not be found.
@@ -35,7 +35,7 @@ sealed class KeytoolFindCertResult {
         val reason: String,
         val stdout: String,
         val stderr: String,
-    ) : KeytoolFindCertResult()
+    ) : KeytoolQueryResult()
 
     /**
      * Indicates a critical failure occurred during the search or parsing phase.
@@ -48,5 +48,5 @@ sealed class KeytoolFindCertResult {
         override val jdk: Jdk,
         val message: String,
         val cause: Throwable? = null,
-    ) : KeytoolFindCertResult()
+    ) : KeytoolQueryResult()
 }
