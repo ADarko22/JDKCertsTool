@@ -57,6 +57,13 @@ Here are some ways the architecture supports extensibility:
 This architecture ensures that JDKCertsTool remains adaptable, maintainable, and open to future expansion,
 whether that means new platforms, new certificate workflows, or deeper integrations in enterprise environments.
 
+### Command / Query Responsibility Segregation (CQRS)
+
+Keytool operations follow CQRS:
+
+- mutating actions (install/remove) are Commands
+- read-only searches (find) are Queries
+
 ### Evolution Toward Multi-Module
 
 Currently, this architecture is enforced through a package structure within a single root module. As the project grows,
