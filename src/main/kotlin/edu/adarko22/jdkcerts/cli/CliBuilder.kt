@@ -13,9 +13,8 @@ import edu.adarko22.jdkcerts.cli.command.jdk.RemoveCertCliCommand
 import edu.adarko22.jdkcerts.cli.output.DefaultToolOutputPrinter
 import edu.adarko22.jdkcerts.cli.output.ToolOutputPrinter
 import edu.adarko22.jdkcerts.core.jdk.DiscoverJdksUseCase
+import edu.adarko22.jdkcerts.core.jdk.keytool.usecase.ExecuteKeytoolCommandUseCase
 import edu.adarko22.jdkcerts.core.jdk.keytool.usecase.FindKeytoolCertificateUseCase
-import edu.adarko22.jdkcerts.core.jdk.keytool.usecase.InstallKeytoolCertificateUseCase
-import edu.adarko22.jdkcerts.core.jdk.keytool.usecase.RemoveKeytoolCertificateUseCase
 
 /**
  * Builder for assembling the JDKCertsTool CLI application.
@@ -31,8 +30,7 @@ import edu.adarko22.jdkcerts.core.jdk.keytool.usecase.RemoveKeytoolCertificateUs
  */
 class CliBuilder(
     private val discoverJdks: DiscoverJdksUseCase,
-    private val installKeytoolCertificateUseCase: InstallKeytoolCertificateUseCase,
-    private val removeKeytoolCertificateUseCase: RemoveKeytoolCertificateUseCase,
+    private val executeKeytoolCommandUseCase: ExecuteKeytoolCommandUseCase,
     private val findKeytoolCertificateUseCase: FindKeytoolCertificateUseCase,
     private val toolOutputPrinter: ToolOutputPrinter = DefaultToolOutputPrinter(),
 ) : CliEntryPoint {
@@ -75,7 +73,7 @@ class CliBuilder(
         apply {
             subcommands.add(
                 InstallCertCliCommand(
-                    installKeytoolCertificateUseCase,
+                    executeKeytoolCommandUseCase,
                     keytoolCommandResultsCliPresenter,
                 ),
             )
@@ -88,7 +86,7 @@ class CliBuilder(
         apply {
             subcommands.add(
                 RemoveCertCliCommand(
-                    removeKeytoolCertificateUseCase,
+                    executeKeytoolCommandUseCase,
                     keytoolCommandResultsCliPresenter,
                 ),
             )

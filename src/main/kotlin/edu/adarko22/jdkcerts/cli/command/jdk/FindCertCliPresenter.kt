@@ -6,7 +6,7 @@ import edu.adarko22.jdkcerts.cli.output.green
 import edu.adarko22.jdkcerts.cli.output.red
 import edu.adarko22.jdkcerts.cli.output.yellow
 import edu.adarko22.jdkcerts.core.jdk.keytool.model.CertificateInfo
-import edu.adarko22.jdkcerts.core.jdk.keytool.model.KeytoolFindCertResult
+import edu.adarko22.jdkcerts.core.jdk.keytool.model.KeytoolQueryResult
 import java.time.format.DateTimeFormatter
 
 class FindCertCliPresenter(
@@ -22,12 +22,12 @@ class FindCertCliPresenter(
      * @param alias The alias used in the search.
      */
     fun present(
-        results: List<KeytoolFindCertResult>,
+        results: List<KeytoolQueryResult>,
         verbose: Boolean,
         alias: String,
     ) {
         // 1. Summary Header
-        val found = results.filterIsInstance<KeytoolFindCertResult.Found>()
+        val found = results.filterIsInstance<KeytoolQueryResult.Found>()
         if (found.isNotEmpty()) {
             output.print("Found ${found.size} certificates matching alias '$alias':\n".green())
         } else {
@@ -38,14 +38,14 @@ class FindCertCliPresenter(
         results.forEach { result -> processResult(result, verbose) }
 
         // 3. Footer Summary for Errors
-        val errors = results.filterIsInstance<KeytoolFindCertResult.Error>()
+        val errors = results.filterIsInstance<KeytoolQueryResult.Error>()
         if (errors.isNotEmpty()) {
             output.print("Note: ${errors.size} JDKs encountered execution errors. Use --verbose for details.".red())
         }
     }
 
     private fun processResult(
-        result: KeytoolFindCertResult,
+        result: KeytoolQueryResult,
         verbose: Boolean,
     ) {
         output.print("--------------------------------------------------".blue())
@@ -53,11 +53,11 @@ class FindCertCliPresenter(
         output.print("Path: ${result.jdk.path}".blue())
 
         when (result) {
-            is KeytoolFindCertResult.Found -> {
+            is KeytoolQueryResult.Found -> {
                 result.certificateInfos.forEach { presentFound(it, verbose) }
             }
 
-            is KeytoolFindCertResult.NotFound -> {
+            is KeytoolQueryResult.NotFound -> {
                 output.print("Status: NOT FOUND".yellow())
                 output.print("Reason: ${result.reason}")
                 if (verbose) {
@@ -70,7 +70,7 @@ class FindCertCliPresenter(
                 }
             }
 
-            is KeytoolFindCertResult.Error -> {
+            is KeytoolQueryResult.Error -> {
                 output.print("Status: ERROR".red())
                 output.print("Message: ${result.message}")
                 if (verbose && result.cause != null) {

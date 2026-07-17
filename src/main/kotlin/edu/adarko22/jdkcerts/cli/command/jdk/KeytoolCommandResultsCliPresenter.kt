@@ -5,7 +5,7 @@ import edu.adarko22.jdkcerts.cli.output.blue
 import edu.adarko22.jdkcerts.cli.output.green
 import edu.adarko22.jdkcerts.cli.output.red
 import edu.adarko22.jdkcerts.cli.output.yellow
-import edu.adarko22.jdkcerts.core.jdk.keytool.model.KeytoolCommandResult
+import edu.adarko22.jdkcerts.core.jdk.keytool.model.KeytoolOperationResult
 
 /**
  * CLI presenter responsible for formatting the results for the console output.
@@ -16,7 +16,7 @@ class KeytoolCommandResultsCliPresenter(
     private val output: ToolOutputPrinter,
 ) {
     fun present(
-        results: List<KeytoolCommandResult>,
+        results: List<KeytoolOperationResult>,
         dryRun: Boolean,
     ) {
         var successes = 0
@@ -31,7 +31,7 @@ class KeytoolCommandResultsCliPresenter(
 
             // 2. Status and Output
             when (result) {
-                is KeytoolCommandResult.Success -> {
+                is KeytoolOperationResult.Success -> {
                     if (dryRun) {
                         output.print("Status: DRY RUN".yellow())
                         output.print("Command: ${result.processResult.dryRunOutput}")
@@ -42,7 +42,7 @@ class KeytoolCommandResultsCliPresenter(
                     successes++
                 }
 
-                is KeytoolCommandResult.Failure -> {
+                is KeytoolOperationResult.Failure -> {
                     output.print("Status: ERROR".red())
                     output.print("Message: ${result.errorMessage}".red())
                     output.print("Details:\n${result.processResult.stderr}".red())

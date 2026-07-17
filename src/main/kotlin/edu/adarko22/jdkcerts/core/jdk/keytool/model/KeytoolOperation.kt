@@ -1,17 +1,11 @@
 package edu.adarko22.jdkcerts.core.jdk.keytool.model
 
 import edu.adarko22.jdkcerts.core.jdk.Jdk
+import kotlin.collections.List
 import kotlin.io.path.absolutePathString
 
-/**
- * Represents a `keytool` command with arguments and automatic keystore resolution.
- *
- * @property alias The certificate alias (if applicable for this command).
- * @property keystorePassword The keystore password.
- */
-interface KeytoolCommand {
+sealed interface KeytoolOperation {
     val alias: String
-    val keystorePassword: String
 
     /**
      * Returns the command-line arguments for this keytool operation (without keytool executable or keystore args).
@@ -23,16 +17,20 @@ interface KeytoolCommand {
      * This implementation is shared across all command types to avoid duplication.
      *
      * @param jdk The JDK instance providing keytool path and keystore information.
+     * @param keystorePassword The keystore password.
      * @return Complete command list ready for process execution.
      */
-    fun buildCommand(jdk: Jdk): List<String> {
+    fun buildCommand(
+        jdk: Jdk,
+        keystorePassword: String,
+    ): List<String> {
         val keytoolExecutable = jdk.keytoolPath.absolutePathString()
         val keystoreInfo = jdk.keystoreInfo
 
         val keystoreArgs =
             when {
-                keystoreInfo.cacertsShortcutEnabled -> listOf("-cacerts")
-                else -> listOf("-keystore", keystoreInfo.keystorePath.absolutePathString())
+                keystoreInfo.cacertsShortcutEnabled -> listOf("-cacerts", "-storepass", keystorePassword)
+                else -> listOf("-keystore", keystoreInfo.keystorePath.absolutePathString(), "-storepass", keystorePassword)
             }
 
         return buildList {
@@ -42,3 +40,8 @@ interface KeytoolCommand {
         }
     }
 }
+
+// QRS Separations
+sealed interface KeytoolCommand : KeytoolOperation
+
+sealed interface KeytoolQuery : KeytoolOperation

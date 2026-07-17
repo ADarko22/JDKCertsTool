@@ -8,6 +8,8 @@ import edu.adarko22.jdkcerts.cli.command.aliasOption
 import edu.adarko22.jdkcerts.cli.command.customJdkDirsOption
 import edu.adarko22.jdkcerts.cli.command.keystorePasswordOption
 import edu.adarko22.jdkcerts.cli.command.verboseOption
+import edu.adarko22.jdkcerts.core.jdk.keytool.model.ExecutionContext
+import edu.adarko22.jdkcerts.core.jdk.keytool.model.FindCertKeytoolQuery
 import edu.adarko22.jdkcerts.core.jdk.keytool.model.SearchStrategy
 import edu.adarko22.jdkcerts.core.jdk.keytool.usecase.FindKeytoolCertificateUseCase
 import kotlinx.coroutines.runBlocking
@@ -46,12 +48,9 @@ class FindCertCliCommand(
 
         val results =
             runBlocking {
-                findKeytoolCertificateUseCase.execute(
-                    alias,
-                    keystorePassword,
-                    customJdkDirs,
-                    searchStrategy,
-                )
+                val findCertKeytoolQuery = FindCertKeytoolQuery(alias, searchStrategy)
+                val executionContext = ExecutionContext(customJdkDirs, keystorePassword)
+                findKeytoolCertificateUseCase.execute(findCertKeytoolQuery, executionContext)
             }
         findCertCliPresenter.present(results, verbose, alias)
     }

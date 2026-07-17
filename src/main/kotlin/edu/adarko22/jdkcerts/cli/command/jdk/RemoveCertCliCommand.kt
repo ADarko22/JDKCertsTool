@@ -6,7 +6,9 @@ import edu.adarko22.jdkcerts.cli.command.aliasOption
 import edu.adarko22.jdkcerts.cli.command.customJdkDirsOption
 import edu.adarko22.jdkcerts.cli.command.dryRunOption
 import edu.adarko22.jdkcerts.cli.command.keystorePasswordOption
-import edu.adarko22.jdkcerts.core.jdk.keytool.usecase.RemoveKeytoolCertificateUseCase
+import edu.adarko22.jdkcerts.core.jdk.keytool.model.ExecutionContext
+import edu.adarko22.jdkcerts.core.jdk.keytool.model.RemoveCertKeytoolCommand
+import edu.adarko22.jdkcerts.core.jdk.keytool.usecase.ExecuteKeytoolCommandUseCase
 import kotlinx.coroutines.runBlocking
 import java.nio.file.Path
 
@@ -14,7 +16,7 @@ import java.nio.file.Path
  * Command for removing a certificate, by its alias, from JDK cacerts keystore across all the JDK installations discovered.
  */
 class RemoveCertCliCommand(
-    private val removeKeytoolCertificateUseCase: RemoveKeytoolCertificateUseCase,
+    private val executeKeytoolCommandUseCase: ExecuteKeytoolCommandUseCase,
     val keytoolCommandResultsCliPresenter: KeytoolCommandResultsCliPresenter,
 ) : CliktCommand(name = "remove-cert") {
     private val customJdkDirs: List<Path> by customJdkDirsOption()
@@ -27,13 +29,9 @@ class RemoveCertCliCommand(
     override fun run() {
         val results =
             runBlocking {
-                removeKeytoolCertificateUseCase
-                    .execute(
-                        alias,
-                        keystorePassword,
-                        customJdkDirs,
-                        dryRun,
-                    )
+                val removeCertKeytoolCommand = RemoveCertKeytoolCommand(alias)
+                val executionContext = ExecutionContext(customJdkDirs, keystorePassword, dryRun)
+                executeKeytoolCommandUseCase.execute(removeCertKeytoolCommand, executionContext)
             }
         keytoolCommandResultsCliPresenter.present(results, dryRun)
     }

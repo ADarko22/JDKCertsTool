@@ -1,13 +1,11 @@
 package edu.adarko22.jdkcerts.core.jdk.keytool.usecase
 
+import edu.adarko22.jdkcerts.core.execution.KeytoolProcessRunner
 import edu.adarko22.jdkcerts.core.execution.ProcessRunner
 import edu.adarko22.jdkcerts.core.jdk.DiscoverJdksUseCase
+import edu.adarko22.jdkcerts.core.jdk.keytool.model.ExecutionContext
 import edu.adarko22.jdkcerts.core.jdk.keytool.model.KeytoolCommand
-import edu.adarko22.jdkcerts.core.jdk.keytool.model.KeytoolCommandResult
-import kotlinx.coroutines.async
-import kotlinx.coroutines.awaitAll
-import kotlinx.coroutines.coroutineScope
-import java.nio.file.Path
+import edu.adarko22.jdkcerts.core.jdk.keytool.model.KeytoolOperationResult
 
 /**
  * Use case for executing [KeytoolCommand] on all discovered JDKs.
@@ -23,51 +21,28 @@ import java.nio.file.Path
  * - **Structured Concurrency:** Wrapped in a `coroutineScope`, ensuring that if the parent job
  * is canceled, all parallel OS process tasks are safely notified.
  *
- * @param discoverJdks Component responsible for finding and assembling [Jdk] instances.
- * @param processRunner Component responsible for running system commands safely.
+ * @param keytoolProcessRunner Engine running KeytoolCommands.
  */
 class ExecuteKeytoolCommandUseCase(
-    private val discoverJdks: DiscoverJdksUseCase,
-    private val processRunner: ProcessRunner,
+    val jdkDiscoverJdksUseCase: DiscoverJdksUseCase,
+    private val keytoolProcessRunner: KeytoolProcessRunner,
 ) {
     /**
      * Executes the given keytool command against all discovered JDKs concurrently.
      *
      * Standard process failures (e.g., non-zero exit codes) are gracefully caught and
-     * wrapped in a [KeytoolCommandResult.Failure] object. They do **not** throw exceptions
+     * wrapped in a [KeytoolOperationResult.Failure] object. They do **not** throw exceptions
      * or cancel the concurrent execution of other JDKs.
      *
      * @param keytoolCommand The keytool command configuration (responsible for building its own arguments).
-     * @param customJdkDirs Optional user-provided directories to include in the JDK discovery phase.
-     * @param dryRun If `true`, the OS process is bypassed and the command returns a simulated preview.
-     * @return List of [KeytoolCommandResult] objects, representing the isolated outcome for each JDK.
+     * @param executionContext The context for executing the keytool command on the system.
+     * @return List of [KeytoolOperationResult] objects, representing the isolated outcome for each JDK.
      */
     suspend fun execute(
         keytoolCommand: KeytoolCommand,
-        customJdkDirs: List<Path>,
-        dryRun: Boolean,
-    ): List<KeytoolCommandResult> =
-        coroutineScope {
-            val jdks = discoverJdks.discover(customJdkDirs)
-
-            val deferredResults =
-                jdks.map { jdk ->
-                    async {
-                        val command = keytoolCommand.buildCommand(jdk)
-                        val result = processRunner.runCommand(command, dryRun)
-
-                        if (result.exitCode == 0) {
-                            KeytoolCommandResult.Success(jdk, result)
-                        } else {
-                            KeytoolCommandResult.Failure(
-                                jdk,
-                                result,
-                                "Keytool failed with exit code ${result.exitCode}: ${result.stderr}",
-                            )
-                        }
-                    }
-                }
-
-            deferredResults.awaitAll()
-        }
+        executionContext: ExecutionContext,
+    ): List<KeytoolOperationResult> {
+        val jdks = jdkDiscoverJdksUseCase.discover(executionContext.customJdkDirs)
+        return keytoolProcessRunner.runConcurrently(keytoolCommand, jdks, executionContext.masterPassword, executionContext.dryRun)
+    }
 }

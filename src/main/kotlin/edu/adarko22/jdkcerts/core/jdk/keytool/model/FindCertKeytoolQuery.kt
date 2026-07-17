@@ -12,14 +12,12 @@ package edu.adarko22.jdkcerts.core.jdk.keytool.model
  *   Requires post-processing of all keystore entries.
  *
  * @property alias The certificate alias or search pattern.
- * @property keystorePassword The keystore password.
  * @property searchStrategy The search strategy (EXACT_MATCH, CLOSEST_MATCH, REGEX).
  */
-data class FindCertKeytoolCommand(
+data class FindCertKeytoolQuery(
     override val alias: String,
-    override val keystorePassword: String,
     val searchStrategy: SearchStrategy,
-) : KeytoolCommand {
+) : KeytoolQuery {
     override fun getArgs(): List<String> =
         if (searchStrategy == SearchStrategy.EXACT_MATCH) {
             listOf(
@@ -27,15 +25,11 @@ data class FindCertKeytoolCommand(
                 "-v",
                 "-alias",
                 alias,
-                "-storepass",
-                keystorePassword,
             )
         } else {
             listOf(
                 "-list",
                 "-v",
-                "-storepass",
-                keystorePassword,
             )
         }
 }
