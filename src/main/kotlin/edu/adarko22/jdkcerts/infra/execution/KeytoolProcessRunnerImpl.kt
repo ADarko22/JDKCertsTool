@@ -10,13 +10,11 @@ import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.coroutineScope
 
 /**
- * Use case for executing [KeytoolOperation] on all discovered JDKs.
- *
- * This use case leverages Kotlin Coroutines to fan-out external processes concurrently,
- * significantly reducing execution time when scanning multiple JDK installations.
+ * Implementation of [KeytoolProcessRunner] which leverages Kotlin Coroutines
+ * to fan-out external processes concurrently, when scanning multiple JDK installations.
  *
  * **Architectural Notes:**
- * - **Concurrency Delegation:** It relies entirely on the injected [edu.adarko22.jdkcerts.core.execution.ProcessRunner] to safely handle
+ * - **Concurrency Delegation:** It relies entirely on the injected [ProcessRunner] to safely handle
  * OS-level process throttling and resource limits.
  * - **Non-Deterministic Ordering:** Because tasks run concurrently, the temporal execution order
  * is non-deterministic. However, the final list of results is reliably mapped back to the discovered JDKs.
@@ -32,11 +30,11 @@ class KeytoolProcessRunnerImpl(
      * Executes the given keytool command against all discovered JDKs concurrently.
      *
      * Standard process failures (e.g., non-zero exit codes) are gracefully caught and
-     * wrapped in a [edu.adarko22.jdkcerts.core.jdk.keytool.model.KeytoolOperationResult.Failure] object. They do **not** throw exceptions
+     * wrapped in a [KeytoolOperationResult.Failure] object. They do **not** throw exceptions
      * or cancel the concurrent execution of other JDKs.
      *
      * @param operation The keytool command configuration (responsible for building its own arguments).
-     * @return List of [edu.adarko22.jdkcerts.core.jdk.keytool.model.KeytoolOperationResult] objects, representing the isolated outcome for each JDK.
+     * @return List of [KeytoolOperationResult] objects, representing the isolated outcome for each JDK.
      */
     override suspend fun runConcurrently(
         operation: KeytoolOperation,

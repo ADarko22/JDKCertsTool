@@ -9,6 +9,11 @@ import edu.adarko22.jdkcerts.core.jdk.keytool.model.CertificateInfo
 import edu.adarko22.jdkcerts.core.jdk.keytool.model.KeytoolQueryResult
 import java.time.format.DateTimeFormatter
 
+/**
+ * Formats and prints results of the `find-cert` command.
+ *
+ * Supports a verbose mode for extra certificate details and debug output.
+ */
 class FindCertCliPresenter(
     private val output: ToolOutputPrinter,
 ) {

@@ -3,9 +3,11 @@ package edu.adarko22.jdkcerts.core.jdk.keytool.model
 import java.nio.file.Path
 
 /**
- * @property customJdkDirs  Optional user-provided directories to include in the JDK discovery phase.
- * @property masterPassword Password for all the keystores accessed on the JDKs.
- * @property dryRun If `true`, the OS process is bypassed and the command returns a simulated preview.
+ * Execution options for keytool operations.
+ *
+ * @property customJdkDirs Directories to include when discovering JDKs.
+ * @property masterPassword Keystore password used for all targeted JDKs.
+ * @property dryRun If true, operations are simulated and no external processes are started.
  */
 data class ExecutionContext(
     val customJdkDirs: List<Path> = emptyList(),

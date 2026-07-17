@@ -8,20 +8,9 @@ import edu.adarko22.jdkcerts.core.jdk.keytool.model.KeytoolCommand
 import edu.adarko22.jdkcerts.core.jdk.keytool.model.KeytoolOperationResult
 
 /**
- * Use case for executing [KeytoolCommand] on all discovered JDKs.
+ * Orchestrates executing keytool operations across discovered JDKs.
  *
- * This use case leverages Kotlin Coroutines to fan-out external processes concurrently,
- * significantly reducing execution time when scanning multiple JDK installations.
- *
- * **Architectural Notes:**
- * - **Concurrency Delegation:** It relies entirely on the injected [ProcessRunner] to safely handle
- * OS-level process throttling and resource limits.
- * - **Non-Deterministic Ordering:** Because tasks run concurrently, the temporal execution order
- * is non-deterministic. However, the final list of results is reliably mapped back to the discovered JDKs.
- * - **Structured Concurrency:** Wrapped in a `coroutineScope`, ensuring that if the parent job
- * is canceled, all parallel OS process tasks are safely notified.
- *
- * @param keytoolProcessRunner Engine running KeytoolCommands.
+ * Discovers JDKs via [jdkDiscoverJdksUseCase] and delegates execution to [KeytoolProcessRunner].
  */
 class ExecuteKeytoolCommandUseCase(
     val jdkDiscoverJdksUseCase: DiscoverJdksUseCase,
