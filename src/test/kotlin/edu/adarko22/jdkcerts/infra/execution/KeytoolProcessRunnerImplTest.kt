@@ -4,90 +4,191 @@ import edu.adarko22.jdkcerts.core.execution.ProcessResult
 import edu.adarko22.jdkcerts.core.execution.ProcessRunner
 import edu.adarko22.jdkcerts.core.jdk.Jdk
 import edu.adarko22.jdkcerts.core.jdk.java.model.JavaInfo
+import edu.adarko22.jdkcerts.core.jdk.keytool.model.FindCertKeytoolQuery
+import edu.adarko22.jdkcerts.core.jdk.keytool.model.InstallCertKeytoolCommand
 import edu.adarko22.jdkcerts.core.jdk.keytool.model.KeystoreInfo
 import edu.adarko22.jdkcerts.core.jdk.keytool.model.KeytoolOperationResult
 import edu.adarko22.jdkcerts.core.jdk.keytool.model.RemoveCertKeytoolCommand
+import edu.adarko22.jdkcerts.core.jdk.keytool.model.SearchStrategy
 import kotlinx.coroutines.test.runTest
 import org.junit.jupiter.api.Assertions.assertEquals
-import org.junit.jupiter.api.Assertions.assertInstanceOf
 import org.junit.jupiter.api.Assertions.assertTrue
+import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
+import org.junit.jupiter.api.extension.ExtendWith
+import org.mockito.Mock
+import org.mockito.junit.jupiter.MockitoExtension
+import org.mockito.kotlin.any
+import org.mockito.kotlin.eq
+import org.mockito.kotlin.times
+import org.mockito.kotlin.verify
+import org.mockito.kotlin.whenever
 import java.nio.file.Path
 
+@ExtendWith(MockitoExtension::class)
 class KeytoolProcessRunnerImplTest {
-    private fun jdk(name: String): Jdk {
-        val jdkPath = Path.of("/opt/$name")
-        return Jdk(
-            path = jdkPath,
-            javaInfo = JavaInfo(vendor = "OpenJDK", fullVersion = "17.0.7", major = 17),
-            keystoreInfo = KeystoreInfo(keystorePath = jdkPath.resolve("lib/security/cacerts"), cacertsShortcutEnabled = true),
-        )
+    @Mock
+    private lateinit var processRunner: ProcessRunner
+
+    private lateinit var runner: KeytoolProcessRunnerImpl
+
+    // --- Test Fixtures ---
+    private val masterPassword = "changeit"
+
+    private val jdkPath = Path.of("/usr/lib/jvm/java-17")
+    private val keytoolPath = Path.of("/usr/lib/jvm/java-17/bin/keytool")
+    private val keystorePath = Path.of("/usr/lib/jvm/java-17/lib/security/cacerts")
+
+    private val standardJdk = createDummyJdk(cacertsEnabled = false)
+    private val cacertsShortcutJdk = createDummyJdk(cacertsEnabled = true)
+
+    @BeforeEach
+    fun setUp() {
+        runner = KeytoolProcessRunnerImpl(processRunner)
     }
 
-    private fun result(
-        exitCode: Int,
-        stderr: String = "",
-    ): ProcessResult = ProcessResult(stdout = "", stderr = stderr, exitCode = exitCode, dryRunOutput = "")
-
     @Test
-    fun `maps exit code 0 to Success`() =
+    fun `Install command with standard keystore builds correct args and returns Success`() =
         runTest {
-            val jdk = jdk("jdk17")
-            val runner = KeytoolProcessRunnerImpl { _, _ -> result(exitCode = 0) }
+            // Given
+            val operation = InstallCertKeytoolCommand(alias = "my-cert", certificateAbsolutePath = "/tmp/cert.pem")
+            val successProcessResult = ProcessResult(exitCode = 0, stdout = "Certificate added", stderr = "", dryRunOutput = "")
 
-            val results = runner.runConcurrently(RemoveCertKeytoolCommand("alias"), listOf(jdk), "pw", dryRun = false)
+            whenever(processRunner.runCommand(any(), any())).thenReturn(successProcessResult)
+
+            // When
+            val results = runner.runConcurrently(operation, listOf(standardJdk), masterPassword, dryRun = false)
+
+            // Then
+            val expectedArgs =
+                listOf(
+                    keytoolPath.toString(),
+                    "-importcert",
+                    "-noprompt",
+                    "-alias",
+                    "my-cert",
+                    "-file",
+                    "/tmp/cert.pem",
+                    "-keystore",
+                    keystorePath.toString(),
+                    "-storepass",
+                    masterPassword,
+                )
+
+            verify(processRunner).runCommand(eq(expectedArgs), eq(false))
 
             assertEquals(1, results.size)
-            val success = assertInstanceOf(KeytoolOperationResult.Success::class.java, results.single())
-            assertEquals(jdk, success.jdk)
+            val result = results.first()
+            assertTrue(result is KeytoolOperationResult.Success)
+            assertEquals(standardJdk, result.jdk)
+            assertEquals(successProcessResult, (result as KeytoolOperationResult.Success).processResult)
         }
 
     @Test
-    fun `maps non-zero exit code to Failure with descriptive message`() =
+    fun `Remove command with cacerts shortcut builds correct args and returns Failure on non-zero exit`() =
         runTest {
-            val jdk = jdk("jdk17")
-            val runner = KeytoolProcessRunnerImpl { _, _ -> result(exitCode = 1, stderr = "boom") }
+            // Given
+            val operation = RemoveCertKeytoolCommand(alias = "old-cert")
+            val failureProcessResult =
+                ProcessResult(exitCode = 1, stdout = "", stderr = "keytool error: alias does not exist", dryRunOutput = "")
 
-            val results = runner.runConcurrently(RemoveCertKeytoolCommand("alias"), listOf(jdk), "pw", dryRun = false)
+            whenever(processRunner.runCommand(any(), any())).thenReturn(failureProcessResult)
 
-            val failure = assertInstanceOf(KeytoolOperationResult.Failure::class.java, results.single())
-            assertEquals(jdk, failure.jdk)
-            assertTrue(failure.errorMessage.contains("exit code 1"), failure.errorMessage)
-            assertTrue(failure.errorMessage.contains("boom"), failure.errorMessage)
+            // When
+            val results = runner.runConcurrently(operation, listOf(cacertsShortcutJdk), masterPassword, dryRun = true)
+
+            // Then
+            val expectedArgs =
+                listOf(keytoolPath.toString(), "-delete", "-alias", "old-cert", "-cacerts", "-storepass", masterPassword)
+
+            verify(processRunner).runCommand(eq(expectedArgs), eq(true)) // verifies dryRun propagation
+
+            assertEquals(1, results.size)
+            val result = results.first()
+            assertTrue(result is KeytoolOperationResult.Failure)
+
+            val failure = result as KeytoolOperationResult.Failure
+            assertEquals(cacertsShortcutJdk, failure.jdk)
+            assertEquals(failureProcessResult, failure.processResult)
+            assertTrue(failure.errorMessage.contains("exit code 1"))
+            assertTrue(failure.errorMessage.contains("alias does not exist"))
         }
 
     @Test
-    fun `returns one result per JDK mapped back to its JDK`() =
+    fun `Find command with EXACT_MATCH includes alias in args`() =
         runTest {
-            val jdk1 = jdk("jdk11")
-            val jdk2 = jdk("jdk17")
-            // Fail only when targeting jdk17's keytool executable.
-            val runner =
-                KeytoolProcessRunnerImpl { command, _ ->
-                    if (command.first().contains("jdk17")) result(exitCode = 1, stderr = "nope") else result(exitCode = 0)
+            // Given
+            val operation = FindCertKeytoolQuery(alias = "my-cert", searchStrategy = SearchStrategy.EXACT_MATCH)
+            whenever(processRunner.runCommand(any(), any()))
+                .thenReturn(ProcessResult(exitCode = 0, stdout = "", stderr = "", dryRunOutput = ""))
+
+            // When
+            runner.runConcurrently(operation, listOf(cacertsShortcutJdk), masterPassword, dryRun = false)
+
+            // Then
+            val expectedArgs =
+                listOf(keytoolPath.toString(), "-list", "-v", "-alias", "my-cert", "-cacerts", "-storepass", masterPassword)
+            verify(processRunner).runCommand(eq(expectedArgs), eq(false))
+        }
+
+    @Test
+    fun `Find command with REGEX excludes alias from args`() =
+        runTest {
+            // Given
+            val operation = FindCertKeytoolQuery(alias = "ignored-alias", searchStrategy = SearchStrategy.REGEX)
+            whenever(processRunner.runCommand(any(), any()))
+                .thenReturn(ProcessResult(exitCode = 0, stdout = "", stderr = "", dryRunOutput = ""))
+
+            // When
+            runner.runConcurrently(operation, listOf(cacertsShortcutJdk), masterPassword, dryRun = false)
+
+            // Then
+            val expectedArgs =
+                listOf(keytoolPath.toString(), "-list", "-v", "-cacerts", "-storepass", masterPassword)
+            verify(processRunner).runCommand(eq(expectedArgs), eq(false))
+        }
+
+    @Test
+    fun `Multiple JDKs run concurrently and map results independently`() =
+        runTest {
+            // Given
+            val operation = RemoveCertKeytoolCommand(alias = "my-cert")
+
+            val successResult = ProcessResult(exitCode = 0, stdout = "deleted", stderr = "", dryRunOutput = "")
+            val failureResult = ProcessResult(exitCode = 255, stdout = "", stderr = "permission denied", dryRunOutput = "")
+
+            // Mock different responses based on the arguments that will be generated for each JDK type
+            whenever(processRunner.runCommand(any(), any()))
+                .thenAnswer { invocation ->
+                    val args = invocation.arguments[0] as List<*>
+                    if (args.contains("-cacerts")) successResult else failureResult
                 }
 
-            val results = runner.runConcurrently(RemoveCertKeytoolCommand("alias"), listOf(jdk1, jdk2), "pw", dryRun = false)
+            // When
+            val results =
+                runner.runConcurrently(operation, listOf(cacertsShortcutJdk, standardJdk), masterPassword, dryRun = false)
 
+            // Then
             assertEquals(2, results.size)
-            assertInstanceOf(KeytoolOperationResult.Success::class.java, results[0])
-            assertEquals(jdk1, results[0].jdk)
-            assertInstanceOf(KeytoolOperationResult.Failure::class.java, results[1])
-            assertEquals(jdk2, results[1].jdk)
+            verify(processRunner, times(2)).runCommand(any(), any())
+
+            // Verify result mapping for cacerts shortcut JDK
+            val cacertsResult = results.find { it.jdk == cacertsShortcutJdk }
+            assertTrue(cacertsResult is KeytoolOperationResult.Success)
+
+            // Verify result mapping for standard JDK
+            val standardResult = results.find { it.jdk == standardJdk }
+            assertTrue(standardResult is KeytoolOperationResult.Failure)
         }
 
-    @Test
-    fun `forwards dryRun flag to the process runner`() =
-        runTest {
-            var observedDryRun: Boolean? = null
-            val runner =
-                KeytoolProcessRunnerImpl { _, dryRun ->
-                    observedDryRun = dryRun
-                    result(exitCode = 0)
-                }
+    // --- Helper Methods ---
 
-            runner.runConcurrently(RemoveCertKeytoolCommand("alias"), listOf(jdk("jdk17")), "pw", dryRun = true)
-
-            assertEquals(true, observedDryRun)
-        }
+    private fun createDummyJdk(cacertsEnabled: Boolean): Jdk {
+        // Adjust this depending on your actual Jdk / KeystoreInfo constructors
+        return Jdk(
+            path = jdkPath,
+            javaInfo = JavaInfo("Vendor", "17.0", 17),
+            keystoreInfo = KeystoreInfo(keystorePath = keystorePath, cacertsShortcutEnabled = cacertsEnabled),
+        )
+    }
 }
