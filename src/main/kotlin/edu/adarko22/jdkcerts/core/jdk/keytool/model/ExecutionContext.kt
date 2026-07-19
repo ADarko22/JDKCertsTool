@@ -5,12 +5,12 @@ import java.nio.file.Path
 /**
  * Execution options for keytool operations.
  *
- * @property customJdkDirs Directories to include when discovering JDKs.
+ * @property customJdkPaths Explicit JDK home paths to target; when non-empty, auto-discovery is bypassed.
  * @property masterPassword Keystore password used for all targeted JDKs.
  * @property dryRun If true, operations are simulated and no external processes are started.
  */
 data class ExecutionContext(
-    val customJdkDirs: List<Path> = emptyList(),
+    val customJdkPaths: List<Path> = emptyList(),
     val masterPassword: String,
     val dryRun: Boolean = false,
 )

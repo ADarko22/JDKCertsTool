@@ -27,13 +27,16 @@ class UNIXJdkPathsDiscovery(
      * Validates candidate roots by confirming the active existence of structural execution subfiles
      * via [isValidJavaHome] before calculating real paths to eliminate symlink duplicates.
      */
-    override fun discover(customJdkDirs: List<Path>): List<Path> {
-        val searchDirs = customJdkDirs.ifEmpty { defaultDirs + discoverJetBrainsRuntimeHomes() }
-        return searchDirs
-            .filter(Files::isDirectory)
+    override fun discover(customJdkPaths: List<Path>): List<Path> {
+        val searchSources =
+            customJdkPaths.ifEmpty {
+                (defaultDirs + discoverJetBrainsRuntimeHomes())
+                    .filter { Files.isDirectory(it) }
+                    .flatMap { Files.newDirectoryStream(it) }
+            }
+
+        return searchSources
             .asSequence()
-            .flatMap { Files.newDirectoryStream(it) }
-            .map { toJavaHome(it) }
             .filter { isValidJavaHome(it) }
             .map { it.toRealPath() }
             .distinct()

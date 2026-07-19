@@ -5,7 +5,7 @@ import com.github.ajalt.clikt.core.Context
 import com.github.ajalt.clikt.parameters.options.flag
 import com.github.ajalt.clikt.parameters.options.option
 import edu.adarko22.jdkcerts.cli.command.aliasOption
-import edu.adarko22.jdkcerts.cli.command.customJdkDirsOption
+import edu.adarko22.jdkcerts.cli.command.customJdkPathsOption
 import edu.adarko22.jdkcerts.cli.command.keystorePasswordOption
 import edu.adarko22.jdkcerts.cli.command.verboseOption
 import edu.adarko22.jdkcerts.core.jdk.keytool.model.ExecutionContext
@@ -24,7 +24,7 @@ class FindCertCliCommand(
     val findKeytoolCertificateUseCase: FindKeytoolCertificateUseCase,
     private val findCertCliPresenter: FindCertCliPresenter,
 ) : CliktCommand(name = "find-cert") {
-    private val customJdkDirs: List<Path> by customJdkDirsOption()
+    private val customJdkPaths: List<Path> by customJdkPathsOption()
     private val keystorePassword: String by keystorePasswordOption()
     private val alias: String by aliasOption()
     private val verbose: Boolean by verboseOption()
@@ -49,7 +49,7 @@ class FindCertCliCommand(
         val results =
             runBlocking {
                 val findCertKeytoolQuery = FindCertKeytoolQuery(alias, searchStrategy)
-                val executionContext = ExecutionContext(customJdkDirs, keystorePassword)
+                val executionContext = ExecutionContext(customJdkPaths, keystorePassword)
                 findKeytoolCertificateUseCase.execute(findCertKeytoolQuery, executionContext)
             }
         findCertCliPresenter.present(results, verbose, alias)

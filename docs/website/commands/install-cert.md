@@ -14,7 +14,7 @@ jdkcerts install-cert --cert <PATH> --alias <ALIAS> [options]
 | `--cert <PATH>` | **Required** | Local filesystem path to the target certificate (`.pem`, `.crt`, etc.) |  |
 | `--alias <TEXT>` | **Required** | The target lookup entry alias to assign inside the keystore. |  |
 | `--keystore-password <TEXT>` | Optional | The protection password guarding the targeted cacerts file. | `changeit` |
-| `--custom-jdk-dirs <VALUE>` | Optional | Limits execution to specific, comma-separated JDK directory paths. |  |
+| `--custom-jdk-paths <VALUE>` | Optional | Limits execution to specific, comma-separated absolute JDK home paths. |  |
 | `--dry-run` | Flag | Simulates processing and previews updates without applying disk changes. |  |
 
 ### Examples
@@ -25,4 +25,8 @@ jdkcerts install-cert --cert /path/to/corp-ca.pem --alias corporate-root --dry-r
 
 # Commit global installation
 jdkcerts install-cert --cert /path/to/corp-ca.pem --alias corporate-root
+
+# Restrict to specific JDK installations
+jdkcerts install-cert --cert /path/to/corp-ca.pem --alias corporate-root \
+  --custom-jdk-paths "/Users/you/.sdkman/candidates/java/11.0.28-sem, /Users/you/.sdkman/candidates/java/8.0.472-zulu"
 ```

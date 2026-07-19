@@ -33,7 +33,7 @@ class ExecuteKeytoolCommandUseCase(
         keytoolCommand: KeytoolCommand,
         executionContext: ExecutionContext,
     ): List<KeytoolCommandResult> {
-        val jdks = jdkDiscoverJdksUseCase.discover(executionContext.customJdkDirs)
+        val jdks = jdkDiscoverJdksUseCase.discover(executionContext.customJdkPaths)
         return keytoolProcessRunner
             .runConcurrently(keytoolCommand, jdks, executionContext.masterPassword, executionContext.dryRun)
             .map { outcome -> outcome.toCommandResult(keytoolCommand.alias) }

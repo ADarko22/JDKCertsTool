@@ -50,7 +50,7 @@ class FindKeytoolCertificateUseCase(
         findCertKeytoolQuery: FindCertKeytoolQuery,
         executionContext: ExecutionContext,
     ): List<KeytoolQueryResult> {
-        val jdks = jdkDiscoverJdksUseCase.discover(executionContext.customJdkDirs)
+        val jdks = jdkDiscoverJdksUseCase.discover(executionContext.customJdkPaths)
         return keytoolProcessRunner
             .runConcurrently(findCertKeytoolQuery, jdks, executionContext.masterPassword, executionContext.dryRun)
             .map { outcome ->

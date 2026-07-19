@@ -13,7 +13,7 @@ jdkcerts remove-cert --alias <ALIAS> [options]
 | --- | --- | --- | --- |
 | `--alias <TEXT>` | **Required** | The exact alphanumeric alias identifying the certificate to drop. |  |
 | `--keystore-password <TEXT>` | Optional | Password protecting the target keystores. | `changeit` |
-| `--custom-jdk-dirs <VALUE>` | Optional | Scopes target operations exclusively to the provided paths. |  |
+| `--custom-jdk-paths <VALUE>` | Optional | Scopes target operations exclusively to the provided absolute JDK home paths. |  |
 | `--dry-run` | Flag | Logs matching targets and exits without mutating keystores on disk. |  |
 
 ### Examples
