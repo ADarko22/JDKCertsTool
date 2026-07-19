@@ -41,20 +41,12 @@ class SystemProcessRunner(
      * * This function suspends until the process exits, times out, or the parent coroutine is canceled.
      *
      * @param command A list containing the executable and its arguments (e.g., `["java", "-version"]`).
-     * @param dryRun If `true`, the command is not executed and a textual preview is returned instead.
      * @return A [ProcessResult] containing the output, error streams, and exit code.
      * If the process times out or fails, the exit code will be -1 and the error message
      * will be populated in [ProcessResult.stderr].
      */
-    override suspend fun runCommand(
-        command: List<String>,
-        dryRun: Boolean,
-    ): ProcessResult =
+    override suspend fun runCommand(command: List<String>): ProcessResult =
         withContext(processDispatcher) {
-            if (dryRun) {
-                return@withContext ProcessResult("", "", 0, "[Dry run] ${command.joinToString(" ")}")
-            }
-
             var process: Process? = null
 
             try {
@@ -72,16 +64,16 @@ class SystemProcessRunner(
                     val stderr = stderrDeferred.await()
                     val exitCode = process!!.waitFor()
 
-                    ProcessResult(stdout.trim(), stderr.trim(), exitCode, "")
+                    ProcessResult(stdout.trim(), stderr.trim(), exitCode)
                 }
             } catch (_: TimeoutCancellationException) {
-                ProcessResult("", "Error: Command timed out after ${timeoutMillis}ms", -1, "")
+                ProcessResult("", "Error: Command timed out after ${timeoutMillis}ms", -1)
             } catch (e: CancellationException) {
                 // Propagate cancellation signal
                 throw e
             } catch (e: Exception) {
                 val errorMessage = "Error executing command: ${e.message ?: "Unknown Error"}"
-                ProcessResult("", errorMessage, -1, "")
+                ProcessResult("", errorMessage, -1)
             } finally {
                 // Ensure the OS process is aggressively killed if the coroutine exits early (via timeout, cancellation, or crash).
                 process?.destroyForcibly()

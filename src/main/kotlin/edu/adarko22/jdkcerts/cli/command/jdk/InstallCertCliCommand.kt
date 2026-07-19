@@ -35,6 +35,6 @@ class InstallCertCliCommand(
                 val executionContext = ExecutionContext(customJdkDirs, keystorePassword, dryRun)
                 executeKeytoolCommandUseCase.execute(installCertKeytoolCommand, executionContext)
             }
-        keytoolCommandResultsCliPresenter.present(results, dryRun)
+        keytoolCommandResultsCliPresenter.present(results)
     }
 }

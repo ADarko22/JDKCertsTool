@@ -64,6 +64,12 @@ Keytool operations follow CQRS:
 - mutating actions (install/remove) are Commands
 - read-only searches (find) are Queries
 
+Each side produces its own domain result — `KeytoolCommandResult` (`Success` / `DryRun` / typed `Failure`) for commands
+and `KeytoolQueryResult` (`Found` / `NotFound` / `DryRun` / typed `Failure`) for queries. Both are derived from the
+verdict-free `KeytoolProcessResult` returned by the `infra` process runner, with a single `KeytoolErrorClassifier`
+interpreting raw keytool output into a neutral `KeytoolFailure`. This keeps the domain results free of exit codes and
+process streams, and centralises failure interpretation in one place.
+
 ### Evolution Toward Multi-Module
 
 Currently, this architecture is enforced through a package structure within a single root module. As the project grows,

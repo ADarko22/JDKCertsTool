@@ -33,6 +33,6 @@ class RemoveCertCliCommand(
                 val executionContext = ExecutionContext(customJdkDirs, keystorePassword, dryRun)
                 executeKeytoolCommandUseCase.execute(removeCertKeytoolCommand, executionContext)
             }
-        keytoolCommandResultsCliPresenter.present(results, dryRun)
+        keytoolCommandResultsCliPresenter.present(results)
     }
 }

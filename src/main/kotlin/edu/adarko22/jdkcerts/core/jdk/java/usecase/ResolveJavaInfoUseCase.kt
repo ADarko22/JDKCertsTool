@@ -30,7 +30,7 @@ class ResolveJavaInfoUseCase(
         val command = listOf(javaPath.absolutePathString(), "-version")
         val output =
             processRunner
-                .runCommand(command, dryRun = false)
+                .runCommand(command)
                 .let { it.stderr + "\n" + it.stdout }
         return javaInfoParser.parseVersionInfo(output)
     }

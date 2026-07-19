@@ -22,7 +22,7 @@ class FindCertCliPresenter(
     /**
      * Presents the results of the certificate search across all JDKs.
      *
-     * @param results List of result states (Found, NotFound, or Error).
+     * @param results One result per JDK (Found, NotFound, DryRun, or a typed Failure).
      * @param verbose If true, displays full certificate fingerprints and debug info for failures.
      * @param alias The alias used in the search.
      */
@@ -43,9 +43,9 @@ class FindCertCliPresenter(
         results.forEach { result -> processResult(result, verbose) }
 
         // 3. Footer Summary for Errors
-        val errors = results.filterIsInstance<KeytoolQueryResult.Error>()
-        if (errors.isNotEmpty()) {
-            output.print("Note: ${errors.size} JDKs encountered execution errors. Use --verbose for details.".red())
+        val failures = results.filterIsInstance<KeytoolQueryResult.Failure>()
+        if (failures.isNotEmpty()) {
+            output.print("Note: ${failures.size} JDKs encountered execution errors. Use --verbose for details.".red())
         }
     }
 
@@ -65,23 +65,35 @@ class FindCertCliPresenter(
             is KeytoolQueryResult.NotFound -> {
                 output.print("Status: NOT FOUND".yellow())
                 output.print("Reason: ${result.reason}")
-                if (verbose) {
-                    if (result.stdout.isNotBlank()) {
-                        output.print("Raw Stdout: ${result.stdout}")
-                    }
-                    if (result.stderr.isNotBlank()) {
-                        output.print("Raw StdErr: ${result.stderr}")
-                    }
-                }
             }
 
-            is KeytoolQueryResult.Error -> {
-                output.print("Status: ERROR".red())
-                output.print("Message: ${result.message}")
-                if (verbose && result.cause != null) {
-                    output.print("Trace: ${result.cause.message}")
-                }
+            is KeytoolQueryResult.DryRun -> {
+                output.print("Status: DRY RUN".yellow())
+                output.print("Command: ${result.previewCommand}")
             }
+
+            is KeytoolQueryResult.Failure -> {
+                presentFailure(result, verbose)
+            }
+        }
+    }
+
+    private fun presentFailure(
+        failure: KeytoolQueryResult.Failure,
+        verbose: Boolean,
+    ) {
+        output.print("Status: ERROR".red())
+        val message =
+            when (failure) {
+                is KeytoolQueryResult.Failure.WrongPassword -> "Incorrect keystore password."
+                is KeytoolQueryResult.Failure.ParseError -> failure.message
+                is KeytoolQueryResult.Failure.InvalidPattern -> failure.message
+                is KeytoolQueryResult.Failure.Unknown -> "Keytool failed (exit code ${failure.exitCode})."
+            }
+        output.print("Message: $message")
+
+        if (verbose && failure.rawStderr.isNotBlank()) {
+            output.print("Raw StdErr: ${failure.rawStderr}")
         }
     }
 
