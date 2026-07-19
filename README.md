@@ -22,9 +22,27 @@ If you’ve ever hit SSL or trust errors when using Java with internal services,
 helps you fix that in seconds.**
 
 _Note that this is a developer tool which assumes usage on development environment.
-This assumption translates, for example, in having the same password (or the default `changeit`) for all the keystores
-and implicitly assuming the **cacerts** keystore._
+This assumption translates, for example, in having the same password (or the default `changeit`) for all the
+truststores and implicitly assuming the **cacerts** truststore._
 
+---
+
+## 🎯 Scope: the JDK truststore, not the application keystore
+
+JDKCertsTool manages the JDK **truststore** only — the `TrustedCertEntry` entries that hold the **public certificates of
+external services** you connect to, such as:
+
+- Package-registry APIs and other HTTPS endpoints,
+- HTTP client requests and secure database connections,
+- corporate proxy / firewall CA certificates required to reach the internet behind a company gateway.
+
+Concretely, it works on the default **`cacerts`** truststore (JDKs > 8) or resolves the default truststore path on
+older JDKs.
+
+It is **not** concerned with the application **keystore**, i.e. `PrivateKeyEntry` entries. Those hold private material —
+TLS/HTTPS server keys used to decrypt traffic, keys used to sign JWT tokens or other artifacts before distribution — and
+**must be managed securely by the application itself**. Managing private keys is explicitly **out of scope** for this
+tool.
 ---
 
 ## 📦 Installation

@@ -4,6 +4,10 @@ JDKCertsTool addresses common real-world scenarios where managing JDK truststore
 manually fighting with `keytool` for every Java version on your machine, this tool manages the entire lifecycle of your
 certificates globally.
 
+All scenarios below concern the JDK **truststore** — the `TrustedCertEntry` public certificates of external services
+(databases, proxies, etc.). Application **private keys** (`PrivateKeyEntry`) are out of scope and must be managed by the
+application itself.
+
 ## Enterprise Setup & Provisioning
 
 **Problem:** Corporate environments frequently use SSL inspection via internal Certificate Authorities (CAs), or
