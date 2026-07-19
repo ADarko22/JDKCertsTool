@@ -37,12 +37,12 @@ class DiscoverJdksUseCase(
      * thrown during the resolution of a single JDK will cancel the `async` jobs of all other JDKs
      * and bubble up to the caller.
      *
-     * @param customJdkDirs Optional user-provided directories to search in addition to system defaults.
+     * @param customJdkPaths Optional explicit JDK home paths; when provided, they replace system auto-discovery.
      * @return A list of fully populated [Jdk] instances, ready for domain operations.
      */
-    suspend fun discover(customJdkDirs: List<Path> = emptyList()): List<Jdk> =
+    suspend fun discover(customJdkPaths: List<Path> = emptyList()): List<Jdk> =
         coroutineScope {
-            val jdkPaths = jdkPathsDiscovery.discover(customJdkDirs)
+            val jdkPaths = jdkPathsDiscovery.discover(customJdkPaths)
             jdkPaths.map { jdkPath -> async { createJdk(jdkPath) } }.awaitAll()
         }
 

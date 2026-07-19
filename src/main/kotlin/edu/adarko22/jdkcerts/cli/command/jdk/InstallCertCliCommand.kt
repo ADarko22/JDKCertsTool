@@ -4,7 +4,7 @@ import com.github.ajalt.clikt.core.CliktCommand
 import com.github.ajalt.clikt.core.Context
 import edu.adarko22.jdkcerts.cli.command.aliasOption
 import edu.adarko22.jdkcerts.cli.command.certPathOption
-import edu.adarko22.jdkcerts.cli.command.customJdkDirsOption
+import edu.adarko22.jdkcerts.cli.command.customJdkPathsOption
 import edu.adarko22.jdkcerts.cli.command.dryRunOption
 import edu.adarko22.jdkcerts.cli.command.keystorePasswordOption
 import edu.adarko22.jdkcerts.core.jdk.keytool.model.ExecutionContext
@@ -20,7 +20,7 @@ class InstallCertCliCommand(
     private val executeKeytoolCommandUseCase: ExecuteKeytoolCommandUseCase,
     val keytoolCommandResultsCliPresenter: KeytoolCommandResultsCliPresenter,
 ) : CliktCommand(name = "install-cert") {
-    private val customJdkDirs: List<Path> by customJdkDirsOption()
+    private val customJdkPaths: List<Path> by customJdkPathsOption()
     private val dryRun: Boolean by dryRunOption()
     private val keystorePassword: String by keystorePasswordOption()
     private val certPath: Path by certPathOption()
@@ -32,7 +32,7 @@ class InstallCertCliCommand(
         val results =
             runBlocking {
                 val installCertKeytoolCommand = InstallCertKeytoolCommand(alias, certPath.toAbsolutePath().toString())
-                val executionContext = ExecutionContext(customJdkDirs, keystorePassword, dryRun)
+                val executionContext = ExecutionContext(customJdkPaths, keystorePassword, dryRun)
                 executeKeytoolCommandUseCase.execute(installCertKeytoolCommand, executionContext)
             }
         keytoolCommandResultsCliPresenter.present(results)

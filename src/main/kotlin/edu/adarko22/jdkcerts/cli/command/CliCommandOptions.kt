@@ -15,8 +15,11 @@ import java.nio.file.Paths
  */
 fun ParameterHolder.dryRunOption(): OptionDelegate<Boolean> = option("--dry-run", help = "Preview changes only").flag()
 
-fun ParameterHolder.customJdkDirsOption(): OptionDelegate<List<Path>> =
-    option("--custom-jdk-dirs", help = "Comma-separated paths to JDK dirs").convert { it.toPaths() }.default(emptyList())
+fun ParameterHolder.customJdkPathsOption(): OptionDelegate<List<Path>> =
+    option(
+        "--custom-jdk-paths",
+        help = "Comma-separated absolute JDK home paths (bypasses auto-discovery). E.g. \"/path/to/jdk-11, /path/to/jdk-8\"",
+    ).convert { it.toPaths() }.default(emptyList())
 
 fun ParameterHolder.keystorePasswordOption(): OptionDelegate<String> =
     option("--keystore-password", help = "Keystore password").default("changeit")
