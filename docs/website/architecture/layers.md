@@ -39,9 +39,23 @@ Install         Remove                    Find
 2. **KeytoolQuery (Reads)**
    Represents an intent to inspect a keystore without mutating state (e.g., `FindCertKeytoolQuery`).
 
-At the infrastructure layer (`infra`), both paths converge onto the concurrent `KeytoolProcessRunner`, as all
-operations execute a process and collect a `KeytoolOperationResult`. However, at the domain layer (`core`), the reading
-path diverges to handle complex data mutation tasks (like applying custom regex filtering or calculating fuzzy matches
-on certificate aliases). CQRS isolates this heavy text-parsing math entirely inside the query path, leaving the mutation
-engine lightweight and maintainable.
+At the infrastructure layer (`infra`), both paths converge onto the concurrent `KeytoolProcessRunner`. It executes each
+operation and returns a **verdict-free** `KeytoolProcessResult` — either `Executed` (raw exit code, stdout, stderr) or
+`DryRun` (the previewed command). This boundary type carries no success/failure judgement and no OS/process types, so
+the domain stays agnostic of infrastructure details.
+
+Interpretation happens back in the `core` layer:
+
+- A single `KeytoolErrorClassifier` translates a failed execution's raw output into a neutral `KeytoolFailure`
+  (e.g. `WrongPassword`, `AliasNotFound`, `AliasAlreadyExists`, `CertificateAlreadyExists`, `Unknown`). This is the one
+  place keytool's output strings are matched.
+- Each CQRS use case then maps the outcome into its own domain result:
+    - the **command** path (`ExecuteKeytoolCommandUseCase`) produces a `KeytoolCommandResult`
+      (`Success` / `DryRun` / typed `Failure`);
+    - the **query** path (`FindKeytoolCertificateUseCase`) produces a `KeytoolQueryResult`
+      (`Found` / `NotFound` / `DryRun` / typed `Failure`), and additionally owns the heavy text work — regex filtering
+      and fuzzy-match scoring on certificate aliases.
+
+CQRS isolates that heavy query-side parsing math inside the read path, while dry-run is modelled as a first-class result
+on both sides, leaving the mutation engine lightweight and maintainable.
 

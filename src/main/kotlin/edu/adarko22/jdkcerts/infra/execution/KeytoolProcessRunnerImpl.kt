@@ -1,12 +1,12 @@
 package edu.adarko22.jdkcerts.infra.execution
 
+import edu.adarko22.jdkcerts.core.execution.KeytoolProcessResult
 import edu.adarko22.jdkcerts.core.execution.KeytoolProcessRunner
 import edu.adarko22.jdkcerts.core.execution.ProcessRunner
 import edu.adarko22.jdkcerts.core.jdk.Jdk
 import edu.adarko22.jdkcerts.core.jdk.keytool.model.FindCertKeytoolQuery
 import edu.adarko22.jdkcerts.core.jdk.keytool.model.InstallCertKeytoolCommand
 import edu.adarko22.jdkcerts.core.jdk.keytool.model.KeytoolOperation
-import edu.adarko22.jdkcerts.core.jdk.keytool.model.KeytoolOperationResult
 import edu.adarko22.jdkcerts.core.jdk.keytool.model.RemoveCertKeytoolCommand
 import edu.adarko22.jdkcerts.core.jdk.keytool.model.SearchStrategy
 import kotlinx.coroutines.async
@@ -19,6 +19,11 @@ import kotlin.io.path.absolutePathString
  * to fan-out external processes concurrently, when scanning multiple JDK installations.
  *
  * **Architectural Notes:**
+ * - **Dry-run handling:** Dry runs are short-circuited here — the command is composed and returned
+ * as a [KeytoolProcessResult.DryRun] preview without ever touching the [ProcessRunner]. This keeps
+ * the generic process runner free of any dry-run concept.
+ * - **Verdict-free outcomes:** Non-zero exit codes are **not** judged here; they are reported as
+ * [KeytoolProcessResult.Executed] and interpreted by the core layer (keytool exit codes are ambiguous).
  * - **Concurrency Delegation:** It relies entirely on the injected [ProcessRunner] to safely handle
  * OS-level process throttling and resource limits.
  * - **Non-Deterministic Ordering:** Because tasks run concurrently, the temporal execution order
@@ -31,28 +36,18 @@ import kotlin.io.path.absolutePathString
 class KeytoolProcessRunnerImpl(
     private val processRunner: ProcessRunner,
 ) : KeytoolProcessRunner {
-    /**
-     * Executes the given keytool command against all discovered JDKs concurrently.
-     *
-     * Standard process failures (e.g., non-zero exit codes) are gracefully caught and
-     * wrapped in a [KeytoolOperationResult.Failure] object. They do **not** throw exceptions
-     * or cancel the concurrent execution of other JDKs.
-     *
-     * @param operation The keytool command configuration (responsible for building its own arguments).
-     * @return List of [KeytoolOperationResult] objects, representing the isolated outcome for each JDK.
-     */
     override suspend fun runConcurrently(
         operation: KeytoolOperation,
         jdks: List<Jdk>,
         masterPassword: String,
         dryRun: Boolean,
-    ): List<KeytoolOperationResult> =
+    ): List<KeytoolProcessResult> =
         coroutineScope {
             jdks
                 .map { jdk ->
                     async {
                         val command = buildCommand(operation, jdk, masterPassword)
-                        runCommand(command, dryRun, jdk)
+                        execute(command, dryRun, jdk)
                     }
                 }.awaitAll()
         }
@@ -91,21 +86,16 @@ class KeytoolProcessRunnerImpl(
         return keytoolCommandPath + operationArgs + keystoreArgs + listOf("-storepass", masterPassword)
     }
 
-    private suspend fun runCommand(
+    private suspend fun execute(
         command: List<String>,
         dryRun: Boolean,
         jdk: Jdk,
-    ): KeytoolOperationResult {
-        val result = processRunner.runCommand(command, dryRun)
-
-        return if (result.exitCode == 0) {
-            KeytoolOperationResult.Success(jdk, result)
-        } else {
-            KeytoolOperationResult.Failure(
-                jdk,
-                result,
-                "Keytool failed with exit code ${result.exitCode}: ${result.stderr}",
-            )
+    ): KeytoolProcessResult {
+        if (dryRun) {
+            return KeytoolProcessResult.DryRun(jdk, command.joinToString(" "))
         }
+
+        val result = processRunner.runCommand(command)
+        return KeytoolProcessResult.Executed(jdk, result.exitCode, result.stdout, result.stderr)
     }
 }

@@ -22,13 +22,8 @@ fun interface ProcessRunner {
      * process runs, resuming only when the process exits, crashes, or is canceled.
      *
      * @param command A list containing the target executable and its arguments (e.g., `["ls", "-la"]`).
-     * @param dryRun If `true`, the command must **not** be executed on the host system. Instead,
-     * the implementation should return a simulated [ProcessResult] containing the command as a preview string.
      * @return A [ProcessResult] capturing the standard output (stdout), standard error (stderr),
      * and the integer exit code of the process.
      */
-    suspend fun runCommand(
-        command: List<String>,
-        dryRun: Boolean,
-    ): ProcessResult
+    suspend fun runCommand(command: List<String>): ProcessResult
 }
