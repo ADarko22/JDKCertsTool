@@ -33,11 +33,11 @@ Install         Remove                    Find
 ```
 
 1. **KeytoolCommand (Mutations)**
-   Represents an intent to change the state of a keystore (e.g., `InstallCertKeytoolCommand`,
+   Represents an intent to change the state of a truststore (e.g., `InstallCertKeytoolCommand`,
    `RemoveCertKeytoolCommand`).
 
 2. **KeytoolQuery (Reads)**
-   Represents an intent to inspect a keystore without mutating state (e.g., `FindCertKeytoolQuery`).
+   Represents an intent to inspect a truststore without mutating state (e.g., `FindCertKeytoolQuery`).
 
 At the infrastructure layer (`infra`), both paths converge onto the concurrent `KeytoolProcessRunner`. It executes each
 operation and returns a **verdict-free** `KeytoolProcessResult` — either `Executed` (raw exit code, stdout, stderr) or

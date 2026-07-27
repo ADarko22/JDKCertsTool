@@ -16,7 +16,7 @@ import kotlinx.coroutines.runBlocking
 import java.nio.file.Path
 
 /**
- * Find certificate by alias across all JDK keystores.
+ * Find certificate by alias across all JDK truststores.
  *
  * Default searches for exact alias match. Use `--regex` or `--closest-match` for other strategies.
  */
@@ -40,7 +40,7 @@ class FindCertCliCommand(
     ).flag()
 
     override fun help(context: Context) =
-        "Find certificate by alias across JDK keystores (default: exact match, use --regex or --closest-match for other strategies)"
+        "Find certificate by alias across JDK truststores (default: exact match, use --regex or --closest-match for other strategies)"
 
     override fun run() {
         // Determine search strategy from flags

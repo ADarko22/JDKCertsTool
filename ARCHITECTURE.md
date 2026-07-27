@@ -35,7 +35,7 @@ Here are some ways the architecture supports extensibility:
 
 - **New Certificate Workflows**
 
-  Add high-level operations—like exporting certificates, validating keystore integrity, or syncing certs between JDKs—by
+  Add high-level operations—like exporting certificates, validating truststore integrity, or syncing certs between JDKs—by
   simply adding new Use Cases in the `core` layer.
 
 - **Platform & Tool Adaptability**

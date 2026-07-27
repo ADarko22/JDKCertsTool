@@ -57,7 +57,7 @@ class KeytoolCommandResultsCliPresenter(
             }
 
             is KeytoolCommandResult.Failure.AliasAlreadyExists -> {
-                "Alias `$alias` already exists in the keystore."
+                "Alias `$alias` already exists in the truststore."
             }
 
             is KeytoolCommandResult.Failure.CertificateAlreadyExists -> {
@@ -65,7 +65,7 @@ class KeytoolCommandResultsCliPresenter(
             }
 
             is KeytoolCommandResult.Failure.AliasNotFound -> {
-                "Alias `$alias` does not exist in the keystore."
+                "Alias `$alias` does not exist in the truststore."
             }
 
             is KeytoolCommandResult.Failure.Unknown -> {

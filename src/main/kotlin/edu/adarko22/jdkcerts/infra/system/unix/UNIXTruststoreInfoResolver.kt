@@ -1,22 +1,22 @@
 package edu.adarko22.jdkcerts.infra.system.unix
 
 import edu.adarko22.jdkcerts.core.jdk.java.model.JavaInfo
-import edu.adarko22.jdkcerts.core.jdk.keytool.model.KeystoreInfo
-import edu.adarko22.jdkcerts.infra.system.KeystoreInfoResolver
+import edu.adarko22.jdkcerts.core.jdk.keytool.model.TruststoreInfo
+import edu.adarko22.jdkcerts.infra.system.TruststoreInfoResolver
 import java.nio.file.Files
 import java.nio.file.Path
 
 /**
- * Unix/macOS implementation of [KeystoreInfoResolver].
+ * Unix/macOS implementation of [TruststoreInfoResolver].
  *
  * Determines the path to the JDK's `cacerts` file and whether the
  * `-cacerts` shortcut is supported (Java 9+).
  */
-class UNIXKeystoreInfoResolver : KeystoreInfoResolver {
+class UNIXTruststoreInfoResolver : TruststoreInfoResolver {
     override fun resolve(
         jdkPath: Path,
         javaInfo: JavaInfo,
-    ): KeystoreInfo = KeystoreInfo(findCacertsFolder(jdkPath), javaInfo.major > 8)
+    ): TruststoreInfo = TruststoreInfo(findCacertsFolder(jdkPath), javaInfo.major > 8)
 
     private fun findCacertsFolder(jdkPath: Path): Path =
         listOf(

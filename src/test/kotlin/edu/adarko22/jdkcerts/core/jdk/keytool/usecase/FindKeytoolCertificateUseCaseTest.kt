@@ -8,9 +8,9 @@ import edu.adarko22.jdkcerts.core.jdk.java.model.JavaInfo
 import edu.adarko22.jdkcerts.core.jdk.keytool.model.CertificateInfo
 import edu.adarko22.jdkcerts.core.jdk.keytool.model.ExecutionContext
 import edu.adarko22.jdkcerts.core.jdk.keytool.model.FindCertKeytoolQuery
-import edu.adarko22.jdkcerts.core.jdk.keytool.model.KeystoreInfo
 import edu.adarko22.jdkcerts.core.jdk.keytool.model.KeytoolQueryResult
 import edu.adarko22.jdkcerts.core.jdk.keytool.model.SearchStrategy
+import edu.adarko22.jdkcerts.core.jdk.keytool.model.TruststoreInfo
 import edu.adarko22.jdkcerts.core.jdk.keytool.parser.CertificateInfoParser
 import edu.adarko22.jdkcerts.core.jdk.keytool.parser.CertificateParseResult
 import edu.adarko22.jdkcerts.core.jdk.keytool.parser.ParseError
@@ -108,7 +108,7 @@ class FindKeytoolCertificateUseCaseTest {
         }
 
     @Test
-    fun `regex returns NotFound when keystore has no certificates`() =
+    fun `regex returns NotFound when truststore has no certificates`() =
         runTest {
             val query = FindCertKeytoolQuery("alpha.*", SearchStrategy.REGEX)
 
@@ -165,7 +165,7 @@ class FindKeytoolCertificateUseCaseTest {
         }
 
     @Test
-    fun `closest match returns NotFound when keystore has no certificates`() =
+    fun `closest match returns NotFound when truststore has no certificates`() =
         runTest {
             val query = FindCertKeytoolQuery("aaaa", SearchStrategy.CLOSEST_MATCH)
 
@@ -272,6 +272,6 @@ private fun jdk(name: String): Jdk {
     return Jdk(
         path = jdkPath,
         javaInfo = JavaInfo(vendor = "OpenJDK", fullVersion = "17.0.7", major = 17),
-        keystoreInfo = KeystoreInfo(keystorePath = jdkPath.resolve("lib/security/cacerts"), cacertsShortcutEnabled = true),
+        truststoreInfo = TruststoreInfo(truststorePath = jdkPath.resolve("lib/security/cacerts"), cacertsShortcutEnabled = true),
     )
 }

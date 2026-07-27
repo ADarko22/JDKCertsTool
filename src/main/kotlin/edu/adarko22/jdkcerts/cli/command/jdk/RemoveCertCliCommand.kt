@@ -13,7 +13,7 @@ import kotlinx.coroutines.runBlocking
 import java.nio.file.Path
 
 /**
- * Command for removing a certificate, by its alias, from JDK cacerts keystore across all the JDK installations discovered.
+ * Command for removing a certificate, by its alias, from the JDK cacerts truststore across all the JDK installations discovered.
  */
 class RemoveCertCliCommand(
     private val executeKeytoolCommandUseCase: ExecuteKeytoolCommandUseCase,
@@ -24,7 +24,7 @@ class RemoveCertCliCommand(
     private val keystorePassword: String by keystorePasswordOption()
     private val alias: String by aliasOption()
 
-    override fun help(context: Context) = "Remove certificate from all JDK keystores"
+    override fun help(context: Context) = "Remove certificate from all JDK truststores"
 
     override fun run() {
         val results =

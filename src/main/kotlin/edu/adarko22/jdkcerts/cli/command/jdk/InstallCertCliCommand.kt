@@ -14,7 +14,7 @@ import kotlinx.coroutines.runBlocking
 import java.nio.file.Path
 
 /**
- * Command for installing certificates into JDK cacerts keystore across all the JDK installations discovered.
+ * Command for installing certificates into the JDK cacerts truststore across all the JDK installations discovered.
  */
 class InstallCertCliCommand(
     private val executeKeytoolCommandUseCase: ExecuteKeytoolCommandUseCase,
@@ -26,7 +26,7 @@ class InstallCertCliCommand(
     private val certPath: Path by certPathOption()
     private val alias: String by aliasOption()
 
-    override fun help(context: Context) = "Install certificate across all JDK keystores"
+    override fun help(context: Context) = "Install certificate across all JDK truststores"
 
     override fun run() {
         val results =

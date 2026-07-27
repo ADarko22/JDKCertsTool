@@ -36,7 +36,7 @@ class FindCertCliPresenter(
         if (found.isNotEmpty()) {
             output.print("Found ${found.size} certificates matching alias '$alias':\n".green())
         } else {
-            output.print("Certificate alias '$alias' was not found in any JDK keystores.\n".yellow())
+            output.print("Certificate alias '$alias' was not found in any JDK truststores.\n".yellow())
         }
 
         // 2. Iterate through all results and process one at a time

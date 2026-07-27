@@ -1,6 +1,6 @@
 # 📥 install-cert
 
-Concurrently imports a specific certificate asset into all discovered or designated JDK target keystores.
+Concurrently imports a specific certificate asset into all discovered or designated JDK target truststores.
 
 ### Usage
 ```bash
@@ -12,7 +12,7 @@ jdkcerts install-cert --cert <PATH> --alias <ALIAS> [options]
 | Option | Type | Description | Default |
 | --- | --- | --- | --- |
 | `--cert <PATH>` | **Required** | Local filesystem path to the target certificate (`.pem`, `.crt`, etc.) |  |
-| `--alias <TEXT>` | **Required** | The target lookup entry alias to assign inside the keystore. |  |
+| `--alias <TEXT>` | **Required** | The target lookup entry alias to assign inside the truststore. |  |
 | `--keystore-password <TEXT>` | Optional | The protection password guarding the targeted cacerts file. | `changeit` |
 | `--custom-jdk-paths <VALUE>` | Optional | Limits execution to specific, comma-separated absolute JDK home paths. |  |
 | `--dry-run` | Flag | Simulates processing and previews updates without applying disk changes. |  |
