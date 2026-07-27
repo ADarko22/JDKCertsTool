@@ -7,9 +7,9 @@ import edu.adarko22.jdkcerts.core.jdk.Jdk
 import edu.adarko22.jdkcerts.core.jdk.java.model.JavaInfo
 import edu.adarko22.jdkcerts.core.jdk.keytool.model.FindCertKeytoolQuery
 import edu.adarko22.jdkcerts.core.jdk.keytool.model.InstallCertKeytoolCommand
-import edu.adarko22.jdkcerts.core.jdk.keytool.model.KeystoreInfo
 import edu.adarko22.jdkcerts.core.jdk.keytool.model.RemoveCertKeytoolCommand
 import edu.adarko22.jdkcerts.core.jdk.keytool.model.SearchStrategy
+import edu.adarko22.jdkcerts.core.jdk.keytool.model.TruststoreInfo
 import kotlinx.coroutines.test.runTest
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertTrue
@@ -38,7 +38,7 @@ class KeytoolProcessRunnerImplTest {
 
     private val jdkPath = Path.of("/usr/lib/jvm/java-17")
     private val keytoolPath = Path.of("/usr/lib/jvm/java-17/bin/keytool")
-    private val keystorePath = Path.of("/usr/lib/jvm/java-17/lib/security/cacerts")
+    private val truststorePath = Path.of("/usr/lib/jvm/java-17/lib/security/cacerts")
 
     private val standardJdk = createDummyJdk(cacertsEnabled = false)
     private val cacertsShortcutJdk = createDummyJdk(cacertsEnabled = true)
@@ -49,7 +49,7 @@ class KeytoolProcessRunnerImplTest {
     }
 
     @Test
-    fun `Install command with standard keystore builds correct args and returns Executed`() =
+    fun `Install command with standard truststore builds correct args and returns Executed`() =
         runTest {
             // Given
             val operation = InstallCertKeytoolCommand(alias = "my-cert", certificateAbsolutePath = "/tmp/cert.pem")
@@ -69,7 +69,7 @@ class KeytoolProcessRunnerImplTest {
                     "-file",
                     "/tmp/cert.pem",
                     "-keystore",
-                    keystorePath.toString(),
+                    truststorePath.toString(),
                     "-storepass",
                     masterPassword,
                 )
@@ -194,6 +194,6 @@ class KeytoolProcessRunnerImplTest {
         Jdk(
             path = jdkPath,
             javaInfo = JavaInfo("Vendor", "17.0", 17),
-            keystoreInfo = KeystoreInfo(keystorePath = keystorePath, cacertsShortcutEnabled = cacertsEnabled),
+            truststoreInfo = TruststoreInfo(truststorePath = truststorePath, cacertsShortcutEnabled = cacertsEnabled),
         )
 }

@@ -2,7 +2,7 @@ package edu.adarko22.jdkcerts.core.jdk
 
 import edu.adarko22.jdkcerts.core.jdk.java.usecase.ResolveJavaInfoUseCase
 import edu.adarko22.jdkcerts.infra.system.JdkPathsDiscovery
-import edu.adarko22.jdkcerts.infra.system.KeystoreInfoResolver
+import edu.adarko22.jdkcerts.infra.system.TruststoreInfoResolver
 import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.coroutineScope
@@ -13,7 +13,7 @@ import java.nio.file.Path
  *
  * This use case acts as a high-performance factory pipeline. It first scans the file system
  * for valid JDK installation paths, and then concurrently resolves the heavy I/O metadata
- * (Java version, vendor details, and keystore configurations) for every discovered path.
+ * (Java version, vendor details, and truststore configurations) for every discovered path.
  *
  * **Architectural Notes:**
  * - **I/O Parallelism:** By delegating the metadata resolution to concurrent `async` blocks,
@@ -22,12 +22,12 @@ import java.nio.file.Path
  * if the discovery process is canceled by the user (e.g., CLI exit), all underlying active I/O tasks are immediately terminated.
  *
  * @param jdkPathsDiscovery Component responsible for sweeping the file system for JDK root directories.
- * @param keystoreInfoResolver Component responsible for determining the default keystore path and password.
+ * @param truststoreInfoResolver Component responsible for determining the default truststore path.
  * @param resolveJavaInfo Use case that extracts Java vendor and version by invoking the JDK's binary.
  */
 class DiscoverJdksUseCase(
     private val jdkPathsDiscovery: JdkPathsDiscovery,
-    private val keystoreInfoResolver: KeystoreInfoResolver,
+    private val truststoreInfoResolver: TruststoreInfoResolver,
     private val resolveJavaInfo: ResolveJavaInfoUseCase,
 ) {
     /**
@@ -52,11 +52,11 @@ class DiscoverJdksUseCase(
      */
     private suspend fun createJdk(jdkPath: Path): Jdk {
         val javaInfo = resolveJavaInfo.resolve(jdkPath)
-        val keystoreInfo = keystoreInfoResolver.resolve(jdkPath, javaInfo)
+        val truststoreInfo = truststoreInfoResolver.resolve(jdkPath, javaInfo)
         return Jdk(
             path = jdkPath,
             javaInfo = javaInfo,
-            keystoreInfo = keystoreInfo,
+            truststoreInfo = truststoreInfo,
         )
     }
 }

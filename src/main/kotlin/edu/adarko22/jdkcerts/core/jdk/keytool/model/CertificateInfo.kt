@@ -5,7 +5,7 @@ import java.time.LocalDateTime
 /**
  * Represents the details of a generic X.509 certificate.
  *
- * @property alias The unique alias name of the certificate entry in the keystore.
+ * @property alias The unique alias name of the certificate entry in the truststore.
  * @property owner The Distinguished Name (DN) of the certificate subject (owner).
  * @property issuer The Distinguished Name (DN) of the certificate issuer (CA).
  * @property serialNumber The unique serial number assigned by the issuer to this certificate.

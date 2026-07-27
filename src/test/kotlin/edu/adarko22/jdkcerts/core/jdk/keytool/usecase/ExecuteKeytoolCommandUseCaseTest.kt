@@ -7,10 +7,10 @@ import edu.adarko22.jdkcerts.core.jdk.Jdk
 import edu.adarko22.jdkcerts.core.jdk.java.model.JavaInfo
 import edu.adarko22.jdkcerts.core.jdk.keytool.model.ExecutionContext
 import edu.adarko22.jdkcerts.core.jdk.keytool.model.InstallCertKeytoolCommand
-import edu.adarko22.jdkcerts.core.jdk.keytool.model.KeystoreInfo
 import edu.adarko22.jdkcerts.core.jdk.keytool.model.KeytoolCommand
 import edu.adarko22.jdkcerts.core.jdk.keytool.model.KeytoolCommandResult
 import edu.adarko22.jdkcerts.core.jdk.keytool.model.RemoveCertKeytoolCommand
+import edu.adarko22.jdkcerts.core.jdk.keytool.model.TruststoreInfo
 import io.mockk.coEvery
 import io.mockk.mockk
 import kotlinx.coroutines.test.runTest
@@ -132,6 +132,6 @@ private fun jdk(name: String): Jdk {
     return Jdk(
         path = jdkPath,
         javaInfo = JavaInfo(vendor = "OpenJDK", fullVersion = "17.0.7", major = 17),
-        keystoreInfo = KeystoreInfo(keystorePath = jdkPath.resolve("lib/security/cacerts"), cacertsShortcutEnabled = true),
+        truststoreInfo = TruststoreInfo(truststorePath = jdkPath.resolve("lib/security/cacerts"), cacertsShortcutEnabled = true),
     )
 }

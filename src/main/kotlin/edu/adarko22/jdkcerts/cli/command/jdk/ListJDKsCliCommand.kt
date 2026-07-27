@@ -36,6 +36,5 @@ class ListJDKsCliCommand(
 
         output.print("Found JDKs:".green())
         jdks.forEach { output.print("  - $it".green()) }
-        output.print("\n")
     }
 }

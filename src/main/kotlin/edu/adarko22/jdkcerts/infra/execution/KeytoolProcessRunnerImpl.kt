@@ -57,7 +57,7 @@ class KeytoolProcessRunnerImpl(
         jdk: Jdk,
         masterPassword: String,
     ): List<String> {
-        val info = jdk.keystoreInfo
+        val info = jdk.truststoreInfo
 
         val keytoolCommandPath = listOf(jdk.keytoolPath.absolutePathString())
 
@@ -77,13 +77,13 @@ class KeytoolProcessRunnerImpl(
                 }
             }
 
-        val keystoreArgs =
+        val truststoreArgs =
             when {
                 info.cacertsShortcutEnabled -> listOf("-cacerts")
-                else -> listOf("-keystore", info.keystorePath.absolutePathString())
+                else -> listOf("-keystore", info.truststorePath.absolutePathString())
             }
 
-        return keytoolCommandPath + operationArgs + keystoreArgs + listOf("-storepass", masterPassword)
+        return keytoolCommandPath + operationArgs + truststoreArgs + listOf("-storepass", masterPassword)
     }
 
     private suspend fun execute(

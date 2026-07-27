@@ -16,7 +16,7 @@ import edu.adarko22.jdkcerts.core.jdk.keytool.parser.CertificateParseResult
 import java.util.regex.PatternSyntaxException
 
 /**
- * CQRS **query** use case: finds certificates across all JDK keystores using configurable strategies.
+ * CQRS **query** use case: finds certificates across all JDK truststores using configurable strategies.
  *
  * Executes keytool on each discovered JDK, then maps the neutral [KeytoolProcessResult] into a
  * semantic [KeytoolQueryResult]. Raw keytool failures are interpreted by [KeytoolErrorClassifier]
@@ -39,7 +39,7 @@ class FindKeytoolCertificateUseCase(
      *
      * Behavior depends on [FindCertKeytoolQuery.searchStrategy]:
      * - **EXACT_MATCH**: Direct alias lookup using keytool's `-alias` option (fastest)
-     * - **REGEX**: Pattern matching across all keystore entries (slower, may have multiple matches)
+     * - **REGEX**: Pattern matching across all truststore entries (slower, may have multiple matches)
      * - **CLOSEST_MATCH**: Fuzzy matching using edit/vector distance (slowest, single best match)
      *
      * @param findCertKeytoolQuery The keytool query configuration.
@@ -113,7 +113,7 @@ class FindKeytoolCertificateUseCase(
             }
 
         if (!parseResult.hasCertificates) {
-            return noCertificates(outcome, parseResult, "No certificates found in keystore")
+            return noCertificates(outcome, parseResult, "No certificates found in truststore")
         }
 
         val matchedCertificates = parseResult.certificates.filter { it.alias.matches(aliasRegex) }
@@ -133,7 +133,7 @@ class FindKeytoolCertificateUseCase(
         alias: String,
     ): KeytoolQueryResult {
         if (!parseResult.hasCertificates) {
-            return noCertificates(outcome, parseResult, "No certificates found in keystore")
+            return noCertificates(outcome, parseResult, "No certificates found in truststore")
         }
 
         val certificatesWithScores = parseResult.certificates.associateWith { fuzzyMatcher.similarityScore(it.alias, alias) }
@@ -179,7 +179,7 @@ class FindKeytoolCertificateUseCase(
     ): KeytoolQueryResult =
         when (val failure = errorClassifier.classify(outcome.exitCode, outcome.stdout, outcome.stderr)) {
             is KeytoolFailure.AliasNotFound -> {
-                KeytoolQueryResult.NotFound(outcome.jdk, "Alias `$alias` not found in keystore")
+                KeytoolQueryResult.NotFound(outcome.jdk, "Alias `$alias` not found in truststore")
             }
 
             is KeytoolFailure.WrongPassword -> {

@@ -7,7 +7,7 @@ import org.junit.jupiter.api.io.TempDir
 import java.nio.file.Files
 import java.nio.file.Path
 
-class UNIXKeystoreInfoResolverTest {
+class UNIXTruststoreInfoResolverTest {
     @Test
     fun `resolve picks lib security cacerts when present`(
         @TempDir tempDir: Path,
@@ -18,9 +18,9 @@ class UNIXKeystoreInfoResolverTest {
         Files.createFile(expected)
 
         val javaInfo = JavaInfo(major = 11, fullVersion = "11.0.11", vendor = "OpenJDK")
-        val result = UNIXKeystoreInfoResolver().resolve(jdkPath, javaInfo)
+        val result = UNIXTruststoreInfoResolver().resolve(jdkPath, javaInfo)
 
-        Assertions.assertEquals(expected, result.keystorePath)
+        Assertions.assertEquals(expected, result.truststorePath)
         Assertions.assertTrue(result.cacertsShortcutEnabled, "major > 8 should enable cacerts shortcut")
     }
 
@@ -34,9 +34,9 @@ class UNIXKeystoreInfoResolverTest {
         Files.createFile(expected)
 
         val javaInfo = JavaInfo(major = 8, fullVersion = "1.8.0_332", vendor = "Oracle")
-        val result = UNIXKeystoreInfoResolver().resolve(jdkPath, javaInfo)
+        val result = UNIXTruststoreInfoResolver().resolve(jdkPath, javaInfo)
 
-        Assertions.assertEquals(expected, result.keystorePath)
+        Assertions.assertEquals(expected, result.truststorePath)
         Assertions.assertFalse(result.cacertsShortcutEnabled, "major = 8 should not enable cacerts shortcut")
     }
 
@@ -49,7 +49,7 @@ class UNIXKeystoreInfoResolverTest {
 
         val ex =
             Assertions.assertThrows(IllegalStateException::class.java) {
-                UNIXKeystoreInfoResolver().resolve(jdkPath, javaInfo)
+                UNIXTruststoreInfoResolver().resolve(jdkPath, javaInfo)
             }
         Assertions.assertTrue(ex.message?.contains("Could not find cacerts file") == true)
     }

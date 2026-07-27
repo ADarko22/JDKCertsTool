@@ -19,7 +19,7 @@ sealed interface KeytoolFailure {
         override val rawStderr: String,
     ) : KeytoolFailure
 
-    /** The targeted alias is not present in the keystore. */
+    /** The targeted alias is not present in the truststore. */
     data class AliasNotFound(
         override val rawStderr: String,
     ) : KeytoolFailure

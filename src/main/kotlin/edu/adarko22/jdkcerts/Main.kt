@@ -21,8 +21,8 @@ import edu.adarko22.jdkcerts.infra.system.SystemType
  * Supported commands include:
  *  - info: display system and JDK information
  *  - list-jdks: list all discovered JDKs
- *  - install-cert: install a certificate into JDK keystores
- *  - remove-cert: remove a certificate from JDK keystores
+ *  - install-cert: install a certificate into JDK truststores
+ *  - remove-cert: remove a certificate from JDK truststores
  *
  * @author Angelo Buono (adarko22)
  *
@@ -46,7 +46,7 @@ fun main(args: Array<String>) {
     val discoverJdksUseCase =
         DiscoverJdksUseCase(
             systemType.jdkPathDiscovery(),
-            systemType.keystoreInfoResolver(),
+            systemType.truststoreInfoResolver(),
             resolveJavaInfoUseCase,
         )
 

@@ -1,6 +1,6 @@
 # 🔍 find-cert
 
-Queries keystores using one of three pluggable matching engines to trace and debug profile layouts.
+Queries truststores using one of three pluggable matching engines to trace and debug profile layouts.
 
 ### Lookup Strategies
 

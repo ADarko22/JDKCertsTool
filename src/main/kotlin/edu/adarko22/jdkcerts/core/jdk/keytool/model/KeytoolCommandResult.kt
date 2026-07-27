@@ -52,7 +52,7 @@ sealed class KeytoolCommandResult {
             override val rawStderr: String,
         ) : Failure()
 
-        /** A delete was rejected because [alias] does not exist in the keystore. */
+        /** A delete was rejected because [alias] does not exist in the truststore. */
         data class AliasNotFound(
             override val jdk: Jdk,
             val alias: String,

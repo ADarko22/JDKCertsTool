@@ -1,12 +1,12 @@
 package edu.adarko22.jdkcerts.infra.system
 
 import edu.adarko22.jdkcerts.infra.system.unix.UNIXJdkPathsDiscovery
-import edu.adarko22.jdkcerts.infra.system.unix.UNIXKeystoreInfoResolver
 import edu.adarko22.jdkcerts.infra.system.unix.UNIXSystemInfoProvider
+import edu.adarko22.jdkcerts.infra.system.unix.UNIXTruststoreInfoResolver
 
 /**
  * Represents the host system type and provides system-specific implementations
- * for discovering JDK paths and resolving keystore information.
+ * for discovering JDK paths and resolving truststore information.
  */
 enum class SystemType {
     /**
@@ -17,7 +17,7 @@ enum class SystemType {
 
         override fun jdkPathDiscovery() = UNIXJdkPathsDiscovery(unixSystemInfoProvider)
 
-        override fun keystoreInfoResolver() = UNIXKeystoreInfoResolver()
+        override fun truststoreInfoResolver() = UNIXTruststoreInfoResolver()
     }, ;
 
     /**
@@ -26,7 +26,7 @@ enum class SystemType {
     abstract fun jdkPathDiscovery(): JdkPathsDiscovery
 
     /**
-     * Returns a system-specific [KeystoreInfoResolver] implementation.
+     * Returns a system-specific [TruststoreInfoResolver] implementation.
      */
-    abstract fun keystoreInfoResolver(): KeystoreInfoResolver
+    abstract fun truststoreInfoResolver(): TruststoreInfoResolver
 }

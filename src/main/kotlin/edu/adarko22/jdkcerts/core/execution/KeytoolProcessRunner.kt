@@ -16,7 +16,7 @@ interface KeytoolProcessRunner {
      *
      * @param operation The keytool operation to execute (command or query).
      * @param jdks The JDK installations to target.
-     * @param masterPassword The keystore password applied to each JDK's keystore.
+     * @param masterPassword The keystore password applied to each JDK's truststore.
      * @param dryRun If true, implementations must not start OS processes and should instead
      * return [KeytoolProcessResult.DryRun] previews.
      * @return A list of [KeytoolProcessResult], one per JDK.

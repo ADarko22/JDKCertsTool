@@ -48,7 +48,7 @@ jdkcerts list-jdks [--custom-jdk-paths <VALUE>]
 
 ## 📥 install-cert
 
-Installs a certificate across all discovered JDK keystores.
+Installs a certificate across all discovered JDK truststores.
 
 ```bash
 jdkcerts install-cert --cert <PATH> --alias <ALIAS> [--keystore-password <PASSWORD>] [--dry-run] [--custom-jdk-paths <VALUE>]
@@ -83,7 +83,7 @@ jdkcerts install-cert --cert /path/to/cert.pem --alias my-cert \
 
 ## 🗑️ remove-cert
 
-Removes a certificate by alias from all discovered JDK keystores.
+Removes a certificate by alias from all discovered JDK truststores.
 
 ```bash
 jdkcerts remove-cert --alias <ALIAS> [--keystore-password <PASSWORD>] [--dry-run] [--custom-jdk-paths <VALUE>]
@@ -113,12 +113,12 @@ jdkcerts remove-cert --alias my-cert
 
 ## 🔍 find-cert
 
-Finds and displays certificate details by alias across all JDK keystores.
+Finds and displays certificate details by alias across all JDK truststores.
 
 Supports three search strategies for maximum flexibility:
 
 - **EXACT_MATCH** (default): Fast direct alias lookup using keytool's `-alias` option
-- **REGEX**: Pattern-based matching across all keystore entries (use `--regex` flag)
+- **REGEX**: Pattern-based matching across all truststore entries (use `--regex` flag)
 - **CLOSEST_MATCH**: Fuzzy matching for approximate alias names (use `--closest-match` flag)
 
 ```bash
