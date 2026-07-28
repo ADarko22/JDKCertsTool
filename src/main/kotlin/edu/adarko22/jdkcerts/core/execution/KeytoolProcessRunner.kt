@@ -10,7 +10,7 @@ import edu.adarko22.jdkcerts.core.jdk.keytool.model.KeytoolOperation
  * [KeytoolProcessResult.DryRun], and must not throw for non-zero exit codes — those are reported
  * as [KeytoolProcessResult.Executed] and interpreted by the core layer.
  */
-interface KeytoolProcessRunner {
+fun interface KeytoolProcessRunner {
     /**
      * Executes the provided operation against the supplied JDKs concurrently.
      *
