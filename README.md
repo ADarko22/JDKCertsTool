@@ -1,9 +1,13 @@
 # 🛠️ JDK Certs Tool
 
-[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
+[![Code Quality & Security](https://github.com/ADarko22/JDKCertsTool/actions/workflows/build-test-analyse.yml/badge.svg)](https://github.com/ADarko22/JDKCertsTool/actions/workflows/build-test-analyse.yml)
+[![Quality gate status](https://sonarcloud.io/api/project_badges/measure?project=ADarko22_JDKCertsTool&metric=alert_status)](https://sonarcloud.io/summary/new_code?id=ADarko22_JDKCertsTool)
+[![Coverage](https://sonarcloud.io/api/project_badges/measure?project=ADarko22_JDKCertsTool&metric=coverage)](https://sonarcloud.io/summary/new_code?id=ADarko22_JDKCertsTool)
+[![Latest release](https://img.shields.io/github/v/release/ADarko22/JDKCertsTool)](https://github.com/ADarko22/JDKCertsTool/releases/latest)
+[![License: Apache 2.0](https://img.shields.io/badge/License-Apache_2.0-blue.svg)](LICENSE)
 
 A command-line utility to manage certificates in all the installed JDKs discovered.
-Visitthe [JDKCertsTool official page](https://adarko22.github.io/JDKCertsTool/website) to discover more about!
+Visit the [JDKCertsTool official page](https://adarko22.github.io/JDKCertsTool/website) to discover more!
 
 ## ❓ Why JDKCertsTool?
 
@@ -43,6 +47,7 @@ It is **not** concerned with the application **keystore**, i.e. `PrivateKeyEntry
 TLS/HTTPS server keys used to decrypt traffic, keys used to sign JWT tokens or other artifacts before distribution — and
 **must be managed securely by the application itself**. Managing private keys is explicitly **out of scope** for this
 tool.
+
 ---
 
 ## 📦 Installation
@@ -55,7 +60,7 @@ brew install jdkcerts
 
 # or upgrade with
 brew upgrade jdkcerts
-````
+```
 
 ---
 
@@ -75,11 +80,13 @@ Checkout the [Commands Overview](USAGE.md) section to learn about the commands, 
 
 ## 💻 Contributing
 
-Your contributions are welcome! 
-Have a look at the dedicated [contribution](DEVELOPMENT.md) section for further details.
+Your contributions are welcome! Start with the [Contributing Guide](CONTRIBUTING.md), which links to the detailed
+[Development Guide](DEVELOPMENT.md) and [Architecture](ARCHITECTURE.md) overview.
+
+Found a security issue? Please follow the [Security Policy](SECURITY.md) instead of opening a public issue.
 
 ---
 
 ## 📄 License
 
-This project is licensed under the [MIT License](LICENSE).
+This project is licensed under the [Apache License 2.0](LICENSE).

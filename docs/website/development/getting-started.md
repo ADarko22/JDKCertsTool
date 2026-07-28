@@ -18,7 +18,7 @@ will automatically resolve, download, and containerize the appropriate target JD
 
 ```bash
 # Clone the codebase
-git clone [https://github.com/ADarko22/JDKCertsTool.git](https://github.com/ADarko22/JDKCertsTool.git)
+git clone https://github.com/ADarko22/JDKCertsTool.git
 cd JDKCertsTool
 
 # Execute initial verification suite

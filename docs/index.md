@@ -1,6 +1,10 @@
 # 🛠️ JDK Certs Tool
 
-[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
+[![Code Quality & Security](https://github.com/ADarko22/JDKCertsTool/actions/workflows/build-test-analyse.yml/badge.svg)](https://github.com/ADarko22/JDKCertsTool/actions/workflows/build-test-analyse.yml)
+[![Quality gate status](https://sonarcloud.io/api/project_badges/measure?project=ADarko22_JDKCertsTool&metric=alert_status)](https://sonarcloud.io/summary/new_code?id=ADarko22_JDKCertsTool)
+[![Coverage](https://sonarcloud.io/api/project_badges/measure?project=ADarko22_JDKCertsTool&metric=coverage)](https://sonarcloud.io/summary/new_code?id=ADarko22_JDKCertsTool)
+[![Latest release](https://img.shields.io/github/v/release/ADarko22/JDKCertsTool)](https://github.com/ADarko22/JDKCertsTool/releases/latest)
+[![License: Apache 2.0](https://img.shields.io/badge/License-Apache_2.0-blue.svg)](LICENSE)
 
 A command-line utility to effortlessly manage certificates across all discovered JDK installations on your machine.
 

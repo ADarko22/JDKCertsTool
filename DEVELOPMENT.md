@@ -87,7 +87,7 @@ If you modify dependencies, update your lock files by running:
 ### 2. Dependency Verification (Checksums & Signatures)
 
 We verify the cryptographic integrity of all external artifacts using pure offline SHA-256 checksums.
-This is a security gate that esnures downloaded binaries match what we expect without relying on public PGP key servers.
+This is a security gate that ensures downloaded binaries match what we expect without relying on public PGP key servers.
 
 If you add or upgrade a library, the build will fail in CI until you refresh the local verification rules:
 
