@@ -17,3 +17,12 @@ updates:
       # You can add more ignore rules here for other dependencies if needed
       # - dependency-name: "some.other.dependency"
       #   versions: ["< 2.0.0"] # Example: ignore any version before 2.0.0
+
+  # Configuration for the MkDocs (pip) documentation dependencies
+  - package-ecosystem: "pip" # Python dependencies for the docs site
+    directory: "/docs" # Location of docs/requirements.txt (and requirements.in)
+    schedule:
+      interval: "weekly"
+    open-pull-requests-limit: 5
+    allow:
+      - dependency-type: "all"
