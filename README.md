@@ -7,7 +7,7 @@
 [![License: Apache 2.0](https://img.shields.io/badge/License-Apache_2.0-blue.svg)](LICENSE)
 
 A command-line utility to manage certificates in all the installed JDKs discovered.
-Visit the [JDKCertsTool official page](https://adarko22.github.io/JDKCertsTool/website) to discover more!
+Visit the [JDKCertsTool documentation site](https://adarko22.github.io/JDKCertsTool/) for the full guide.
 
 ## ❓ Why JDKCertsTool?
 
@@ -74,14 +74,15 @@ jdkcerts --help
 
 ### 💡 Commands Overview
 
-Checkout the [Commands Overview](USAGE.md) section to learn about the commands, their options and examples.
+See the [Commands Reference](https://adarko22.github.io/JDKCertsTool/website/commands/overview/) on the documentation
+site to learn about the commands, their options and examples.
 
 ---
 
 ## 💻 Contributing
 
-Your contributions are welcome! Start with the [Contributing Guide](CONTRIBUTING.md), which links to the detailed
-[Development Guide](DEVELOPMENT.md) and [Architecture](ARCHITECTURE.md) overview.
+Your contributions are welcome! Start with the [Contributing Guide](CONTRIBUTING.md). Deep-dive developer and
+architecture docs live on the [documentation site](https://adarko22.github.io/JDKCertsTool/website/development/getting-started/).
 
 Found a security issue? Please follow the [Security Policy](SECURITY.md) instead of opening a public issue.
 

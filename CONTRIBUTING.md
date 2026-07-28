@@ -3,10 +3,10 @@
 Thanks for your interest in improving **JDKCertsTool**! Contributions of all kinds are welcome — bug reports, feature
 ideas, documentation fixes, and code.
 
-This file is the entry point. The deep-dive guides live alongside it:
+This file is the entry point. The deep-dive guides live on the documentation site:
 
-- 🛠️ [Development Guide](DEVELOPMENT.md) — environment setup, daily commands, testing, build security.
-- 🏛️ [Architecture](ARCHITECTURE.md) — Clean Architecture layers (`core` / `cli` / `infra`) and the rules to follow.
+- 🛠️ [Getting Started](https://adarko22.github.io/JDKCertsTool/website/development/getting-started/) — environment setup and daily commands.
+- 🏛️ [Architecture](https://adarko22.github.io/JDKCertsTool/website/architecture/layers/) — Clean Architecture layers (`core` / `cli` / `infra`) and the rules to follow.
 - 📖 [Documentation site](https://adarko22.github.io/JDKCertsTool/) — user-facing docs and command reference.
 
 ## 🐛 Reporting bugs
@@ -31,7 +31,7 @@ you're solving so we can confirm it fits before you invest in a PR.
 
 1. **Fork & branch** off `master` (e.g. `feat/windows-support`, `fix/keytool-classifier`).
 2. **Follow the architecture.** New business logic goes in `core`; OS-specific code in `infra`; CLI wiring in `cli`.
-   Dependencies only flow inward. See [ARCHITECTURE.md](ARCHITECTURE.md).
+   Dependencies only flow inward. See the [Architecture docs](https://adarko22.github.io/JDKCertsTool/website/architecture/layers/).
 3. **Add tests** mirroring the existing patterns under `src/test/kotlin/...` and keep coverage healthy.
 4. **Verify locally** before pushing:
    ```bash
@@ -39,7 +39,7 @@ you're solving so we can confirm it fits before you invest in a PR.
    ./gradlew ktlintFormat # auto-fix style violations
    ```
 5. **If you touched dependencies**, refresh the supply-chain manifests (details in
-   [DEVELOPMENT.md](DEVELOPMENT.md#-build-security)):
+   [Build Security](https://adarko22.github.io/JDKCertsTool/website/development/security/)):
    ```bash
    ./gradlew dependencies --write-locks
    ./gradlew clean build --write-verification-metadata sha256
