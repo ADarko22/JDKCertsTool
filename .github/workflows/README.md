@@ -33,9 +33,9 @@ Manual run via **GitHub Actions → Run workflow**, with one required input: `ta
 
 5. **Post-Release Version Bump**
 
-   Updates projectVersion in `gradle.properties` to the next snapshot version and pushes directly to main.
+   Updates projectVersion in `gradle.properties` to the next snapshot version and pushes directly to master.
 
-## 🔐 Required SecretsTo
+## 🔐 Required Secrets
 
 The pipeline requires and uses the following secrets:
 
@@ -62,7 +62,7 @@ Ensures every commit and PR builds cleanly, passes tests, and produces coverage 
     - Adds comments and status updates to the PR.
 
 2. **Build Test & Analysis**
-    - Sets up JDK 17 & Gradle
+    - Sets up JDK 21 & Gradle
     - Initializes CodeQL for Kotlin
     - Builds the project & runs Sonar analysis
     - Uploads security findings
@@ -72,4 +72,4 @@ Ensures every commit and PR builds cleanly, passes tests, and produces coverage 
     - JaCoCo coverage report
 
 4. **Test Summary**
-    - Published via `dorny/test-reporter@v1`
+    - Published via `dorny/test-reporter@v3`
