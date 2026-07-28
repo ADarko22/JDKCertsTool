@@ -3,7 +3,6 @@ package edu.adarko22.jdkcerts.core.jdk.keytool.usecase
 import edu.adarko22.jdkcerts.core.execution.KeytoolProcessResult
 import edu.adarko22.jdkcerts.core.execution.KeytoolProcessRunner
 import edu.adarko22.jdkcerts.core.jdk.DiscoverJdksUseCase
-import edu.adarko22.jdkcerts.core.jdk.Jdk
 import edu.adarko22.jdkcerts.core.jdk.keytool.classifier.KeytoolErrorClassifier
 import edu.adarko22.jdkcerts.core.jdk.keytool.classifier.KeytoolFailure
 import edu.adarko22.jdkcerts.core.jdk.keytool.model.ExecutionContext
@@ -36,47 +35,50 @@ class ExecuteKeytoolCommandUseCase(
         val jdks = jdkDiscoverJdksUseCase.discover(executionContext.customJdkPaths)
         return keytoolProcessRunner
             .runConcurrently(keytoolCommand, jdks, executionContext.masterPassword, executionContext.dryRun)
-            .map { outcome -> outcome.toCommandResult(keytoolCommand.alias) }
-    }
+            .map { outcome ->
+                when (outcome) {
+                    is KeytoolProcessResult.DryRun -> {
+                        KeytoolCommandResult.DryRun(outcome.jdk, outcome.previewCommand)
+                    }
 
-    private fun KeytoolProcessResult.toCommandResult(alias: String): KeytoolCommandResult =
-        when (this) {
-            is KeytoolProcessResult.DryRun -> {
-                KeytoolCommandResult.DryRun(jdk, previewCommand)
-            }
-
-            is KeytoolProcessResult.Executed -> {
-                if (exitCode == 0) {
-                    KeytoolCommandResult.Success(jdk)
-                } else {
-                    errorClassifier.classify(exitCode, stdout, stderr).toCommandFailure(jdk, alias)
+                    is KeytoolProcessResult.Executed -> {
+                        if (outcome.exitCode == 0) {
+                            KeytoolCommandResult.Success(outcome.jdk)
+                        } else {
+                            handleFailure(outcome, keytoolCommand.alias)
+                        }
+                    }
                 }
             }
-        }
+    }
 
-    private fun KeytoolFailure.toCommandFailure(
-        jdk: Jdk,
+    /**
+     * Maps a non-zero keytool exit into a typed command failure, interpreting the raw output through
+     * [KeytoolErrorClassifier].
+     */
+    private fun handleFailure(
+        outcome: KeytoolProcessResult.Executed,
         alias: String,
     ): KeytoolCommandResult.Failure =
-        when (this) {
+        when (val failure = errorClassifier.classify(outcome.exitCode, outcome.stdout, outcome.stderr)) {
             is KeytoolFailure.WrongPassword -> {
-                KeytoolCommandResult.Failure.WrongPassword(jdk, rawStderr)
+                KeytoolCommandResult.Failure.WrongPassword(outcome.jdk, failure.rawStderr)
             }
 
             is KeytoolFailure.AliasAlreadyExists -> {
-                KeytoolCommandResult.Failure.AliasAlreadyExists(jdk, alias, rawStderr)
+                KeytoolCommandResult.Failure.AliasAlreadyExists(outcome.jdk, alias, failure.rawStderr)
             }
 
             is KeytoolFailure.CertificateAlreadyExists -> {
-                KeytoolCommandResult.Failure.CertificateAlreadyExists(jdk, conflictingAlias, rawStderr)
+                KeytoolCommandResult.Failure.CertificateAlreadyExists(outcome.jdk, failure.conflictingAlias, failure.rawStderr)
             }
 
             is KeytoolFailure.AliasNotFound -> {
-                KeytoolCommandResult.Failure.AliasNotFound(jdk, alias, rawStderr)
+                KeytoolCommandResult.Failure.AliasNotFound(outcome.jdk, alias, failure.rawStderr)
             }
 
             is KeytoolFailure.Unknown -> {
-                KeytoolCommandResult.Failure.Unknown(jdk, exitCode, rawStderr)
+                KeytoolCommandResult.Failure.Unknown(outcome.jdk, failure.exitCode, failure.rawStderr)
             }
         }
 }
