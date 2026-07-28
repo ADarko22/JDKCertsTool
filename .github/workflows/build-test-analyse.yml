@@ -12,17 +12,20 @@ on:
   schedule:
     - cron: "0 5 * * *" # every day at 5 am
 
+# Least privilege: the workflow default is read-only; each job below elevates only
+# the write scopes it actually needs (see per-job `permissions`).
 permissions:
   contents: read
-  actions: read
-  security-events: write
-  pull-requests: write
-  statuses: write
-  checks: write
 
 jobs:
   lint:
     runs-on: ubuntu-latest
+
+    # Super-Linter reports results as commit statuses / PR annotations.
+    permissions:
+      contents: read
+      statuses: write
+      pull-requests: write
 
     steps:
       - name: Checkout code
@@ -41,6 +44,11 @@ jobs:
 
   build-test-sonar:
     runs-on: ubuntu-latest
+
+    # dorny/test-reporter publishes test results as a check run.
+    permissions:
+      contents: read
+      checks: write
 
     steps:
       - name: Checkout code
@@ -105,6 +113,12 @@ jobs:
 
   codeql:
     runs-on: ubuntu-latest
+
+    # CodeQL uploads SARIF results to the code-scanning (security) dashboard.
+    permissions:
+      contents: read
+      security-events: write
+      actions: read
 
     steps:
       - name: Checkout code
