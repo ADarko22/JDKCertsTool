@@ -24,3 +24,8 @@ update the cryptographic manifest metadata file:
 !!! warning "Review Verification Changes"
     Always carefully audit the auto-generated diff profiles inside `gradle/verification-metadata.xml` before packaging them
     inside your repository commits.
+
+!!! note "Dependabot is reconciled automatically"
+    Dependabot cannot update the verification manifest, so the `dependabot-gradle-verification.yml`
+    workflow regenerates `gradle/verification-metadata.xml` and commits it back to each Dependabot Gradle
+    PR. The manual command above is only needed for dependency changes you make yourself.

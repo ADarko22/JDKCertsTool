@@ -5,10 +5,10 @@
 JDKCertsTool follows [Semantic Versioning](https://semver.org/). Security fixes are applied to the **latest released
 minor version**. Please upgrade to the latest release before reporting an issue.
 
-| Version   | Supported          |
-|-----------|--------------------|
+| Version    | Supported          |
+|------------|--------------------|
 | Latest 2.x | :white_check_mark: |
-| < 2.0     | :x:                |
+| < 2.0      | :x:                |
 
 ## Reporting a vulnerability
 
@@ -16,7 +16,8 @@ minor version**. Please upgrade to the latest release before reporting an issue.
 
 Instead, report them privately through GitHub's built-in advisory workflow:
 
-- Open a private report via **[Security → Advisories → Report a vulnerability](https://github.com/ADarko22/JDKCertsTool/security/advisories/new)**.
+- Open a private report via *
+  *[Security → Advisories → Report a vulnerability](https://github.com/ADarko22/JDKCertsTool/security/advisories/new)**.
 
 Please include, where applicable:
 
@@ -40,4 +41,5 @@ against hardened production truststores is outside its intended use.
 ## Supply-chain security
 
 This project enforces dependency locking and offline SHA-256 dependency verification, and runs SonarCloud and CodeQL on
-every change. See [Build Security](DEVELOPMENT.md#-build-security) for how these gates work and how to update them.
+every change. Dependabot updates are automatically reconciled with the verification manifest by a dedicated workflow.
+See [Build Security](DEVELOPMENT.md#-build-security) for how these gates work and how to update them.

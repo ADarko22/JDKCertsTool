@@ -44,6 +44,8 @@ you're solving so we can confirm it fits before you invest in a PR.
    ./gradlew dependencies --write-locks
    ./gradlew clean build --write-verification-metadata sha256
    ```
+   > This manual refresh is for your own dependency changes. Dependabot PRs are reconciled
+   > automatically by the `dependabot-gradle-verification.yml` workflow.
 6. **Open a Pull Request** against `master` and fill in the PR template. CI (Super-Linter, build/test, SonarCloud,
    CodeQL) must be green before review.
 
