@@ -2,7 +2,7 @@ package edu.adarko22.jdkcerts.infra.system.unix
 
 import edu.adarko22.jdkcerts.core.jdk.java.model.JavaInfo
 import edu.adarko22.jdkcerts.core.jdk.keytool.model.TruststoreInfo
-import edu.adarko22.jdkcerts.infra.system.TruststoreInfoResolver
+import edu.adarko22.jdkcerts.core.system.TruststoreInfoResolver
 import java.nio.file.Files
 import java.nio.file.Path
 
