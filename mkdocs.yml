@@ -59,6 +59,7 @@ nav:
   - Architecture:
       - Overview & Layers: website/architecture/layers.md
       - Extensibility & Evolution: website/architecture/extensibility.md
+      - Verification: website/architecture/verification.md
   - Contributing:
       - Getting Started: website/development/getting-started.md
       - Commands & Style: website/development/commands-style.md
