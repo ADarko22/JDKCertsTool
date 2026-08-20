@@ -1,8 +1,8 @@
 package edu.adarko22.jdkcerts.core.jdk
 
 import edu.adarko22.jdkcerts.core.jdk.java.usecase.ResolveJavaInfoUseCase
-import edu.adarko22.jdkcerts.infra.system.JdkPathsDiscovery
-import edu.adarko22.jdkcerts.infra.system.TruststoreInfoResolver
+import edu.adarko22.jdkcerts.core.system.JdkPathsDiscovery
+import edu.adarko22.jdkcerts.core.system.TruststoreInfoResolver
 import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.coroutineScope

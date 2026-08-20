@@ -1,5 +1,7 @@
 package edu.adarko22.jdkcerts.infra.system
 
+import edu.adarko22.jdkcerts.core.system.JdkPathsDiscovery
+import edu.adarko22.jdkcerts.core.system.TruststoreInfoResolver
 import edu.adarko22.jdkcerts.infra.system.unix.UNIXJdkPathsDiscovery
 import edu.adarko22.jdkcerts.infra.system.unix.UNIXSystemInfoProvider
 import edu.adarko22.jdkcerts.infra.system.unix.UNIXTruststoreInfoResolver
@@ -21,12 +23,12 @@ enum class SystemType {
     }, ;
 
     /**
-     * Returns a system-specific [JdkPathsDiscovery] implementation.
+     * Returns a system-specific [edu.adarko22.jdkcerts.core.system.JdkPathsDiscovery] implementation.
      */
     abstract fun jdkPathDiscovery(): JdkPathsDiscovery
 
     /**
-     * Returns a system-specific [TruststoreInfoResolver] implementation.
+     * Returns a system-specific [edu.adarko22.jdkcerts.core.system.TruststoreInfoResolver] implementation.
      */
     abstract fun truststoreInfoResolver(): TruststoreInfoResolver
 }

@@ -1,4 +1,4 @@
-package edu.adarko22.jdkcerts.infra.system
+package edu.adarko22.jdkcerts.core.system
 
 import java.nio.file.Path
 
