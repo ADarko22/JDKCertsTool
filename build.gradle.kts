@@ -32,6 +32,8 @@ dependencies {
     testImplementation(libs.mockito.core)
     testImplementation(libs.mockito.kotlin)
     testImplementation(libs.coroutines.test)
+    testImplementation(libs.archunit)
+    testImplementation(libs.archunit.junit6)
 
     testRuntimeOnly(libs.junit.engine)
     testRuntimeOnly(libs.junit.platform.reporting)
