@@ -23,8 +23,7 @@ import edu.adarko22.jdkcerts.core.jdk.keytool.usecase.FindKeytoolCertificateUseC
  * and wires them with the necessary use cases and output printer.
  *
  * @param discoverJdks Use case for discovering installed JDKs.
- * @param installKeytoolCertificateUseCase Use case for installing certificates.
- * @param removeKeytoolCertificateUseCase Use case for removing certificates.
+ * @param executeKeytoolCommandUseCase Use case for executing keytool commands.
  * @param findKeytoolCertificateUseCase Use case for finding certificates.
  * @param toolOutputPrinter Output printer used for CLI messages (default is [DefaultToolOutputPrinter]).
  */
