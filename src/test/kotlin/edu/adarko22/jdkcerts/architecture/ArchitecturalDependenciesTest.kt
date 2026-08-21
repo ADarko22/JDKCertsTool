@@ -1,6 +1,7 @@
 package edu.adarko22.jdkcerts.architecture
 
 import com.tngtech.archunit.core.domain.JavaConstructor
+import com.tngtech.archunit.core.importer.ImportOption
 import com.tngtech.archunit.junit.AnalyzeClasses
 import com.tngtech.archunit.junit.ArchTest
 import com.tngtech.archunit.lang.ArchCondition
@@ -9,8 +10,11 @@ import com.tngtech.archunit.lang.SimpleConditionEvent
 import com.tngtech.archunit.lang.syntax.ArchRuleDefinition.constructors
 import com.tngtech.archunit.library.freeze.FreezingArchRule.freeze
 
-@AnalyzeClasses(packages = ["edu.adarko22.jdkcerts"])
-class AbstractDependencyInjectionTest {
+@AnalyzeClasses(
+    packages = ["edu.adarko22.jdkcerts"],
+    importOptions = [ImportOption.DoNotIncludeTests::class],
+)
+class ArchitecturalDependenciesTest {
     companion object {
         private val ALLOWED_CONCRETE_PACKAGES =
             listOf(
@@ -36,9 +40,6 @@ class AbstractDependencyInjectionTest {
         freeze(
             constructors()
                 .that()
-                .areDeclaredInClassesThat()
-                .doNotHaveFullyQualifiedName(".*Test($|\\$.*)")
-                .and()
                 .areDeclaredInClassesThat()
                 .areNotAnonymousClasses()
                 .should(haveOnlyInterfaceOrWhitelistedParameters()),

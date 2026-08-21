@@ -4,6 +4,7 @@ import com.tngtech.archunit.junit.AnalyzeClasses
 import com.tngtech.archunit.junit.ArchTest
 import com.tngtech.archunit.library.Architectures
 import com.tngtech.archunit.library.Architectures.layeredArchitecture
+import com.tngtech.archunit.library.dependencies.SlicesRuleDefinition.slices
 
 @AnalyzeClasses(packages = ["edu.adarko22.jdkcerts"])
 class ArchitecturalPackageLayersTest {
@@ -55,4 +56,12 @@ class ArchitecturalPackageLayersTest {
             .mayOnlyAccessLayers(CORE_LAYER)
             .whereLayer(CLI_LAYER)
             .mayNotBeAccessedByAnyLayer()
+
+    @ArchTest
+    @JvmField
+    val topLevelPackagesFreeOfCycles =
+        slices()
+            .matching("edu.adarko22.jdkcerts.(*)..")
+            .should()
+            .beFreeOfCycles()
 }
