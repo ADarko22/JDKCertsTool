@@ -1,4 +1,4 @@
-# 🛠️ JDK Certs Tool
+# JDK Certs Tool
 
 [![Code Quality & Security](https://github.com/ADarko22/JDKCertsTool/actions/workflows/build-test-analyse.yml/badge.svg)](https://github.com/ADarko22/JDKCertsTool/actions/workflows/build-test-analyse.yml)
 [![Quality gate status](https://sonarcloud.io/api/project_badges/measure?project=ADarko22_JDKCertsTool&metric=alert_status)](https://sonarcloud.io/summary/new_code?id=ADarko22_JDKCertsTool)
@@ -9,7 +9,7 @@
 A command-line utility to manage certificates in all the installed JDKs discovered.
 Visit the [JDKCertsTool documentation site](https://adarko22.github.io/JDKCertsTool/) for the full guide.
 
-## ❓ Why JDKCertsTool?
+## Why JDKCertsTool❓
 
 Modern JDKs rely on a **trusted certificate store** to securely connect to HTTPS services. But managing these
 certificates—especially across multiple installed JDKs—can be a pain.
@@ -31,7 +31,7 @@ truststores and implicitly assuming the **cacerts** truststore._
 
 ---
 
-## 🎯 Scope: the JDK truststore, not the application keystore
+## Scope: the JDK truststore, not the application keystore
 
 JDKCertsTool manages the JDK **truststore** only — the `TrustedCertEntry` entries that hold the **public certificates of
 external services** you connect to, such as:
@@ -50,7 +50,7 @@ tool.
 
 ---
 
-## 📦 Installation
+## Installation
 
 ### Via Homebrew (macOS/Linux)
 
@@ -64,7 +64,7 @@ brew upgrade jdkcerts
 
 ---
 
-## 🚀 Quick Start
+## Quick Start
 
 Use the installed `jdkcerts` command:
 
@@ -72,14 +72,14 @@ Use the installed `jdkcerts` command:
 jdkcerts --help
 ```
 
-### 💡 Commands Overview
+### Commands Overview
 
 See the [Commands Reference](https://adarko22.github.io/JDKCertsTool/website/commands/overview/) on the documentation
 site to learn about the commands, their options and examples.
 
 ---
 
-## 💻 Contributing
+## Contributing
 
 Your contributions are welcome! Start with the [Contributing Guide](CONTRIBUTING.md). Deep-dive developer and
 architecture docs live on the [documentation site](https://adarko22.github.io/JDKCertsTool/website/development/getting-started/).
