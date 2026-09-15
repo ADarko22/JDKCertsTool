@@ -7,10 +7,11 @@ and codebase rules required to ensure seamless contributions.
 
 ## 🛠️ Stack Architecture
 
-* **Language:** Kotlin JVM (Targeting Toolchain 21)
+* **Language:** Kotlin JVM (Targeting Toolchain 25)
 * **CLI Engine:** Clikt
 * **Concurrency:** Kotlin Coroutines
 * **Build System:** Gradle (with Kotlin DSL)
+* **Native Packaging:** GraalVM Native Image (Native Build Tools Gradle plugin)
 * **Code Quality:** Ktlint & SonarCloud
 * **Testing:** JUnit 5, MockK, Mockito-Kotlin, and JaCoCo
 
@@ -18,9 +19,9 @@ and codebase rules required to ensure seamless contributions.
 
 ## 🚀 Environment Setup
 
-You do not need to manually install a matching JDK to build this project.
+You do not need to manually install a matching JDK to build and test this project.
 The build uses the **Foojay Toolchain Resolver** to automatically detect, download,
-and provision the required Java 21 runtime isolated inside your local Gradle cache.
+and provision the required Java 25 runtime isolated inside your local Gradle cache.
 
 Simply clone the repository and execute the initial check:
 
@@ -29,6 +30,49 @@ git clone https://github.com/ADarko22/JDKCertsTool.git
 cd JDKCertsTool
 ./gradlew check
 ```
+
+---
+
+## 🧬 Building the Native Executable
+
+The `jdkcerts` binary is a GraalVM native image — a standalone executable with no JDK/JRE dependency at runtime.
+Building it locally (as opposed to running from source with `./gradlew run`) requires an actual GraalVM 25 installation,
+since `native-image` is a GraalVM-specific tool that the Foojay resolver's plain-JDK toolchains don't provide.
+
+### Prerequisites
+
+Install GraalVM 25 (Community Edition) and point `GRAALVM_HOME` at it, e.g. via [SDKMAN!](https://sdkman.io/):
+
+```bash
+sdk install java 25-graalce   # run `sdk list java` first if this identifier has changed
+sdk use java 25-graalce
+export GRAALVM_HOME=$(sdk home java 25-graalce)
+```
+
+### Build & Run
+
+```bash
+./gradlew nativeCompile
+./build/native/nativeCompile/jdkcerts --help
+```
+
+`./gradlew run` (JVM-based) remains the fast everyday feedback loop for day-to-day development.
+Use `nativeCompile` specifically to verify the actual release artifact before it ships.
+
+### Diagnosing native-image reachability issues
+
+If `nativeCompile` or the built binary fails with a `MissingReflectionRegistrationError` (usually after adding a new
+dependency), run the CLI under the native-image tracing agent to see what it touches:
+
+```bash
+./gradlew -Pagent run --args="<subcommand>"
+```
+
+Most third-party libraries' reflection/JNI needs (e.g. Mordant's JNA-based terminal detection, pulled by Clikt)
+are already covered by
+the [GraalVM Reachability Metadata Repository](https://github.com/oracle/graalvm-reachability-metadata),
+enabled and pinned in `build.gradle.kts` (`graalvmNative { metadataRepository { ... } }`) — check there before writing
+project-specific reflect config for a class that isn't part of this project's own source.
 
 ---
 

@@ -1,0 +1,17 @@
+name: Set up GraalVM 25
+description: Sets up the GraalVM Community 25 toolchain used for native-image builds
+
+inputs:
+  github-token:
+    description: Token passed through to graalvm/setup-graalvm to avoid GitHub API rate limiting
+    required: true
+
+runs:
+  using: composite
+  steps:
+    - name: Set up GraalVM 25
+      uses: graalvm/setup-graalvm@0426e2e191540e8514dff98dc52a5f5146a2a276 # v1.6.6
+      with:
+        java-version: '25'
+        distribution: 'graalvm-community'
+        github-token: ${{ inputs.github-token }}
